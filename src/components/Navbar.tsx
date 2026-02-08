@@ -1,8 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { IconChevronDown, IconMenu2, IconX, IconSun, IconMoon, IconSkull, IconExternalLink } from '@tabler/icons-react';
-import { ThemeToggle } from './ThemeToggle';
-import { Button } from '@/components/ui/button';
+import React, { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import {
+  IconChevronDown,
+  IconMenu2,
+  IconX,
+  IconSun,
+  IconMoon,
+  IconSkull,
+  IconExternalLink,
+} from "@tabler/icons-react";
+import { ThemeToggle } from "./ThemeToggle";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,17 +23,17 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from "@/hooks/use-mobile";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"; // Keep for now in case it's a dependency of drawer
 import { Toggle } from "@/components/ui/toggle";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
-import Logo from './Logo';
-import PixelSvgIcon from './PixelSvgIcon';
-import AuthDialog from './auth/AuthDialog'; // Added for auth
-import UserMenu from './auth/UserMenu'; // Added for auth
-import { useAuth } from '@/hooks/useAuth'; // Added for auth
-import { useProfile } from '@/hooks/useProfile';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import Logo from "./Logo";
+import PixelSvgIcon from "./PixelSvgIcon";
+import AuthDialog from "./auth/AuthDialog"; // Added for auth
+import UserMenu from "./auth/UserMenu"; // Added for auth
+import { useAuth } from "@/hooks/useAuth"; // Added for auth
+import { useProfile } from "@/hooks/useProfile";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface NavLink {
   name: string;
@@ -41,33 +49,57 @@ interface NavDropdown {
 }
 
 const mainLinks: (NavLink | NavDropdown)[] = [
-  { name: 'Home', path: '/', icon: 'home' },
-  { name: 'Blogs', path: '/blogs', icon: 'text', tag: 'NEW' },
-  { name: 'Contact', path: '/contact', icon: 'contact' },
+  { name: "Home", path: "/", icon: "home" },
+  { name: "Blogs", path: "/blogs", icon: "text", tag: "NEW" },
+  { name: "Contact", path: "/contact", icon: "contact" },
   {
-    name: 'Resources',
-    icon: 'resources',
+    name: "Resources",
+    icon: "resources",
     links: [
-      { name: 'Resources Hub', path: '/resources', icon: 'resources-hub' },
-      { name: 'Utilities', path: '/utilities', icon: 'software' },
-      { name: 'Community Assets', path: '/showcase', icon: 'yt-videos', tag: 'NEW' },
-      { name: 'Community', path: '/community', icon: 'yt-videos' },
-    ]
+      { name: "Resources Hub", path: "/resources", icon: "resources-hub" },
+      { name: "Utilities", path: "/utilities", icon: "software" },
+      {
+        name: "Community Assets",
+        path: "/showcase",
+        icon: "yt-videos",
+        tag: "NEW",
+      },
+      { name: "Community", path: "/community", icon: "yt-videos" },
+    ],
   },
   {
-    name: 'Tools',
-    icon: 'tools',
+    name: "Tools",
+    icon: "tools",
     links: [
-      { name: 'Music Copyright Checker', path: '/gappa', icon: 'music' },
-      { name: 'Background Generator', path: '/background-generator', icon: 'background' },
-      { name: 'Player Renderer', path: '/player-renderer', icon: 'player' },
-      { name: 'Text Generator', path: '/text-generator', icon: 'text' },
-      { name: 'Youtube Tools', path: '/youtube-downloader', icon: 'yt-downloader', tag: 'NEW' },
-      { name: 'AI Title Helper', path: '/ai-title-helper', icon: 'text', tag: 'NEW' },
-      { name: 'Content Generators', path: '/generators', icon: 'text' },
-      { name: 's0', path: 'https://s0.renderdragon.org/docs', icon: 'external', tag: 'NEW' }
-    ]
-  }
+      { name: "Music Copyright Checker", path: "/gappa", icon: "music" },
+      {
+        name: "Background Generator",
+        path: "/background-generator",
+        icon: "background",
+      },
+      { name: "Player Renderer", path: "/player-renderer", icon: "player" },
+      { name: "Text Generator", path: "/text-generator", icon: "text" },
+      {
+        name: "Youtube Tools",
+        path: "/youtube-downloader",
+        icon: "yt-downloader",
+        tag: "NEW",
+      },
+      {
+        name: "AI Title Helper",
+        path: "/ai-title-helper",
+        icon: "text",
+        tag: "NEW",
+      },
+      { name: "Content Generators", path: "/generators", icon: "text" },
+      {
+        name: "s0",
+        path: "https://s0.renderdragon.org/docs",
+        icon: "external",
+        tag: "NEW",
+      },
+    ],
+  },
 ];
 
 // Small badge for marking new/updated links
@@ -85,83 +117,83 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-  const [openMobileCollapsible, setOpenMobileCollapsible] = useState<string | null>(null);
-  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-    return localStorage.getItem('theme') as 'light' | 'dark' ||
-      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  const [openMobileCollapsible, setOpenMobileCollapsible] = useState<
+    string | null
+  >(null);
+  const [theme, setTheme] = useState<"light" | "dark">(() => {
+    return (
+      (localStorage.getItem("theme") as "light" | "dark") ||
+      (window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light")
+    );
   });
   const isMobile = useIsMobile();
   const [authDialogOpen, setAuthDialogOpen] = useState(false); // Added for auth
   const { user, loading, signOut } = useAuth(); // Added for auth
   const { profile } = useProfile();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false); // Manages Drawer open state
-  const [showBlogsBanner, setShowBlogsBanner] = useState(true);
-
-  // Initialize banner state from localStorage
-  useEffect(() => {
-    const hidden = localStorage.getItem('hideBlogsBanner');
-    if (hidden === '1') setShowBlogsBanner(false);
-  }, []);
-
-  const dismissBanner = () => {
-    setShowBlogsBanner(false);
-    localStorage.setItem('hideBlogsBanner', '1');
-  };
 
   // ... (lines 111-266 omitted for brevity, logic remains same)
 
   // ...
 
   const toggleTheme = () => {
-    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    const newTheme = theme === "dark" ? "light" : "dark";
     setTheme(newTheme);
-    localStorage.setItem('theme', newTheme);
-    if (newTheme === 'dark') {
-      document.documentElement.classList.add('dark');
+    localStorage.setItem("theme", newTheme);
+    if (newTheme === "dark") {
+      document.documentElement.classList.add("dark");
     } else {
-      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.remove("dark");
     }
   };
 
   useEffect(() => {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
     } else {
-      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.remove("dark");
     }
   }, [theme]);
 
-  const displayName = profile?.username || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';
+  const displayName =
+    profile?.username ||
+    user?.user_metadata?.full_name ||
+    user?.email?.split("@")[0] ||
+    "User";
   const safeAvatarUrl = profile?.avatar_url || user?.user_metadata?.avatar_url;
 
   const getInitials = (name: string) => {
-    return name
-      ?.split(' ')
-      .map((n) => n[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2) || 'U';
+    return (
+      name
+        ?.split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2) || "U"
+    );
   };
 
   const navigate = useNavigate();
 
   const handleShowFavorites = () => {
-    navigate('/account');
+    navigate("/account");
   };
 
   const handleMobileCollapsibleToggle = (name: string) => {
-    setOpenMobileCollapsible(prev => prev === name ? null : name);
+    setOpenMobileCollapsible((prev) => (prev === name ? null : name));
   };
 
   const isLinkActive = (path: string) => {
-    if (path === '/') {
-      return location.pathname === '/';
+    if (path === "/") {
+      return location.pathname === "/";
     }
     return location.pathname.startsWith(path);
   };
 
   const isDropdownActive = (dropdown: NavDropdown) => {
-    return dropdown.links.some(link => isLinkActive(link.path));
+    return dropdown.links.some((link) => isLinkActive(link.path));
   };
 
   const getBackgroundStyle = () => {
@@ -176,40 +208,23 @@ const Navbar = () => {
     return baseStyle;
   };
 
-  const isHomePage = location.pathname === '/';
+  const isHomePage = location.pathname === "/";
   const isTransparent = isHomePage && !scrolled;
 
   return (
     <>
-      {showBlogsBanner && (
-        <div className="fixed top-0 left-0 right-0 z-[60]">
-          <div className="w-full bg-gradient-to-r from-cow-purple/90 via-cow-purple to-cow-purple/90 text-white">
-            <div className="container mx-auto px-4 py-2 flex items-center justify-center gap-3 text-sm">
-              <span className="font-vt323">Check out our new</span>
-              <Link to="/blogs" className="underline underline-offset-2 font-vt323">
-                Blogs feature!
-              </Link>
-              <button
-                aria-label="Dismiss"
-                onClick={dismissBanner}
-                className="ml-3 text-white/80 hover:text-white"
-              >
-                <IconX className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
       <header
-        className={`fixed w-full z-50 transition-all duration-300 py-4 ${scrolled ? 'shadow-lg' : ''
-          }`}
-        style={{ top: showBlogsBanner ? 36 : 0 }}
+        className={`fixed w-full z-50 transition-all duration-300 py-4 ${
+          scrolled ? "shadow-lg" : ""
+        }`}
+        style={{ top: 0 }}
       >
         <div
-          className={`absolute inset-0 z-[-1] pointer-events-none transition-all duration-300 ${isTransparent
-            ? 'bg-transparent'
-            : 'bg-gradient-to-r from-background/80 via-background/90 to-background/80 dark:from-background/80 dark:via-background/90 dark:to-background/80'
-            }`}
+          className={`absolute inset-0 z-[-1] pointer-events-none transition-all duration-300 ${
+            isTransparent
+              ? "bg-transparent"
+              : "bg-gradient-to-r from-background/80 via-background/90 to-background/80 dark:from-background/80 dark:via-background/90 dark:to-background/80"
+          }`}
           style={getBackgroundStyle()}
         />
         <div className="container mx-auto px-4 flex justify-between items-center relative z-10">
@@ -227,22 +242,19 @@ const Navbar = () => {
           </Link>
 
           <nav className="hidden md:flex items-center space-x-6">
-            {mainLinks.map((link, index) => (
-              'path' in link ? (
+            {mainLinks.map((link, index) =>
+              "path" in link ? (
                 <Link
                   key={index}
                   to={link.path}
-                  className={`flex items-center gap-1 transition-colors font-vt323 text-xl ${isLinkActive(link.path) ? 'text-primary' : 'text-foreground hover:text-primary'}`}
+                  className={`flex items-center gap-1 transition-colors font-vt323 text-xl ${isLinkActive(link.path) ? "text-primary" : "text-foreground hover:text-primary"}`}
                 >
                   {/* no icons for desktop */}
                   <span>{link.name}</span>
                   {link.tag && <TagBadge label={link.tag} />}
                 </Link>
               ) : (
-                <div
-                  key={index}
-                  className="relative"
-                >
+                <div key={index} className="relative">
                   <DropdownMenu
                     open={activeDropdown === link.name}
                     onOpenChange={(open) => {
@@ -253,8 +265,8 @@ const Navbar = () => {
                     <DropdownMenuTrigger asChild>
                       <Button
                         variant="ghost"
-                        className={`flex items-center transition-colors font-vt323 text-xl ${isDropdownActive(link) ? 'text-primary' : 'text-foreground hover:text-primary'}`}
-                        style={{ transform: 'none' }}
+                        className={`flex items-center transition-colors font-vt323 text-xl ${isDropdownActive(link) ? "text-primary" : "text-foreground hover:text-primary"}`}
+                        style={{ transform: "none" }}
                         onPointerEnter={() => setActiveDropdown(link.name)}
                         onPointerDown={() => setActiveDropdown(null)}
                       >
@@ -270,8 +282,12 @@ const Navbar = () => {
                     >
                       <DropdownMenuGroup>
                         {link.links.map((subLink, subIndex) => (
-                          <DropdownMenuItem key={subIndex} asChild onSelect={() => setActiveDropdown(null)}>
-                            {String(subLink.path).startsWith('http') ? (
+                          <DropdownMenuItem
+                            key={subIndex}
+                            asChild
+                            onSelect={() => setActiveDropdown(null)}
+                          >
+                            {String(subLink.path).startsWith("http") ? (
                               <a
                                 href={subLink.path}
                                 target="_blank"
@@ -288,7 +304,7 @@ const Navbar = () => {
                             ) : (
                               <Link
                                 to={subLink.path}
-                                className={`flex items-center gap-1 px-2 py-2 cursor-pointer font-vt323 text-xl pixel-corners ${isLinkActive(subLink.path) ? 'text-primary bg-accent/50' : ''}`}
+                                className={`flex items-center gap-1 px-2 py-2 cursor-pointer font-vt323 text-xl pixel-corners ${isLinkActive(subLink.path) ? "text-primary bg-accent/50" : ""}`}
                                 onClick={() => setActiveDropdown(null)}
                               >
                                 {/* sub link name */}
@@ -304,8 +320,8 @@ const Navbar = () => {
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
-              )
-            ))}
+              ),
+            )}
           </nav>
 
           <div className="flex items-center space-x-4">
@@ -330,11 +346,7 @@ const Navbar = () => {
             {/* Mobile Menu Trigger */}
             <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
               <DrawerTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="md:hidden"
-                >
+                <Button variant="ghost" size="icon" className="md:hidden">
                   <IconMenu2 className="h-6 w-6" />
                   <span className="sr-only">Toggle menu</span>
                 </Button>
@@ -355,12 +367,12 @@ const Navbar = () => {
                   </div>
 
                   <nav className="space-y-4">
-                    {mainLinks.map((link, index) => (
-                      'path' in link ? (
+                    {mainLinks.map((link, index) =>
+                      "path" in link ? (
                         <Link
                           key={index}
                           to={link.path}
-                          className={`flex items-center gap-1 text-xl py-3 border-b border-border font-vt323 ${isLinkActive(link.path) ? 'text-primary' : ''}`}
+                          className={`flex items-center gap-1 text-xl py-3 border-b border-border font-vt323 ${isLinkActive(link.path) ? "text-primary" : ""}`}
                           onClick={() => setIsDrawerOpen(false)} // Close drawer on link click
                         >
                           <span>{link.name}</span>
@@ -371,21 +383,26 @@ const Navbar = () => {
                           key={index}
                           className="w-full border-b border-border"
                           open={openMobileCollapsible === link.name}
-                          onOpenChange={() => handleMobileCollapsibleToggle(link.name)}
+                          onOpenChange={() =>
+                            handleMobileCollapsibleToggle(link.name)
+                          }
                         >
                           <CollapsibleTrigger className="w-full flex items-center justify-between text-xl py-3">
                             <div className="flex items-center space-x-3 font-vt323">
                               <span>{link.name}</span>
                             </div>
                             <IconChevronDown
-                              className={`w-4 h-4 transition-transform duration-300 ${openMobileCollapsible === link.name ? 'rotate-180' : ''
-                                }`}
+                              className={`w-4 h-4 transition-transform duration-300 ${
+                                openMobileCollapsible === link.name
+                                  ? "rotate-180"
+                                  : ""
+                              }`}
                             />
                           </CollapsibleTrigger>
                           <CollapsibleContent className="animate-accordion-down">
                             <div className="pl-8 pb-3 space-y-3">
-                              {link.links.map((subLink, subIndex) => (
-                                String(subLink.path).startsWith('http') ? (
+                              {link.links.map((subLink, subIndex) =>
+                                String(subLink.path).startsWith("http") ? (
                                   <a
                                     key={subIndex}
                                     href={subLink.path}
@@ -396,7 +413,9 @@ const Navbar = () => {
                                   >
                                     <span>{subLink.name}</span>
                                     {(subLink as NavLink).tag && (
-                                      <TagBadge label={(subLink as NavLink).tag!} />
+                                      <TagBadge
+                                        label={(subLink as NavLink).tag!}
+                                      />
                                     )}
                                     <IconExternalLink className="w-5 h-5 ml-auto pl-2 opacity-80" />
                                   </a>
@@ -404,21 +423,23 @@ const Navbar = () => {
                                   <Link
                                     key={subIndex}
                                     to={subLink.path}
-                                    className={`flex items-center space-x-3 py-2 font-vt323 text-xl ${isLinkActive(subLink.path) ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+                                    className={`flex items-center space-x-3 py-2 font-vt323 text-xl ${isLinkActive(subLink.path) ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}
                                     onClick={() => setIsDrawerOpen(false)} // Close drawer on sub-link click
                                   >
                                     <span>{subLink.name}</span>
                                     {(subLink as NavLink).tag && (
-                                      <TagBadge label={(subLink as NavLink).tag!} />
+                                      <TagBadge
+                                        label={(subLink as NavLink).tag!}
+                                      />
                                     )}
                                   </Link>
-                                )
-                              ))}
+                                ),
+                              )}
                             </div>
                           </CollapsibleContent>
                         </Collapsible>
-                      )
-                    ))}
+                      ),
+                    )}
                   </nav>
                   {/* Mobile Auth Section */}
                   <div className="pt-4 border-t border-border mt-4">
@@ -429,19 +450,30 @@ const Navbar = () => {
                         <div className="flex items-center gap-3">
                           <Avatar className="h-8 w-8">
                             {safeAvatarUrl && (
-                              <AvatarImage src={safeAvatarUrl} alt="User avatar" referrerPolicy="no-referrer" />
+                              <AvatarImage
+                                src={safeAvatarUrl}
+                                alt="User avatar"
+                                referrerPolicy="no-referrer"
+                              />
                             )}
                             <AvatarFallback className="bg-cow-purple text-white text-xs">
                               {getInitials(displayName)}
                             </AvatarFallback>
                           </Avatar>
                           <div className="min-w-0">
-                            <div className="text-sm font-medium truncate">{displayName || 'User'}</div>
-                            <div className="text-xs text-muted-foreground truncate">{user.email}</div>
+                            <div className="text-sm font-medium truncate">
+                              {displayName || "User"}
+                            </div>
+                            <div className="text-xs text-muted-foreground truncate">
+                              {user.email}
+                            </div>
                           </div>
                         </div>
                         <Button
-                          onClick={() => { handleShowFavorites(); setIsDrawerOpen(false); }}
+                          onClick={() => {
+                            handleShowFavorites();
+                            setIsDrawerOpen(false);
+                          }}
                           variant="outline"
                           className="w-full pixel-corners font-vt323"
                         >
@@ -474,11 +506,11 @@ const Navbar = () => {
 
                 <div className="absolute bottom-0 left-0 right-0 p-4 flex justify-center border-t border-border bg-background">
                   <Toggle
-                    pressed={theme === 'dark'}
+                    pressed={theme === "dark"}
                     onPressedChange={toggleTheme}
                     className="w-full flex items-center justify-center gap-2 py-2 font-vt323"
                   >
-                    {theme === 'dark' ? (
+                    {theme === "dark" ? (
                       <>
                         <PixelSvgIcon name="moon" className="h-5 w-5" />
                         <span>Dark Mode</span>
@@ -506,10 +538,7 @@ const Navbar = () => {
         )}
       </header>
 
-      <AuthDialog
-        open={authDialogOpen}
-        onOpenChange={setAuthDialogOpen}
-      />
+      <AuthDialog open={authDialogOpen} onOpenChange={setAuthDialogOpen} />
     </>
   );
 };
