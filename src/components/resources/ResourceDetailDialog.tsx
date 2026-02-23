@@ -110,6 +110,8 @@ const ResourceDetailDialog = ({
         return <IconFileText className="h-5 w-5" />;
       case 'presets':
         return <IconFileText className="h-5 w-5" />;
+      case 'mcsounds':
+        return <IconFileMusic className="h-5 w-5" />;
       default:
         return <IconFileText className="h-5 w-5" />;
     }
@@ -129,6 +131,8 @@ const ResourceDetailDialog = ({
         return 'bg-green-500/10 text-green-500';
       case 'presets':
         return 'bg-gray-500/10 text-gray-500';
+      case 'mcsounds':
+        return 'bg-teal-500/10 text-teal-500';
       default:
         return 'bg-gray-500/10 text-gray-500';
     }
@@ -231,8 +235,8 @@ const ResourceDetailDialog = ({
 
           <ResourcePreview resource={resource} />
 
-          {!isFavoritesView && (
-            <div className="flex items-center gap-2 justify-between">
+          <div className={`flex items-center gap-2 ${isFavoritesView ? 'justify-center' : 'justify-between'}`}>
+            {!isFavoritesView && (
               <Button
                 variant="outline"
                 className={`${!hasPrevious ? 'opacity-0 pointer-events-none' : 'opacity-70 hover:opacity-100'} transition-opacity`}
@@ -243,15 +247,17 @@ const ResourceDetailDialog = ({
                 <span className="hidden md:inline">Previous</span>
                 <span className="sr-only">Previous resource</span>
               </Button>
+            )}
 
-              <Button
-                onClick={() => onDownload(resource)}
-                className="pixel-btn-primary flex items-center justify-center gap-2"
-              >
-                <IconDownload className="h-5 w-5" />
-                <span>Download Resource</span>
-              </Button>
+            <Button
+              onClick={() => onDownload(resource)}
+              className="pixel-btn-primary flex items-center justify-center gap-2"
+            >
+              <IconDownload className="h-5 w-5" />
+              <span>Download Resource</span>
+            </Button>
 
+            {!isFavoritesView && (
               <Button
                 variant="outline"
                 className={`${!hasNext ? 'opacity-0 pointer-events-none' : 'opacity-70 hover:opacity-100'} transition-opacity`}
@@ -262,8 +268,8 @@ const ResourceDetailDialog = ({
                 <IconChevronRight className="h-4 w-4 md:ml-2" />
                 <span className="sr-only">Next resource</span>
               </Button>
-            </div>
-          )}
+            )}
+          </div>
 
           <p className="text-xs text-center text-muted-foreground">
             By downloading, you agree to our terms of use. Crediting

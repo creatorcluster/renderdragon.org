@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, lazy, Suspense } from 'react';
+import { useRef, useEffect, useState, lazy, Suspense, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -10,6 +10,7 @@ import ResourceFilters from '@/components/resources/ResourceFilters';
 import SortSelector from '@/components/resources/SortSelector';
 import ResourcesList from '@/components/resources/ResourcesList';
 import FavoritesTab from '@/components/resources/FavoritesTab';
+import McSoundsBrowser from '@/components/resources/McSoundsBrowser';
 import AuthDialog from '@/components/auth/AuthDialog';
 import { Button } from '@/components/ui/button';
 import { IconArrowUp, IconHeart, IconSearch } from '@tabler/icons-react';
@@ -58,6 +59,19 @@ const ResourcesHub = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const isMobile = useIsMobile();
 
+  const isMcSoundsView = selectedCategory === 'mcsounds';
+
+  const mcsoundsResourceCount = useMemo(() => {
+    if (!isMcSoundsView) return {};
+    const countMap: Record<string, number> = {};
+    resources.forEach(r => {
+      if (r.subcategory) {
+        countMap[r.subcategory] = (countMap[r.subcategory] || 0) + 1;
+      }
+    });
+    return countMap;
+  }, [resources, isMcSoundsView]);
+
   useEffect(() => {
     const handleScroll = () => {
       const scrolled = window.pageYOffset > 400;
@@ -77,7 +91,6 @@ const ResourcesHub = () => {
     };
   }, []);
 
-  // Check URL params for favorites tab
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('tab') === 'favorites') {
@@ -104,6 +117,45 @@ const ResourcesHub = () => {
     }
   };
 
+  const renderContent = () => (
+    <>
+      <ResourceFilters
+        searchQuery={searchQuery}
+        selectedCategory={selectedCategory}
+        selectedSubcategory={selectedSubcategory}
+        availableSubcategories={availableSubcategories}
+        onSearch={handleSearch}
+        onClearSearch={handleClearSearch}
+        onSearchSubmit={handleSearchSubmit}
+        onCategoryChange={handleCategoryChange}
+        onSubcategoryChange={handleSubcategoryChange}
+        sortOrder={sortOrder}
+        onSortOrderChange={handleSortOrderChange}
+        isMobile={isMobile}
+        inputRef={inputRef}
+
+      />
+
+      {(selectedCategory === 'minecraft-icons' || selectedCategory === 'mcsounds') && (
+        <p className="text-xs text-center text-muted-foreground mb-6 -mt-4 opacity-50 hover:opacity-100 transition-opacity">
+          Powered by Hamburger API
+        </p>
+      )}
+
+      <ResourcesList
+        resources={resources}
+        filteredResources={filteredResources}
+        isLoading={isLoading}
+        isSearching={isSearching}
+        selectedCategory={selectedCategory}
+        searchQuery={searchQuery}
+        onSelectResource={setSelectedResource}
+        onClearFilters={handleClearSearch}
+        hasCategoryResources={hasCategoryResources}
+      />
+    </>
+  );
+
   return (
     <div className="min-h-screen flex flex-col relative">
       <Helmet>
@@ -121,102 +173,86 @@ const ResourcesHub = () => {
 
       <main className="flex-grow pt-24 pb-16 cow-grid-bg custom-scrollbar">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto relative">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <h1 className="text-4xl md:text-5xl font-vt323 font-bold mb-2 text-center">Resources Hub</h1>
-              <p className="text-lg text-muted-foreground text-center max-w-2xl mx-auto">Discover and download a wide range of resources to enhance your RenderDragon experience.</p>
-            </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <h1 className="text-4xl md:text-5xl font-vt323 font-bold mb-2 text-center">Resources Hub</h1>
+            <p className="text-lg text-muted-foreground text-center max-w-2xl mx-auto">Discover and download a wide range of resources to enhance your RenderDragon experience.</p>
+          </motion.div>
 
-
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1, duration: 0.5 }}
-            >
-              <div className="flex items-center justify-center gap-2 mb-6">
-                <Button
-                  variant={!showFavorites ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setShowFavorites(false)}
-                  className="pixel-corners"
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1, duration: 0.5 }}
+            className="mt-6"
+          >
+            <div className="flex items-center justify-center gap-2 mb-6">
+              <Button
+                variant={!showFavorites ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setShowFavorites(false)}
+                className="pixel-corners"
+              >
+                <IconSearch className="h-4 w-4 mr-2" />
+                Resources
+              </Button>
+              <Button
+                variant={showFavorites ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setShowFavorites(true)}
+                className="pixel-corners"
+              >
+                <IconHeart className="h-4 w-4 mr-2" />
+                Favorites
+              </Button>
+            </div>
+            <AnimatePresence mode="wait">
+              {showFavorites ? (
+                <motion.div
+                  key="submit"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className="text-center max-w-4xl mx-auto"
                 >
-                  <IconSearch className="h-4 w-4 mr-2" />
-                  Resources
-                </Button>
-                <Button
-                  variant={showFavorites ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setShowFavorites(true)}
-                  className="pixel-corners"
+                  <FavoritesTab onSelectResource={setSelectedResource} />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="browse"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  transition={{ duration: 0.3 }}
                 >
-                  <IconHeart className="h-4 w-4 mr-2" />
-                  Favorites
-                </Button>
-              </div>
-              <AnimatePresence mode="wait">
-                {showFavorites ? (
-                  <motion.div
-                    key="submit"
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    transition={{ duration: 0.3 }}
-                    className="text-center"
-                  >
-                    <FavoritesTab />
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="browse"
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 20 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <ResourceFilters
-                      searchQuery={searchQuery}
-                      selectedCategory={selectedCategory}
-                      selectedSubcategory={selectedSubcategory}
-                      availableSubcategories={availableSubcategories}
-                      onSearch={handleSearch}
-                      onClearSearch={handleClearSearch}
-                      onSearchSubmit={handleSearchSubmit}
-                      onCategoryChange={handleCategoryChange}
-                      onSubcategoryChange={handleSubcategoryChange}
-                      sortOrder={sortOrder}
-                      onSortOrderChange={handleSortOrderChange}
-                      isMobile={isMobile}
-                      inputRef={inputRef}
-
-                    />
-
-                    {selectedCategory === 'minecraft-icons' && (
-                      <p className="text-xs text-center text-muted-foreground mb-6 -mt-4 opacity-50 hover:opacity-100 transition-opacity">
-                        Powered by Hamburger API
-                      </p>
-                    )}
-
-                    <ResourcesList
-                      resources={resources}
-                      filteredResources={filteredResources}
-                      isLoading={isLoading}
-                      isSearching={isSearching}
-                      selectedCategory={selectedCategory}
-                      searchQuery={searchQuery}
-                      onSelectResource={setSelectedResource}
-                      onClearFilters={handleClearSearch}
-                      hasCategoryResources={hasCategoryResources}
-                    />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          </div>
+                  {isMcSoundsView && !isMobile ? (
+                    <div className="flex gap-6 max-w-7xl mx-auto">
+                      <div className="flex-1 min-w-0">
+                        {renderContent()}
+                      </div>
+                      <div className="w-80 flex-shrink-0">
+                        <div className="sticky top-28 h-[calc(100vh-8rem)]">
+                          <McSoundsBrowser
+                            subcategories={availableSubcategories}
+                            selectedSubcategory={selectedSubcategory}
+                            onSubcategoryChange={handleSubcategoryChange}
+                            resourceCount={mcsoundsResourceCount}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="max-w-4xl mx-auto">
+                      {renderContent()}
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
         </div>
       </main>
 

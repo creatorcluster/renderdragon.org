@@ -235,6 +235,13 @@ const MobileFilters = ({
               <img src="/assets/mci_icon.png" className="h-4 w-4 mr-2" alt="MCI" onError={(e) => { e.currentTarget.style.display = 'none' }} />
               Minecraft Icons
             </Button>
+            <Button
+              variant={selectedCategory === 'mcsounds' ? 'default' : 'outline'}
+              onClick={() => onCategoryChange('mcsounds')}
+              className="justify-start pixel-corners"
+            >
+              MC Sounds
+            </Button>
 
 
             {selectedCategory === 'presets' && (
@@ -365,6 +372,14 @@ const DesktopFilters = ({
         className="h-10 pixel-corners"
       >
         Minecraft Icons
+      </Button>
+      <Button
+        variant={selectedCategory === 'mcsounds' ? 'default' : 'outline'}
+        size="sm"
+        onClick={() => onCategoryChange('mcsounds')}
+        className="h-10 pixel-corners"
+      >
+        MC Sounds
       </Button>
 
 
