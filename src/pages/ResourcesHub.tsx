@@ -11,6 +11,7 @@ import SortSelector from '@/components/resources/SortSelector';
 import ResourcesList from '@/components/resources/ResourcesList';
 import FavoritesTab from '@/components/resources/FavoritesTab';
 import McSoundsBrowser from '@/components/resources/McSoundsBrowser';
+import McIconsBrowser from '@/components/resources/McIconsBrowser';
 import AuthDialog from '@/components/auth/AuthDialog';
 import { Button } from '@/components/ui/button';
 import { IconArrowUp, IconHeart, IconSearch } from '@tabler/icons-react';
@@ -60,6 +61,7 @@ const ResourcesHub = () => {
   const isMobile = useIsMobile();
 
   const isMcSoundsView = selectedCategory === 'mcsounds';
+  const isMcIconsView = selectedCategory === 'minecraft-icons';
 
   const mcsoundsResourceCount = useMemo(() => {
     if (!isMcSoundsView) return {};
@@ -71,6 +73,17 @@ const ResourcesHub = () => {
     });
     return countMap;
   }, [resources, isMcSoundsView]);
+
+  const mciconsResourceCount = useMemo(() => {
+    if (!isMcIconsView) return {};
+    const countMap: Record<string, number> = {};
+    resources.forEach(r => {
+      if (r.subcategory) {
+        countMap[r.subcategory] = (countMap[r.subcategory] || 0) + 1;
+      }
+    });
+    return countMap;
+  }, [resources, isMcIconsView]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -228,19 +241,28 @@ const ResourcesHub = () => {
                   exit={{ opacity: 0, x: 20 }}
                   transition={{ duration: 0.3 }}
                 >
-                  {isMcSoundsView && !isMobile ? (
+                  {(isMcSoundsView || isMcIconsView) && !isMobile ? (
                     <div className="flex gap-6 max-w-7xl mx-auto">
                       <div className="flex-1 min-w-0">
                         {renderContent()}
                       </div>
                       <div className="w-80 flex-shrink-0">
                         <div className="sticky top-28 h-[calc(100vh-8rem)]">
-                          <McSoundsBrowser
-                            subcategories={availableSubcategories}
-                            selectedSubcategory={selectedSubcategory}
-                            onSubcategoryChange={handleSubcategoryChange}
-                            resourceCount={mcsoundsResourceCount}
-                          />
+                          {isMcSoundsView ? (
+                            <McSoundsBrowser
+                              subcategories={availableSubcategories}
+                              selectedSubcategory={selectedSubcategory}
+                              onSubcategoryChange={handleSubcategoryChange}
+                              resourceCount={mcsoundsResourceCount}
+                            />
+                          ) : (
+                            <McIconsBrowser
+                              subcategories={availableSubcategories}
+                              selectedSubcategory={selectedSubcategory}
+                              onSubcategoryChange={handleSubcategoryChange}
+                              resourceCount={mciconsResourceCount}
+                            />
+                          )}
                         </div>
                       </div>
                     </div>
