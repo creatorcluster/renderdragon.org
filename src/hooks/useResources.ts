@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { Resource } from "@/types/resources";
 import { useDownloadCounts } from "@/hooks/useDownloadCounts";
 import {
@@ -32,34 +32,47 @@ export const useResources = () => {
   const [lastAction, setLastAction] = useState<string>("");
   const [loadedFonts, setLoadedFonts] = useState<string[]>([]);
   const [availableCategories, setAvailableCategories] = useState<string[]>([]);
-
-  const fetchResources = useCallback(async () => {
-    try {
-      setIsLoading(true);
-
-      const categories = getAvailableCategories();
-      if (categories.length > 0) {
-        setAvailableCategories(categories);
-      }
-
-      if (selectedCategory === null || selectedCategory === "favorites") {
-        const all = await fetchAllResources();
-        setResources(all);
-        return;
-      }
-
-      const categoryItems = await fetchCategory(selectedCategory as string);
-      setResources(categoryItems);
-    } catch (error) {
-      console.error("Error fetching resources:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [selectedCategory]);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const fetchIdRef = useRef(0);
 
   useEffect(() => {
-    fetchResources();
-  }, [fetchResources]);
+    const currentFetchId = ++fetchIdRef.current;
+    
+    const loadResources = async () => {
+      setIsLoading(true);
+      setResources([]);
+
+      try {
+        const categories = getAvailableCategories();
+        if (categories.length > 0) {
+          setAvailableCategories(categories);
+        }
+
+        let data: Resource[];
+        
+        if (selectedCategory === null || selectedCategory === "favorites") {
+          data = await fetchAllResources();
+        } else {
+          data = await fetchCategory(selectedCategory as string);
+        }
+
+        if (currentFetchId === fetchIdRef.current) {
+          setResources(data);
+        }
+      } catch (error) {
+        console.error("Error fetching resources:", error);
+        if (currentFetchId === fetchIdRef.current) {
+          setResources([]);
+        }
+      } finally {
+        if (currentFetchId === fetchIdRef.current) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    loadResources();
+  }, [selectedCategory, refreshKey]);
 
   const handleSearchSubmit = useCallback((e?: React.FormEvent) => {
     e?.preventDefault();
@@ -75,6 +88,7 @@ export const useResources = () => {
 
   const handleCategoryChange = useCallback(
     (category: Category | null | "favorites") => {
+      setIsLoading(true);
       setSelectedCategory(category);
       setSelectedSubcategory(null);
       setLastAction("category");
@@ -140,7 +154,7 @@ export const useResources = () => {
     if (selectedCategory && selectedCategory !== "favorites") {
       result = result.filter((r) => r.category === selectedCategory);
     } else if (selectedCategory === null) {
-      result = result.filter((r) => r.category !== "minecraft-icons");
+      result = result.filter((r) => r.category !== "minecraft-icons" && r.category !== "mcsounds");
     }
 
     if (selectedCategory === "minecraft-icons") {
@@ -150,7 +164,12 @@ export const useResources = () => {
     }
 
     if (selectedSubcategory && selectedSubcategory !== "all") {
-      if (availableSubcategories.includes(selectedSubcategory)) {
+      if (selectedCategory === "mcsounds") {
+        result = result.filter((r) => 
+          r.subcategory === selectedSubcategory || 
+          r.subcategory?.startsWith(selectedSubcategory + "/")
+        );
+      } else if (availableSubcategories.includes(selectedSubcategory)) {
         result = result.filter((r) => r.subcategory === selectedSubcategory);
       }
     }
@@ -275,6 +294,10 @@ export const useResources = () => {
     loadWaveform,
     loadCachedAudio,
     loadCachedImage,
-    refreshResources: fetchResources,
+    refreshResources: () => {
+      fetchIdRef.current++;
+      setRefreshKey(prev => prev + 1);
+      setSelectedCategory(null);
+    },
   };
 };

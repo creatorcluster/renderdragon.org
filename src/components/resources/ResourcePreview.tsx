@@ -52,7 +52,7 @@ const ResourcePreview = ({ resource }: ResourcePreviewProps) => {
     return <p>No preview available</p>;
   }
 
-  if (resource.category === 'music' || resource.category === 'sfx') {
+  if (resource.category === 'music' || resource.category === 'sfx' || resource.category === 'mcsounds') {
     return <AudioPlayer src={downloadURL} />;
   }
 

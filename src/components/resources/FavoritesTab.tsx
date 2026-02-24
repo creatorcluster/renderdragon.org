@@ -1,14 +1,18 @@
 import { motion } from 'framer-motion';
 import { useHeartedResources } from '@/hooks/useHeartedResources';
 import { useResources } from '@/hooks/useResources';
-import { getResourceUrl } from '@/types/resources';
+import { getResourceUrl, Resource } from '@/types/resources';
 import ResourceCard from './ResourceCard';
 import ResourceCardSkeleton from './ResourceCardSkeleton';
 import { IconHeart } from '@tabler/icons-react';
 
-const FavoritesTab = () => {
+interface FavoritesTabProps {
+  onSelectResource: (resource: Resource) => void;
+}
+
+const FavoritesTab = ({ onSelectResource }: FavoritesTabProps) => {
   const { heartedResources, isLoading: favoritesLoading } = useHeartedResources();
-  const { resources, isLoading: resourcesLoading, setSelectedResource } = useResources();
+  const { resources, isLoading: resourcesLoading } = useResources();
 
   const isLoading = favoritesLoading || resourcesLoading;
 
@@ -51,7 +55,7 @@ const FavoritesTab = () => {
         <ResourceCard
           key={`${resource.id}-${resourceUrl}`}
           resource={resource}
-          onClick={setSelectedResource}
+          onClick={onSelectResource}
         />
         );
       })}

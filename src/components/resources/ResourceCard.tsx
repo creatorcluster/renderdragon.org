@@ -110,6 +110,8 @@ const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
         return <IconFileText className="h-5 w-5" />;
       case "minecraft-icons":
         return <IconBoxModel className="h-5 w-5" />;
+      case "mcsounds":
+        return <IconFileMusic className="h-5 w-5" />;
       default:
         return <IconFileText className="h-5 w-5" />;
     }
@@ -131,6 +133,8 @@ const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
         return "bg-gray-500/10 text-gray-500";
       case "minecraft-icons":
         return "bg-green-500/10 text-green-600";
+      case "mcsounds":
+        return "bg-teal-500/10 text-teal-500";
       default:
         return "bg-gray-500/10 text-gray-500";
     }
@@ -204,6 +208,19 @@ const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
           </div>
         );
       case "sfx":
+        return (
+          <div
+            onClick={handlePreviewClick}
+            className="relative aspect-video bg-muted/5 rounded-md overflow-hidden mb-3 cursor-default flex items-center justify-center"
+          >
+            <AudioPlayer
+              src={previewUrl}
+              isInView={isInView}
+              className="w-full shadow-none border-none bg-transparent p-0"
+            />
+          </div>
+        );
+      case "mcsounds":
         return (
           <div
             onClick={handlePreviewClick}

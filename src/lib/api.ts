@@ -1,4 +1,4 @@
-import { readCache, writeCache } from "@/lib/cache";
+import { readCache, writeCache, clearCache } from "@/lib/cache";
 import { Resource } from "@/types/resources";
 
 const API_BASE = "https://hamburger-api.powernplant101-c6b.workers.dev";
@@ -36,21 +36,27 @@ const fetchJson = async <T>(url: string): Promise<T | null> => {
         Accept: "application/json",
       },
     });
-    if (!res.ok) return null;
+    if (!res.ok) {
+      console.error(`API error: ${res.status} ${res.statusText} for ${url}`);
+      return null;
+    }
     return (await res.json()) as T;
-  } catch {
+  } catch (error) {
+    console.error(`Fetch error for ${url}:`, error);
     return null;
   }
 };
 
 const normalizeCategory = (category: string): Resource["category"] => {
   if (category === "mcicons") return "minecraft-icons";
+  if (category === "mcsounds") return "mcsounds";
   if (category === "resources") return "images";
   return category as Resource["category"];
 };
 
 const toApiCategory = (category: string): string => {
   if (category === "minecraft-icons") return "mcicons";
+  if (category === "mcsounds") return "mcsounds";
   if (category === "images") return "images";
   return category;
 };
@@ -102,7 +108,7 @@ export const fetchCategories = async (): Promise<ApiCategories | null> => {
 export const fetchCategory = async (category: string): Promise<Resource[]> => {
   const cacheKey = `${CATEGORY_CACHE_PREFIX}${category}`;
   const cached = readCache<ApiResource[]>(cacheKey);
-  if (cached) {
+  if (cached && cached.length > 0) {
     return cached.map(item => normalizeApiResource(item, category));
   }
 
@@ -110,28 +116,60 @@ export const fetchCategory = async (category: string): Promise<Resource[]> => {
   const data = await fetchJson<{ category: string; files: ApiResource[] }>(
     `${API_BASE}/category/${apiCategory}`
   );
-  if (data?.files) {
-    writeCache(cacheKey, data.files);
+  if (data?.files && data.files.length > 0) {
+    try {
+      writeCache(cacheKey, data.files);
+    } catch (e) {
+      console.warn(`Failed to cache category ${category}:`, e);
+    }
     return data.files.map(item => normalizeApiResource(item, category));
   }
+  console.error(`Failed to fetch category ${category} from API`);
   return [];
 };
 
 export const fetchAllResources = async (): Promise<Resource[]> => {
   const cached = readCache<ApiAllResources>(ALL_RESOURCES_CACHE_KEY);
-  if (cached) {
+  if (cached && cached.categories && Object.keys(cached.categories).length > 0) {
+    const categoryNames = Object.keys(cached.categories);
+    const existingCategoriesCache = readCache<ApiCategories>(CATEGORIES_CACHE_KEY);
+    if (!existingCategoriesCache) {
+      writeCache(CATEGORIES_CACHE_KEY, { 
+        categories: categoryNames, 
+        total: categoryNames.length 
+      });
+    }
     return Object.entries(cached.categories).flatMap(([category, items]) =>
       items.map(item => normalizeApiResource(item, category))
     );
   }
 
   const data = await fetchJson<ApiAllResources>(`${API_BASE}/all`);
-  if (data?.categories) {
-    writeCache(ALL_RESOURCES_CACHE_KEY, data);
+  if (data?.categories && Object.keys(data.categories).length > 0) {
+    try {
+      writeCache(ALL_RESOURCES_CACHE_KEY, data);
+      const categoryNames = Object.keys(data.categories);
+      writeCache(CATEGORIES_CACHE_KEY, { 
+        categories: categoryNames, 
+        total: categoryNames.length 
+      });
+      Object.entries(data.categories).forEach(([category, items]) => {
+        if (items && items.length > 0) {
+          try {
+            writeCache(`${CATEGORY_CACHE_PREFIX}${normalizeCategory(category)}`, items);
+          } catch {
+            // Ignore quota errors for individual category caches
+          }
+        }
+      });
+    } catch (e) {
+      console.warn("Failed to cache all resources (likely quota exceeded):", e);
+    }
     return Object.entries(data.categories).flatMap(([category, items]) =>
       items.map(item => normalizeApiResource(item, category))
     );
   }
+  console.error("Failed to fetch all resources from API");
   return [];
 };
 
@@ -161,4 +199,17 @@ export const getResourceByCategory = async (category: string): Promise<Resource[
 export const getAvailableCategories = (): string[] => {
   const cached = readCache<ApiCategories>(CATEGORIES_CACHE_KEY);
   return cached?.categories || [];
+};
+
+export const clearResourceCache = (): void => {
+  clearCache(ALL_RESOURCES_CACHE_KEY);
+  clearCache(CATEGORIES_CACHE_KEY);
+  clearCache(`${CATEGORY_CACHE_PREFIX}mcsounds`);
+  clearCache(`${CATEGORY_CACHE_PREFIX}minecraft-icons`);
+  clearCache(`${CATEGORY_CACHE_PREFIX}music`);
+  clearCache(`${CATEGORY_CACHE_PREFIX}sfx`);
+  clearCache(`${CATEGORY_CACHE_PREFIX}images`);
+  clearCache(`${CATEGORY_CACHE_PREFIX}animations`);
+  clearCache(`${CATEGORY_CACHE_PREFIX}fonts`);
+  clearCache(`${CATEGORY_CACHE_PREFIX}presets`);
 };

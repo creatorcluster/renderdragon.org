@@ -3,7 +3,7 @@
 export interface Resource {
   id: number | string;
   title: string;
-  category: 'music' | 'sfx' | 'images' | 'animations' | 'fonts' | 'presets' | 'minecraft-icons';
+  category: 'music' | 'sfx' | 'images' | 'animations' | 'fonts' | 'presets' | 'minecraft-icons' | 'mcsounds';
   subcategory?: string;
   credit?: string;
   filetype?: string;
