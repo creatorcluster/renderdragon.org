@@ -163,8 +163,8 @@ export const useResources = () => {
       );
     }
 
-    if (selectedSubcategory && selectedSubcategory !== "all") {
-      if (selectedCategory === "mcsounds") {
+if (selectedSubcategory && selectedSubcategory !== "all") {
+      if (selectedCategory === "mcsounds" || selectedCategory === "minecraft-icons") {
         result = result.filter((r) => 
           r.subcategory === selectedSubcategory || 
           r.subcategory?.startsWith(selectedSubcategory + "/")
