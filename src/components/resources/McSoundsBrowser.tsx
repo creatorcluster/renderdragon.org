@@ -1,4 +1,5 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
+import type { MouseEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -94,7 +95,7 @@ const CategoryItem = ({
     }
   }, [hasChildren, node.fullPath, onToggle, onSelect]);
   
-  const handleSelectClick = useCallback((e: React.MouseEvent) => {
+  const handleSelectClick = useCallback((e: MouseEvent) => {
     e.stopPropagation();
     onSelect(node.fullPath);
   }, [node.fullPath, onSelect]);
@@ -206,7 +207,22 @@ const McSoundsBrowser = ({
     }
     return new Set();
   });
-  
+
+  useEffect(() => {
+    if (selectedSubcategory) {
+      const parts = selectedSubcategory.split('/');
+      const paths: string[] = [];
+      let path = '';
+      parts.slice(0, -1).forEach(part => {
+        path = path ? `${path}/${part}` : part;
+        paths.push(path);
+      });
+      if (paths.length > 0) {
+        setExpandedPaths(prev => new Set([...prev, ...paths]));
+      }
+    }
+  }, [selectedSubcategory]);
+
   const categoryTree = useMemo(() => 
     buildCategoryTree(subcategories, resourceCount),
     [subcategories, resourceCount]
@@ -225,7 +241,7 @@ const McSoundsBrowser = ({
         if (nameMatches || filteredChildren.length > 0) {
           acc.push({
             ...node,
-            children: filteredChildren,
+            children: nameMatches ? node.children : filteredChildren,
           });
         }
         

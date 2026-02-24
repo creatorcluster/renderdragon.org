@@ -205,7 +205,7 @@ export const clearResourceCache = (): void => {
   clearCache(ALL_RESOURCES_CACHE_KEY);
   clearCache(CATEGORIES_CACHE_KEY);
   clearCache(`${CATEGORY_CACHE_PREFIX}mcsounds`);
-  clearCache(`${CATEGORY_CACHE_PREFIX}mcicons`);
+  clearCache(`${CATEGORY_CACHE_PREFIX}minecraft-icons`);
   clearCache(`${CATEGORY_CACHE_PREFIX}music`);
   clearCache(`${CATEGORY_CACHE_PREFIX}sfx`);
   clearCache(`${CATEGORY_CACHE_PREFIX}images`);

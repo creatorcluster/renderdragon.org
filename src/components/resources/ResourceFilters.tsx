@@ -73,6 +73,27 @@ const groupMciconsSubcategories = (subcategories: string[]): { parent: string; l
   return result;
 };
 
+const groupMcsoundsSubcategories = (subcategories: string[]): { parent: string; label: string; value: string }[] => {
+  const result: { parent: string; label: string; value: string }[] = [];
+  
+  const formatLabel = (sub: string): string => {
+    return sub.split('/').map(part => 
+      part.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+    ).join(' > ');
+  };
+  
+  subcategories.sort().forEach(sub => {
+    const parts = sub.split('/');
+    result.push({
+      parent: parts.length > 1 ? parts[0].replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : '',
+      label: formatLabel(sub),
+      value: sub,
+    });
+  });
+  
+  return result;
+};
+
 const ResourceFilters = ({
   searchQuery,
   selectedCategory,
@@ -153,8 +174,13 @@ const MobileFilters = ({
   onCategoryChange: (category: string | null) => void;
   onSubcategoryChange: (subcategory: string | null) => void;
 }) => {
-  const groupedSubcategories = useMemo(() => 
+  const groupedMciconsSubcategories = useMemo(() => 
     selectedCategory === 'minecraft-icons' ? groupMciconsSubcategories(availableSubcategories) : [],
+    [availableSubcategories, selectedCategory]
+  );
+
+  const groupedMcsoundsSubcategories = useMemo(() => 
+    selectedCategory === 'mcsounds' ? groupMcsoundsSubcategories(availableSubcategories) : [],
     [availableSubcategories, selectedCategory]
   );
 
@@ -262,7 +288,7 @@ const MobileFilters = ({
               </div>
             )}
 
-            {selectedCategory === 'minecraft-icons' && groupedSubcategories.length > 0 && (
+            {selectedCategory === 'minecraft-icons' && groupedMciconsSubcategories.length > 0 && (
               <div className="mt-2 ml-2">
                 <Select
                   value={selectedSubcategory || "all"}
@@ -273,9 +299,30 @@ const MobileFilters = ({
                   </SelectTrigger>
                   <SelectContent className="max-h-[300px]">
                     <SelectItem value="all">All Icons</SelectItem>
-                    {groupedSubcategories.map(item => (
+                    {groupedMciconsSubcategories.map(item => (
                       <SelectItem key={item.value} value={item.value}>
                         {item.parent ? `${item.parent} - ${item.label}` : item.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            {selectedCategory === 'mcsounds' && groupedMcsoundsSubcategories.length > 0 && (
+              <div className="mt-2 ml-2">
+                <Select
+                  value={selectedSubcategory || "all"}
+                  onValueChange={(value) => onSubcategoryChange(value === "all" ? null : value)}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select sound category" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[300px]">
+                    <SelectItem value="all">All Sounds</SelectItem>
+                    {groupedMcsoundsSubcategories.map(item => (
+                      <SelectItem key={item.value} value={item.value}>
+                        {item.label}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -302,8 +349,13 @@ const DesktopFilters = ({
   onCategoryChange: (category: string | null) => void;
   onSubcategoryChange: (subcategory: string | null) => void;
 }) => {
-  const groupedSubcategories = useMemo(() => 
+  const groupedMciconsSubcategories = useMemo(() => 
     selectedCategory === 'minecraft-icons' ? groupMciconsSubcategories(availableSubcategories) : [],
+    [availableSubcategories, selectedCategory]
+  );
+
+  const groupedMcsoundsSubcategories = useMemo(() => 
+    selectedCategory === 'mcsounds' ? groupMcsoundsSubcategories(availableSubcategories) : [],
     [availableSubcategories, selectedCategory]
   );
 
@@ -400,7 +452,7 @@ const DesktopFilters = ({
         </Select>
       )}
 
-      {selectedCategory === 'minecraft-icons' && groupedSubcategories.length > 0 && (
+      {selectedCategory === 'minecraft-icons' && groupedMciconsSubcategories.length > 0 && (
         <Select
           value={selectedSubcategory || "all"}
           onValueChange={(value) => onSubcategoryChange(value === "all" ? null : value)}
@@ -410,9 +462,28 @@ const DesktopFilters = ({
           </SelectTrigger>
           <SelectContent className="max-h-[300px]">
             <SelectItem value="all">All Icons</SelectItem>
-            {groupedSubcategories.map(item => (
+            {groupedMciconsSubcategories.map(item => (
               <SelectItem key={item.value} value={item.value}>
                 {item.parent ? `${item.parent} - ${item.label}` : item.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
+
+      {selectedCategory === 'mcsounds' && groupedMcsoundsSubcategories.length > 0 && (
+        <Select
+          value={selectedSubcategory || "all"}
+          onValueChange={(value) => onSubcategoryChange(value === "all" ? null : value)}
+        >
+          <SelectTrigger className="h-10 w-[200px] pixel-corners">
+            <SelectValue placeholder="Select sound category" />
+          </SelectTrigger>
+          <SelectContent className="max-h-[300px]">
+            <SelectItem value="all">All Sounds</SelectItem>
+            {groupedMcsoundsSubcategories.map(item => (
+              <SelectItem key={item.value} value={item.value}>
+                {item.label}
               </SelectItem>
             ))}
           </SelectContent>

@@ -32,6 +32,7 @@ export const useResources = () => {
   const [lastAction, setLastAction] = useState<string>("");
   const [loadedFonts, setLoadedFonts] = useState<string[]>([]);
   const [availableCategories, setAvailableCategories] = useState<string[]>([]);
+  const [refreshKey, setRefreshKey] = useState(0);
   const fetchIdRef = useRef(0);
 
   useEffect(() => {
@@ -71,7 +72,7 @@ export const useResources = () => {
     };
 
     loadResources();
-  }, [selectedCategory]);
+  }, [selectedCategory, refreshKey]);
 
   const handleSearchSubmit = useCallback((e?: React.FormEvent) => {
     e?.preventDefault();
@@ -295,6 +296,7 @@ export const useResources = () => {
     loadCachedImage,
     refreshResources: () => {
       fetchIdRef.current++;
+      setRefreshKey(prev => prev + 1);
       setSelectedCategory(null);
     },
   };
