@@ -229,7 +229,7 @@ const ResourcesHub = () => {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.3 }}
-                  className="text-center max-w-4xl mx-auto"
+                  className="max-w-7xl mx-auto"
                 >
                   <FavoritesTab onSelectResource={setSelectedResource} />
                 </motion.div>
