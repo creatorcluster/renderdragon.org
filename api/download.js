@@ -1,24 +1,10 @@
 import ytdl from '@distube/ytdl-core';
 import { Writable } from 'stream';
 import ffmpeg from 'fluent-ffmpeg';
-import ffmpegPath from 'ffmpeg-static';
-import fs from 'fs';
 
-// Ensure ffmpeg binary is available – fallback to system ffmpeg if static build is missing
-let resolvedFfmpegPath = ffmpegPath;
-try {
-  const exists = resolvedFfmpegPath && fs.existsSync(resolvedFfmpegPath);
-  console.log('[ffmpeg-debug] static path:', resolvedFfmpegPath, 'exists:', exists);
-  if (!exists) {
-    console.warn('ffmpeg-static binary not found; falling back to system ffmpeg');
-    resolvedFfmpegPath = 'ffmpeg';
-  }
-} catch (err) {
-  console.warn('[ffmpeg-debug] access check failed:', err);
-  resolvedFfmpegPath = 'ffmpeg';
-}
-
-ffmpeg.setFfmpegPath(resolvedFfmpegPath);
+// On Vercel serverless, ffmpeg-static postinstall scripts don't run,
+// so we always use the system ffmpeg binary.
+ffmpeg.setFfmpegPath('ffmpeg');
 
 // Enhanced browser headers (same as info.js)
 const USER_AGENTS = [
@@ -61,7 +47,7 @@ function randomDelay(min = 1000, max = 3000) {
 // Enhanced getInfo with retry logic
 async function getInfoWithRetry(url, tries = 3, delayMs = 2000) {
   await randomDelay(500, 1500);
-  
+
   try {
     const info = await ytdl.getInfo(url, {
       requestOptions: {
@@ -72,30 +58,30 @@ async function getInfoWithRetry(url, tries = 3, delayMs = 2000) {
       quality: 'highestvideo',
       filter: 'audioandvideo',
     });
-    
+
     return info;
   } catch (err) {
     console.log(`[ytdl-download] Attempt ${4 - tries} failed:`, err.message);
-    
+
     const status = typeof err === 'object' && err && ('statusCode' in err ? err.statusCode : err.status);
-    const isRetryable = 
-      status === 429 || 
-      status === 403 || 
-      status === 502 || 
-      status === 503 || 
+    const isRetryable =
+      status === 429 ||
+      status === 403 ||
+      status === 502 ||
+      status === 503 ||
       status === 504 ||
       err.message?.includes('Sign in to confirm') ||
       err.message?.includes('bot') ||
       err.message?.includes('captcha') ||
       err.message?.includes('rate limit') ||
       err.message?.includes('timeout');
-    
+
     if (isRetryable && tries > 1) {
       console.log(`[ytdl-download] Retrying in ${delayMs}ms... (${tries - 1} attempts left)`);
       await new Promise(resolve => setTimeout(resolve, delayMs));
       return getInfoWithRetry(url, tries - 1, delayMs * 1.5);
     }
-    
+
     throw err;
   }
 }
@@ -137,12 +123,12 @@ export default async function handler(req) {
     }
 
     console.log('[ytdl-download] Processing download request for:', url);
-    
+
     // Add delay before processing
     await randomDelay(500, 1000);
-    
+
     const info = await getInfoWithRetry(url, 4, 2000);
-    
+
     if (!info || !info.videoDetails) {
       throw new Error('Failed to fetch video information');
     }
@@ -228,7 +214,7 @@ export default async function handler(req) {
 
   } catch (err) {
     console.error('[ytdl-download] Error:', err.message);
-    
+
     // Return more user-friendly error messages
     let errorMessage = 'Failed to download video';
     if (err.message?.includes('Video unavailable')) {
@@ -240,8 +226,8 @@ export default async function handler(req) {
     } else if (err.message?.includes('timeout')) {
       errorMessage = 'Request timed out. Please try again.';
     }
-    
-    return new Response(JSON.stringify({ 
+
+    return new Response(JSON.stringify({
       error: errorMessage,
       message: errorMessage
     }), {
