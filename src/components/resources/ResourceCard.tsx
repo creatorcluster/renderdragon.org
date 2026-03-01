@@ -15,6 +15,7 @@ import { getResourceUrl, Resource } from "@/types/resources";
 import { cn } from "@/lib/utils";
 import { useHeartedResources } from "@/hooks/useHeartedResources";
 import AudioPlayer from "@/components/AudioPlayer";
+import FolderPickerPopover from "./FolderPickerPopover";
 
 interface ResourceCardProps {
   resource: Resource;
@@ -34,9 +35,11 @@ const ResourceCard = ({ resource, onClick, fontPreviewText }: ResourceCardProps)
     setIsImageLoaded(false);
   }, [resource.id]);
 
-  const { toggleHeart, isHearted } = useHeartedResources();
+  const { toggleHeart, isHearted, moveFavorite, addFavoriteToFolder, getFolderItemCount, folders } = useHeartedResources();
   const resourceUrl = getResourceUrl(resource);
   const isFavorite = isHearted(resourceUrl);
+  const [showFolderPicker, setShowFolderPicker] = useState(false);
+  const heartButtonRef = useRef<HTMLButtonElement>(null);
 
   const getPreviewUrl = (resource: Resource) => {
     if (resource.download_url) return resource.download_url;
@@ -142,11 +145,28 @@ const ResourceCard = ({ resource, onClick, fontPreviewText }: ResourceCardProps)
   };
 
   const handleFavoriteClick = useCallback(
-    (e: React.MouseEvent) => {
+    async (e: React.MouseEvent) => {
       e.stopPropagation();
-      toggleHeart(resourceUrl);
+      try {
+        const result = await toggleHeart(resourceUrl);
+        if (result.action === 'added' && folders.length > 0) {
+          setShowFolderPicker(true);
+        }
+      } catch {
+        // toggle failed, already toasted in the hook
+      }
     },
-    [toggleHeart, resourceUrl],
+    [toggleHeart, resourceUrl, folders.length],
+  );
+
+  const handleFolderSelect = useCallback(
+    (folderId: string | null) => {
+      if (folderId && resourceUrl) {
+        addFavoriteToFolder(resourceUrl, folderId);
+      }
+      setShowFolderPicker(false);
+    },
+    [addFavoriteToFolder, resourceUrl],
   );
 
   const handlePreviewClick = (e: React.MouseEvent) => {
@@ -302,6 +322,7 @@ const ResourceCard = ({ resource, onClick, fontPreviewText }: ResourceCardProps)
         </motion.div>
 
         <motion.button
+          ref={heartButtonRef}
           onClick={handleFavoriteClick}
           className={cn(
             "p-1 rounded-full transition-colors",
@@ -326,6 +347,15 @@ const ResourceCard = ({ resource, onClick, fontPreviewText }: ResourceCardProps)
           />
         </motion.button>
       </div>
+
+      <FolderPickerPopover
+        isOpen={showFolderPicker}
+        onClose={() => setShowFolderPicker(false)}
+        onSelectFolder={handleFolderSelect}
+        folders={folders}
+        getFolderItemCount={getFolderItemCount}
+        anchorRef={heartButtonRef}
+      />
 
       <motion.h3
         className="text-xl font-vt323 mb-2 group-hover:text-primary transition-colors"
