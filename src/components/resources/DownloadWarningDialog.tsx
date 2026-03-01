@@ -16,7 +16,18 @@ interface DownloadWarningDialogProps {
     downloadUrl: string;
 }
 
+const isValidUrl = (url: string): boolean => {
+    try {
+        const parsed = new URL(url);
+        return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+    } catch {
+        return false;
+    }
+};
+
 const DownloadWarningDialog: React.FC<DownloadWarningDialogProps> = ({ isOpen, onClose, downloadUrl }) => {
+    const isValid = isValidUrl(downloadUrl);
+
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
             <DialogContent className="sm:max-w-md">
@@ -41,12 +52,19 @@ const DownloadWarningDialog: React.FC<DownloadWarningDialogProps> = ({ isOpen, o
                     <Button variant="outline" onClick={onClose} className="pixel-corners w-full sm:w-auto">
                         Cancel
                     </Button>
-                    <a href={downloadUrl} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto" onClick={onClose}>
-                        <Button className="pixel-corners bg-cow-purple hover:bg-cow-purple/90 w-full sm:w-auto">
+                    {isValid ? (
+                        <a href={downloadUrl} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto" onClick={onClose}>
+                            <Button className="pixel-corners bg-cow-purple hover:bg-cow-purple/90 w-full sm:w-auto">
+                                <IconExternalLink className="mr-2 h-4 w-4" />
+                                Continue to Download
+                            </Button>
+                        </a>
+                    ) : (
+                        <Button disabled className="pixel-corners bg-cow-purple hover:bg-cow-purple/90 w-full sm:w-auto">
                             <IconExternalLink className="mr-2 h-4 w-4" />
-                            Continue to Download
+                            Invalid URL
                         </Button>
-                    </a>
+                    )}
                 </DialogFooter>
             </DialogContent>
         </Dialog>

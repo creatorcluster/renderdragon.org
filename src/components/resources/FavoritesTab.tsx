@@ -200,7 +200,8 @@ const FavoritesTab = ({ onSelectResource }: FavoritesTabProps) => {
           const blob = await response.blob();
 
           // Generate distinct filename
-          const ext = resource.filetype || url.split('.').pop()?.split('?')[0] || 'file';
+          const rawExt = resource.filetype || url.split('.').pop()?.split('?')[0] || 'file';
+          const ext = /^[a-z0-9]+$/i.test(rawExt) ? rawExt : 'file';
           let filename = resource.title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
           if (resource.credit) {
             filename += `_credit_${resource.credit.replace(/[^a-z0-9]/gi, '_').toLowerCase()}`;
@@ -209,6 +210,12 @@ const FavoritesTab = ({ onSelectResource }: FavoritesTabProps) => {
         } catch (err) {
           console.error(`Failed to fetch ${url}`, err);
         }
+      }
+
+      const fileCount = Object.keys(zip.files).length;
+      if (fileCount === 0) {
+        toast.error('No files could be added to the zip.');
+        return;
       }
 
       const content = await zip.generateAsync({ type: 'blob' });

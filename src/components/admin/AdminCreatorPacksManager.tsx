@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useCreatorPacks } from '@/hooks/useCreatorPacks';
+import { useCreatorPacks, CreatorPack } from '@/hooks/useCreatorPacks';
 import { Button } from '@/components/ui/button';
 import { IconCheck, IconX, IconPackage, IconExternalLink } from '@tabler/icons-react';
 import { formatDistanceToNow } from 'date-fns';
@@ -16,7 +16,7 @@ import { Textarea } from "@/components/ui/textarea";
 
 const AdminCreatorPacksManager = () => {
     const { fetchPendingPacks, reviewPack } = useCreatorPacks();
-    const [pendingPacks, setPendingPacks] = useState<any[]>([]);
+    const [pendingPacks, setPendingPacks] = useState<CreatorPack[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [rejectionReason, setRejectionReason] = useState("");
     const [selectedPackId, setSelectedPackId] = useState<string | null>(null);

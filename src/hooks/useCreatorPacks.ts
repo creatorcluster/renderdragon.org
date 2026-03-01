@@ -16,13 +16,63 @@ export interface CreatorPack {
     status: 'pending' | 'approved' | 'rejected';
     review_reason?: string | null;
     created_at: string;
-    // Joined profile data
     profiles?: {
         username: string | null;
         display_name: string | null;
         avatar_url: string | null;
     };
 }
+
+interface CreatorPackRow {
+    id: string;
+    user_id: string;
+    title: string;
+    slug: string;
+    small_description: string;
+    description: string;
+    cover_image_url: string | null;
+    external_link: string;
+    tags: string[];
+    status: 'pending' | 'approved' | 'rejected';
+    review_reason: string | null;
+    created_at: string;
+}
+
+interface CreatorPackWithProfiles extends CreatorPackRow {
+    profiles: {
+        username: string | null;
+        display_name: string | null;
+        avatar_url: string | null;
+    } | null;
+}
+
+const getErrorMessage = (error: unknown): string => {
+    if (error instanceof Error) return error.message;
+    return 'An unknown error occurred';
+};
+
+const getPostgresErrorCode = (error: unknown): string | null => {
+    if (typeof error === 'object' && error !== null && 'code' in error) {
+        return (error as { code: string }).code;
+    }
+    return null;
+};
+
+const mapToCreatorPack = (row: CreatorPackWithProfiles): CreatorPack => ({
+    id: row.id,
+    user_id: row.user_id,
+    title: row.title,
+    slug: row.slug,
+    small_description: row.small_description,
+    description: row.description,
+    cover_image_url: row.cover_image_url,
+    external_link: row.external_link,
+    tags: row.tags || [],
+    status: row.status,
+    review_reason: row.review_reason,
+    created_at: row.created_at,
+    profiles: row.profiles || undefined,
+});
 
 export interface CreateCreatorPackInput {
     title: string;
@@ -48,8 +98,8 @@ const slugify = (text: string) => {
         .toLowerCase()
         .trim()
         .replace(/\s+/g, '-')
-        .replace(/[^\w\-]+/g, '')
-        .replace(/\-\-+/g, '-');
+        .replace(/[^\w-]+/g, '')
+        .replace(/--+/g, '-');
 };
 
 export const useCreatorPacks = () => {
@@ -60,16 +110,16 @@ export const useCreatorPacks = () => {
     const fetchPacks = useCallback(async () => {
         setIsLoading(true);
         try {
-            const { data, error } = await (supabase as any)
+            const { data, error } = await supabase
                 .from('creator_packs')
                 .select('*, profiles(username, display_name, avatar_url)')
-                .eq('status', 'approved') // Only fetch approved packs for public view
+                .eq('status', 'approved')
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
-            setPacks((data as any[]) || []);
-        } catch (error) {
-            console.error('Error fetching creator packs:', error);
+            setPacks((data as CreatorPackWithProfiles[])?.map(mapToCreatorPack) || []);
+        } catch (error: unknown) {
+            console.error('Error fetching creator packs:', getErrorMessage(error));
         } finally {
             setIsLoading(false);
         }
@@ -77,16 +127,16 @@ export const useCreatorPacks = () => {
 
     const fetchPackBySlug = useCallback(async (slug: string): Promise<CreatorPack | null> => {
         try {
-            const { data, error } = await (supabase as any)
+            const { data, error } = await supabase
                 .from('creator_packs')
                 .select('*, profiles(username, display_name, avatar_url)')
                 .eq('slug', slug)
                 .single();
 
             if (error) throw error;
-            return data as any;
-        } catch (error) {
-            console.error('Error fetching creator pack:', error);
+            return data ? mapToCreatorPack(data as CreatorPackWithProfiles) : null;
+        } catch (error: unknown) {
+            console.error('Error fetching creator pack:', getErrorMessage(error));
             return null;
         }
     }, []);
@@ -100,7 +150,7 @@ export const useCreatorPacks = () => {
         const slug = slugify(input.title);
 
         try {
-            const { data, error } = await (supabase as any)
+            const { data, error } = await supabase
                 .from('creator_packs')
                 .insert({
                     user_id: user.id,
@@ -111,7 +161,7 @@ export const useCreatorPacks = () => {
                     cover_image_url: input.cover_image_url,
                     external_link: input.external_link,
                     tags: input.tags,
-                    status: 'pending', // New packs start as pending
+                    status: 'pending',
                 })
                 .select('*, profiles(username, display_name, avatar_url)')
                 .single();
@@ -119,10 +169,10 @@ export const useCreatorPacks = () => {
             if (error) throw error;
 
             toast.success('Creator pack submitted for review!');
-            return data as any as CreatorPack;
-        } catch (error: any) {
-            console.error('Error creating creator pack:', error);
-            if (error.code === '23505') {
+            return mapToCreatorPack(data as CreatorPackWithProfiles);
+        } catch (error: unknown) {
+            console.error('Error creating creator pack:', getErrorMessage(error));
+            if (getPostgresErrorCode(error) === '23505') {
                 toast.error('A pack with this title already exists. Choose a different title.');
             } else {
                 toast.error('Failed to create creator pack.');
@@ -138,7 +188,7 @@ export const useCreatorPacks = () => {
         }
 
         try {
-            const { data, error } = await (supabase as any)
+            const { data, error } = await supabase
                 .from('creator_packs')
                 .update({
                     title: input.title,
@@ -147,8 +197,8 @@ export const useCreatorPacks = () => {
                     ...(input.cover_image_url !== undefined && { cover_image_url: input.cover_image_url }),
                     external_link: input.external_link,
                     tags: input.tags,
-                    status: 'pending', // Reset status to pending on update
-                    review_reason: null, // Clear review reason on update
+                    status: 'pending',
+                    review_reason: null,
                 })
                 .eq('id', id)
                 .eq('user_id', user.id)
@@ -157,14 +207,14 @@ export const useCreatorPacks = () => {
 
             if (error) throw error;
 
-            const updatedPack = data as any as CreatorPack;
+            const updatedPack = mapToCreatorPack(data as CreatorPackWithProfiles);
 
             setPacks(prev => prev.map(p => p.id === id ? updatedPack : p));
             toast.success('Creator pack updated and submitted for re-review!');
             return updatedPack;
-        } catch (error: any) {
-            console.error('Error updating creator pack:', error);
-            if (error.code === '23505') {
+        } catch (error: unknown) {
+            console.error('Error updating creator pack:', getErrorMessage(error));
+            if (getPostgresErrorCode(error) === '23505') {
                 toast.error('A pack with this title already exists. Choose a different title.');
             } else {
                 toast.error('Failed to update creator pack. You might not have permission.');
@@ -180,18 +230,18 @@ export const useCreatorPacks = () => {
         }
 
         try {
-            const { error } = await (supabase as any)
+            const { error } = await supabase
                 .from('creator_packs')
                 .delete()
                 .eq('id', id)
-                .eq('user_id', user.id); // Ensure they can only delete their own
+                .eq('user_id', user.id);
 
             if (error) throw error;
 
             setPacks(prev => prev.filter(p => p.id !== id));
             toast.success('Creator pack deleted.');
-        } catch (error) {
-            console.error('Error deleting pack:', error);
+        } catch (error: unknown) {
+            console.error('Error deleting pack:', getErrorMessage(error));
             toast.error('Failed to delete creator pack.');
         }
     }, [user]);
@@ -214,8 +264,8 @@ export const useCreatorPacks = () => {
                 .getPublicUrl(fileName);
 
             return urlData.publicUrl;
-        } catch (error) {
-            console.error('Error uploading cover image:', error);
+        } catch (error: unknown) {
+            console.error('Error uploading cover image:', getErrorMessage(error));
             toast.error('Failed to upload cover image.');
             return null;
         }
@@ -229,16 +279,16 @@ export const useCreatorPacks = () => {
         if (!user) return [];
         setIsLoading(true);
         try {
-            const { data, error } = await (supabase as any)
+            const { data, error } = await supabase
                 .from('creator_packs')
                 .select('*, profiles(username, display_name, avatar_url)')
                 .eq('user_id', user.id)
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
-            return (data as any) as CreatorPack[];
-        } catch (error) {
-            console.error('Error fetching user creator packs:', error);
+            return (data as CreatorPackWithProfiles[])?.map(mapToCreatorPack) || [];
+        } catch (error: unknown) {
+            console.error('Error fetching user creator packs:', getErrorMessage(error));
             toast.error('Failed to load your creator packs.');
             return [];
         } finally {
@@ -246,10 +296,9 @@ export const useCreatorPacks = () => {
         }
     }, [user]);
 
-    // Fetch pending packs (for admins)
     const fetchPendingPacks = useCallback(async (): Promise<CreatorPack[]> => {
         try {
-            const { data, error } = await (supabase as any)
+            const { data, error } = await supabase
                 .from('creator_packs')
                 .select('*, profiles:user_id(username, display_name, avatar_url)')
                 .eq('status', 'pending')
@@ -257,42 +306,25 @@ export const useCreatorPacks = () => {
 
             if (error) throw error;
 
-            return ((data as any) || []).map((pack: any) => ({
-                id: pack.id,
-                user_id: pack.user_id,
-                title: pack.title,
-                slug: pack.slug,
-                small_description: pack.small_description,
-                description: pack.description,
-                cover_image_url: pack.cover_image_url,
-                created_at: pack.created_at,
-                external_link: pack.external_link,
-                tags: pack.tags || [],
-                status: pack.status,
-                review_reason: pack.review_reason,
-                profiles: pack.profiles,
-            }));
-        } catch (err: any) {
-            console.error('Error fetching pending packs:', err);
+            return (data as CreatorPackWithProfiles[])?.map(mapToCreatorPack) || [];
+        } catch (error: unknown) {
+            console.error('Error fetching pending packs:', getErrorMessage(error));
             toast.error("Failed to fetch pending creator packs.");
             return [];
         }
     }, []);
 
-    // Admin function to approve or reject a pack
     const reviewPack = useCallback(async (id: string, status: 'approved' | 'rejected', review_reason?: string) => {
         try {
             const { data: { session } } = await supabase.auth.getSession();
             if (!session) throw new Error("Not authenticated");
 
-            const updateData: any = { status };
-            if (status === 'rejected') {
-                updateData.review_reason = review_reason;
-            } else {
-                updateData.review_reason = null;
-            }
+            const updateData: { status: 'approved' | 'rejected'; review_reason: string | null } = {
+                status,
+                review_reason: status === 'rejected' ? review_reason ?? null : null,
+            };
 
-            const { data, error } = await (supabase as any)
+            const { data, error } = await supabase
                 .from('creator_packs')
                 .update(updateData)
                 .eq('id', id)
@@ -301,23 +333,8 @@ export const useCreatorPacks = () => {
 
             if (error) throw error;
 
-            const updatedPack: CreatorPack = {
-                id: (data as any).id,
-                user_id: (data as any).user_id,
-                title: (data as any).title,
-                slug: (data as any).slug,
-                small_description: (data as any).small_description,
-                description: (data as any).description,
-                cover_image_url: (data as any).cover_image_url,
-                created_at: (data as any).created_at,
-                external_link: (data as any).external_link,
-                tags: (data as any).tags || [],
-                status: (data as any).status,
-                review_reason: (data as any).review_reason,
-                profiles: (data as any).profiles,
-            };
+            const updatedPack = mapToCreatorPack(data as CreatorPackWithProfiles);
 
-            // If approved, add it to the public packs list if not already there
             if (status === 'approved') {
                 setPacks(prev => {
                     if (prev.some(p => p.id === id)) {
@@ -326,16 +343,15 @@ export const useCreatorPacks = () => {
                     return [updatedPack, ...prev];
                 });
             } else {
-                // If rejected, remove it from the public list just in case
                 setPacks(prev => prev.filter(p => p.id !== id));
             }
 
             toast.success(`Pack has been ${status}.`);
 
             return updatedPack;
-        } catch (err: any) {
-            console.error('Error reviewing pack:', err);
-            toast.error(err.message || "Failed to review creator pack.");
+        } catch (error: unknown) {
+            console.error('Error reviewing pack:', getErrorMessage(error));
+            toast.error(getErrorMessage(error) || "Failed to review creator pack.");
             return null;
         }
     }, []);

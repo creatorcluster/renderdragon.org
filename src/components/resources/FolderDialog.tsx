@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils';
 interface FolderDialogProps {
     isOpen: boolean;
     onClose: () => void;
-    onSave: (name: string, color: string | null) => void;
+    onSave: (name: string, color: string | null) => Promise<void> | void;
     initialData?: FavoriteFolder | null;
     mode: 'create' | 'edit';
 }
@@ -37,6 +37,7 @@ const COMMON_COLORS = [
 const FolderDialog = ({ isOpen, onClose, onSave, initialData, mode }: FolderDialogProps) => {
     const [name, setName] = useState('');
     const [color, setColor] = useState<string | null>(null);
+    const [isSaving, setIsSaving] = useState(false);
 
     useEffect(() => {
         if (isOpen) {
@@ -50,10 +51,17 @@ const FolderDialog = ({ isOpen, onClose, onSave, initialData, mode }: FolderDial
         }
     }, [isOpen, initialData, mode]);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!name.trim()) return;
-        onSave(name.trim(), color);
+        if (!name.trim() || isSaving) return;
+        setIsSaving(true);
+        try {
+            await onSave(name.trim(), color);
+        } catch (error) {
+            console.error('Failed to save folder:', error);
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     return (
@@ -109,8 +117,8 @@ const FolderDialog = ({ isOpen, onClose, onSave, initialData, mode }: FolderDial
                         <Button type="button" variant="outline" onClick={onClose} className="pixel-corners">
                             Cancel
                         </Button>
-                        <Button type="submit" disabled={!name.trim()} className="pixel-corners">
-                            {mode === 'create' ? 'Create' : 'Save Changes'}
+                        <Button type="submit" disabled={!name.trim() || isSaving} className="pixel-corners">
+                            {isSaving ? 'Saving...' : mode === 'create' ? 'Create' : 'Save Changes'}
                         </Button>
                     </DialogFooter>
                 </form>

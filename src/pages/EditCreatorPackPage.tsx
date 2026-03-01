@@ -12,10 +12,20 @@ import { useCreatorPacks, UpdateCreatorPackInput } from '@/hooks/useCreatorPacks
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Helmet } from 'react-helmet-async';
+import { toast } from 'sonner';
 
 const AVAILABLE_TAGS = [
     'music', 'renders', 'animations', 'images', 'sfx', 'fonts', 'presets', 'all-in-one'
 ];
+
+const isValidUrl = (url: string): boolean => {
+    try {
+        const parsed = new URL(url);
+        return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+    } catch {
+        return false;
+    }
+};
 
 const EditCreatorPackPage = () => {
     const { slug } = useParams<{ slug: string }>();
@@ -35,6 +45,7 @@ const EditCreatorPackPage = () => {
     const [showPreview, setShowPreview] = useState(false);
     const [status, setStatus] = useState<'pending' | 'approved' | 'rejected'>('pending');
     const [reviewReason, setReviewReason] = useState<string | null>(null);
+    const [packId, setPackId] = useState<string | null>(null);
 
     useEffect(() => {
         const loadPack = async () => {
@@ -42,6 +53,7 @@ const EditCreatorPackPage = () => {
             setIsLoading(true);
             const data = await fetchPackBySlug(slug);
             if (data) {
+                setPackId(data.id);
                 setTitle(data.title);
                 setSmallDescription(data.small_description || '');
                 setDescription(data.description || '');
@@ -77,13 +89,24 @@ const EditCreatorPackPage = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!slug || !title.trim() || !externalLink.trim()) return;
+        if (!packId || !title.trim() || !externalLink.trim()) return;
+
+        if (!isValidUrl(externalLink.trim())) {
+            toast.error('Please enter a valid URL starting with http:// or https://');
+            return;
+        }
 
         setIsSubmitting(true);
 
         let coverUrl = existingCoverUrl;
         if (coverFile) {
-            coverUrl = await uploadCoverImage(coverFile);
+            const uploaded = await uploadCoverImage(coverFile);
+            if (!uploaded) {
+                // Upload failed — toast is already shown by the hook; abort submit
+                setIsSubmitting(false);
+                return;
+            }
+            coverUrl = uploaded;
         }
 
         const input: UpdateCreatorPackInput = {
@@ -95,7 +118,7 @@ const EditCreatorPackPage = () => {
             tags: selectedTags,
         };
 
-        const result = await updatePack(slug, input);
+        const result = await updatePack(packId, input);
         setIsSubmitting(false);
 
         if (result) {

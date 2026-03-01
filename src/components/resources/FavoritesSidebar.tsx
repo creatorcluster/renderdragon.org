@@ -28,21 +28,21 @@ interface FavoritesSidebarProps {
 const FolderItem = ({
     folder,
     level = 0,
-    isSelected,
+    selectedFolderId,
     onSelect,
     onEdit,
     onDelete,
     onDownload,
-    childrenFolders
+    getChildren
 }: {
     folder: FavoriteFolder;
     level?: number;
-    isSelected: boolean;
+    selectedFolderId: string | null;
     onSelect: (id: string) => void;
     onEdit: (folder: FavoriteFolder) => void;
     onDelete: (id: string) => void;
     onDownload: (folder: FavoriteFolder) => void;
-    childrenFolders: FavoriteFolder[];
+    getChildren: (parentId: string) => FavoriteFolder[];
 }) => {
     const [isOpen, setIsOpen] = useState(false);
 
@@ -54,7 +54,9 @@ const FolderItem = ({
         }
     });
 
+    const childrenFolders = getChildren(folder.id);
     const hasChildren = childrenFolders.length > 0;
+    const isSelected = selectedFolderId === folder.id;
 
     return (
         <div>
@@ -120,12 +122,12 @@ const FolderItem = ({
                             key={child.id}
                             folder={child}
                             level={level + 1}
-                            isSelected={false} // Would need recursive selection check in real app
+                            selectedFolderId={selectedFolderId}
                             onSelect={onSelect}
                             onEdit={onEdit}
                             onDelete={onDelete}
                             onDownload={onDownload}
-                            childrenFolders={[]} // Simplified for now, real app would pass children
+                            getChildren={getChildren}
                         />
                     ))}
                 </div>
@@ -220,12 +222,12 @@ const FavoritesSidebar = ({
                                     <FolderItem
                                         key={folder.id}
                                         folder={folder}
-                                        isSelected={selectedFolderId === folder.id}
+                                        selectedFolderId={selectedFolderId}
                                         onSelect={onSelectFolder}
                                         onEdit={onEditFolder}
                                         onDelete={onDeleteFolder}
                                         onDownload={onDownloadFolder}
-                                        childrenFolders={[]}
+                                        getChildren={getChildren}
                                     />
                                 ))
                             ) : (
@@ -233,12 +235,12 @@ const FavoritesSidebar = ({
                                     <FolderItem
                                         key={folder.id}
                                         folder={folder}
-                                        isSelected={selectedFolderId === folder.id}
+                                        selectedFolderId={selectedFolderId}
                                         onSelect={onSelectFolder}
                                         onEdit={onEditFolder}
                                         onDelete={onDeleteFolder}
                                         onDownload={onDownloadFolder}
-                                        childrenFolders={getChildren(folder.id)}
+                                        getChildren={getChildren}
                                     />
                                 ))
                             )}

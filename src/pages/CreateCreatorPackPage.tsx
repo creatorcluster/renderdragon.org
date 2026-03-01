@@ -11,10 +11,20 @@ import { useCreatorPacks, CreateCreatorPackInput } from '@/hooks/useCreatorPacks
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Helmet } from 'react-helmet-async';
+import { toast } from 'sonner';
 
 const AVAILABLE_TAGS = [
     'music', 'renders', 'animations', 'images', 'sfx', 'fonts', 'presets', 'all-in-one'
 ];
+
+const isValidUrl = (url: string): boolean => {
+    try {
+        const parsed = new URL(url);
+        return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+    } catch {
+        return false;
+    }
+};
 
 const CreateCreatorPackPage = () => {
     const navigate = useNavigate();
@@ -49,6 +59,11 @@ const CreateCreatorPackPage = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!title.trim() || !externalLink.trim()) return;
+
+        if (!isValidUrl(externalLink.trim())) {
+            toast.error('Please enter a valid URL starting with http:// or https://');
+            return;
+        }
 
         setIsSubmitting(true);
 
