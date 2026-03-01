@@ -19,9 +19,10 @@ import AudioPlayer from "@/components/AudioPlayer";
 interface ResourceCardProps {
   resource: Resource;
   onClick: (resource: Resource) => void;
+  fontPreviewText?: string;
 }
 
-const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
+const ResourceCard = ({ resource, onClick, fontPreviewText }: ResourceCardProps) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [hoverToPlayEnabled] = useState(() => {
@@ -190,7 +191,7 @@ const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
               className="absolute inset-0 flex items-center justify-center text-lg font-medium"
               style={{ fontFamily: resource.title }}
             >
-              Aa Bb Cc
+              {fontPreviewText || "Aa Bb Cc"}
             </div>
           </div>
         );

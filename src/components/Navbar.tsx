@@ -56,21 +56,14 @@ const mainLinks: (NavLink | NavDropdown)[] = [
     name: "Resources",
     icon: "resources",
     links: [
-      { name: "Resources Hub", path: "/resources", icon: "resources-hub" },
+      { name: "Resources Hub", path: "/resources", icon: "resources-hub", tag: "UPDATE" },
       { name: "Utilities", path: "/utilities", icon: "software" },
-      {
-        name: "Community Assets",
-        path: "/showcase",
-        icon: "yt-videos",
-        tag: "NEW",
-      },
       { name: "Community", path: "/community", icon: "yt-videos" },
-      { name: "Native Application", path: "/native-application", icon: "software", tag: "NEW" },
     ],
   },
   {
     name: "Tools",
-    icon: "tools",
+    icon: "tools", // You can use "tools" or any appropriate icon name
     links: [
       { name: "Music Copyright Checker", path: "/gappa", icon: "music" },
       {
@@ -215,17 +208,15 @@ const Navbar = () => {
   return (
     <>
       <header
-        className={`fixed w-full z-50 transition-all duration-300 py-4 ${
-          scrolled ? "shadow-lg" : ""
-        }`}
+        className={`fixed w-full z-50 transition-all duration-300 py-4 ${scrolled ? "shadow-lg" : ""
+          }`}
         style={{ top: 0 }}
       >
         <div
-          className={`absolute inset-0 z-[-1] pointer-events-none transition-all duration-300 ${
-            isTransparent
-              ? "bg-transparent"
-              : "bg-gradient-to-r from-background/80 via-background/90 to-background/80 dark:from-background/80 dark:via-background/90 dark:to-background/80"
-          }`}
+          className={`absolute inset-0 z-[-1] pointer-events-none transition-all duration-300 ${isTransparent
+            ? "bg-transparent"
+            : "bg-gradient-to-r from-background/80 via-background/90 to-background/80 dark:from-background/80 dark:via-background/90 dark:to-background/80"
+            }`}
           style={getBackgroundStyle()}
         />
         <div className="container mx-auto px-4 flex justify-between items-center relative z-10">
@@ -383,11 +374,10 @@ const Navbar = () => {
                               <span>{link.name}</span>
                             </div>
                             <IconChevronDown
-                              className={`w-4 h-4 transition-transform duration-300 ${
-                                openMobileCollapsible === link.name
-                                  ? "rotate-180"
-                                  : ""
-                              }`}
+                              className={`w-4 h-4 transition-transform duration-300 ${openMobileCollapsible === link.name
+                                ? "rotate-180"
+                                : ""
+                                }`}
                             />
                           </CollapsibleTrigger>
                           <CollapsibleContent className="animate-accordion-down">

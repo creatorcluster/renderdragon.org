@@ -210,6 +210,13 @@ const defaultVideoCategories: VideoCategory[] = [
       "Tutorials for editing Minecraft videos in Adobe Premiere Pro & After Effects",
     videos: [
       generateVideoData(
+        "SAOm9_hY39I",
+        "How to Edit Minecraft Videos in Premiere Pro",
+        "Minecraft Motion",
+        "18:42",
+        "89K views",
+      ),
+      generateVideoData(
         "yO52Tx60Keg",
         "Premiere Pro Tutorial for Beginners 2025 - Everything You NEED to KNOW! (UPDATED)",
         "Vince Opra",
