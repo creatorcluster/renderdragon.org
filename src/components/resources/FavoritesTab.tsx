@@ -10,6 +10,7 @@ import { IconHeart } from '@tabler/icons-react';
 import FavoritesSidebar from './FavoritesSidebar';
 import { useFavoriteFolders, FavoriteFolder } from '@/hooks/useFavoriteFolders';
 import FolderDialog from './FolderDialog';
+import { MAX_FOLDER_ITEMS } from '@/hooks/useUserFavorites';
 import { toast } from 'sonner';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
@@ -124,6 +125,13 @@ const FavoritesTab = ({ onSelectResource }: FavoritesTabProps) => {
       const resource = active.data.current.resource;
       const resourceUrl = getResourceUrl(resource);
       const folderId = over.data.current.folder.id;
+
+      // Block drag into full folders
+      const folderCount = favoritesData.filter(f => f.folder_id === folderId).length;
+      if (folderCount >= MAX_FOLDER_ITEMS) {
+        toast.error(`This folder already has ${MAX_FOLDER_ITEMS} items. Please create another folder.`);
+        return;
+      }
 
       if (resourceUrl) {
         moveFavorite(resourceUrl, folderId);
@@ -262,6 +270,7 @@ const FavoritesTab = ({ onSelectResource }: FavoritesTabProps) => {
                 onDownloadFolder={handleDownloadFolder}
                 searchQuery={searchQuery}
                 onSearchChange={setSearchQuery}
+                favoritesData={favoritesData}
               />
             </div>
           </div>

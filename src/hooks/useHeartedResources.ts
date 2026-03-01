@@ -1,14 +1,16 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useUserFavorites } from './useUserFavorites';
+import { useFavoriteFolders } from './useFavoriteFolders';
 import { useAuth } from './useAuth';
 import { getResourceUrl, Resource } from '@/types/resources';
 
 export const useHeartedResources = () => {
   const { user } = useAuth();
   const userFavorites = useUserFavorites();
+  const { folders } = useFavoriteFolders();
   const localStorageKey = 'heartedResources';
-  
+
   const getLocalHeartedResources = useCallback((): string[] => {
     try {
       const stored = localStorage.getItem(localStorageKey);
@@ -44,17 +46,19 @@ export const useHeartedResources = () => {
     };
   }, [getLocalHeartedResources]);
 
-  const toggleHeart = (resource: Resource | string) => {
+  const toggleHeart = (resource: Resource | string): Promise<{ action: 'added' | 'removed' }> => {
     const resourceUrl = typeof resource === 'string' ? resource : getResourceUrl(resource);
-    if (!resourceUrl) return;
+    if (!resourceUrl) return Promise.resolve({ action: 'removed' });
     const current = getLocalHeartedResources();
-    const newHearted = current.includes(resourceUrl)
+    const isCurrentlyHearted = current.includes(resourceUrl);
+    const newHearted = isCurrentlyHearted
       ? current.filter(id => id !== resourceUrl)
       : [...current, resourceUrl];
-    
+
     setLocalHeartedResources(newHearted);
     setHeartedResources(newHearted);
     window.dispatchEvent(new CustomEvent('localFavoritesChanged'));
+    return Promise.resolve({ action: isCurrentlyHearted ? 'removed' : 'added' });
   };
 
   const isHearted = (resource: Resource | string) => {
@@ -64,10 +68,10 @@ export const useHeartedResources = () => {
   };
 
   if (user) {
-    const toggleHeart = (resource: Resource | string) => {
+    const toggleHeart = (resource: Resource | string): Promise<{ action: 'added' | 'removed' }> => {
       const resourceUrl = typeof resource === 'string' ? resource : getResourceUrl(resource);
-      if (!resourceUrl) return;
-      userFavorites.toggleFavorite(resourceUrl);
+      if (!resourceUrl) return Promise.resolve({ action: 'removed' });
+      return userFavorites.toggleFavorite(resourceUrl);
     };
 
     const isHearted = (resource: Resource | string) => {
@@ -81,6 +85,10 @@ export const useHeartedResources = () => {
       toggleHeart,
       isHearted,
       isLoading: userFavorites.isLoading,
+      moveFavorite: userFavorites.moveFavorite,
+      addFavoriteToFolder: userFavorites.addFavoriteToFolder,
+      getFolderItemCount: userFavorites.getFolderItemCount,
+      folders,
     };
   }
 
@@ -89,5 +97,9 @@ export const useHeartedResources = () => {
     toggleHeart,
     isHearted,
     isLoading: false,
+    moveFavorite: (_resourceUrl: string, _folderId: string | null) => { },
+    addFavoriteToFolder: (_resourceUrl: string, _folderId: string) => { },
+    getFolderItemCount: (_folderId: string | null) => 0,
+    folders: [] as ReturnType<typeof useFavoriteFolders>['folders'],
   };
 };

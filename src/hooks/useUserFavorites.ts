@@ -4,6 +4,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { toast } from 'sonner';
 
+export const MAX_FOLDER_ITEMS = 40;
+
 export interface UserFavorite {
   resource_url: string;
   folder_id: string | null;
@@ -36,7 +38,7 @@ export const useUserFavorites = () => {
         throw error;
       }
 
-      return (data as UserFavorite[])?.filter(fav => fav.resource_url != null) || [];
+      return (data as unknown as UserFavorite[])?.filter(fav => fav.resource_url != null) || [];
     },
     enabled: !!user?.id,
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
@@ -58,7 +60,7 @@ export const useUserFavorites = () => {
           .eq('user_id', user.id)
           .eq('resource_url', resourceUrl);
         if (error) throw error;
-        return { action: 'removed', resourceUrl };
+        return { action: 'removed' as const, resourceUrl };
       } else {
         const { error } = await supabase
           .from('user_favorites')
@@ -67,7 +69,7 @@ export const useUserFavorites = () => {
             { onConflict: 'user_id,resource_url', ignoreDuplicates: true }
           );
         if (error) throw error;
-        return { action: 'added', resourceUrl };
+        return { action: 'added' as const, resourceUrl };
       }
     },
     onSuccess: (data) => {
@@ -85,12 +87,55 @@ export const useUserFavorites = () => {
     }
   });
 
+  const addFavoriteToFolderMutation = useMutation({
+    mutationFn: async ({ resourceUrl, folderId }: { resourceUrl: string; folderId: string }) => {
+      if (!user) throw new Error('User not authenticated');
+
+      // Check folder limit
+      const folderCount = favoritesData.filter(f => f.folder_id === folderId).length;
+      if (folderCount >= MAX_FOLDER_ITEMS) {
+        throw new Error('FOLDER_FULL');
+      }
+
+      // Upsert the favorite with the folder_id
+      const { error } = await supabase
+        .from('user_favorites')
+        .upsert(
+          { user_id: user.id, resource_url: resourceUrl, folder_id: folderId },
+          { onConflict: 'user_id,resource_url' }
+        );
+      if (error) throw error;
+      return { resourceUrl, folderId };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['userFavorites', user?.id] });
+      toast.success('Added to folder');
+    },
+    onError: (error) => {
+      if (error instanceof Error && error.message === 'FOLDER_FULL') {
+        toast.error(`This folder already has ${MAX_FOLDER_ITEMS} items. Please create another folder.`);
+        return;
+      }
+      console.error('Error adding favorite to folder:', error);
+      toast.error('Failed to add to folder');
+    }
+  });
+
   const moveFavoriteMutation = useMutation({
     mutationFn: async ({ resourceUrl, folderId }: { resourceUrl: string, folderId: string | null }) => {
       if (!user) throw new Error('User not authenticated');
 
+      // Check folder limit when moving to a folder (not when unassigning)
+      if (folderId) {
+        const folderCount = favoritesData.filter(f => f.folder_id === folderId).length;
+        if (folderCount >= MAX_FOLDER_ITEMS) {
+          throw new Error('FOLDER_FULL');
+        }
+      }
+
       const { error } = await supabase
         .from('user_favorites')
+        // @ts-ignore -- folder_id column exists in DB but generated types are stale
         .update({ folder_id: folderId })
         .eq('user_id', user.id)
         .eq('resource_url', resourceUrl);
@@ -103,30 +148,43 @@ export const useUserFavorites = () => {
       toast.success('Favorite moved to folder');
     },
     onError: (error) => {
+      if (error instanceof Error && error.message === 'FOLDER_FULL') {
+        toast.error(`This folder already has ${MAX_FOLDER_ITEMS} items. Please create another folder.`);
+        return;
+      }
       console.error('Error moving favorite:', error);
       toast.error('Failed to move favorite');
     }
   });
 
-  const toggleFavorite = (resourceUrl: string) => {
+  const toggleFavorite = (resourceUrl: string): Promise<{ action: 'added' | 'removed' }> => {
     if (!user) {
       toast.error('Please sign in to save favorites');
-      return;
+      return Promise.resolve({ action: 'removed' });
     }
     if (!resourceUrl) {
       toast.error('Unable to favorite this resource');
-      return;
+      return Promise.resolve({ action: 'removed' });
     }
     if (!isSchemaReady) {
       toast.error('Favorites storage needs a database update');
-      return;
+      return Promise.resolve({ action: 'removed' });
     }
-    toggleMutation.mutate(resourceUrl);
+    return toggleMutation.mutateAsync(resourceUrl);
   };
 
   const moveFavorite = (resourceUrl: string, folderId: string | null) => {
     if (!user || !resourceUrl) return;
     moveFavoriteMutation.mutate({ resourceUrl, folderId });
+  };
+
+  const addFavoriteToFolder = (resourceUrl: string, folderId: string) => {
+    if (!user || !resourceUrl) return;
+    addFavoriteToFolderMutation.mutate({ resourceUrl, folderId });
+  };
+
+  const getFolderItemCount = (folderId: string | null): number => {
+    return favoritesData.filter(f => f.folder_id === folderId).length;
   };
 
   const isFavorited = (resourceUrl: string) => favorites.includes(resourceUrl);
@@ -137,6 +195,8 @@ export const useUserFavorites = () => {
     isLoading,
     toggleFavorite,
     moveFavorite,
+    addFavoriteToFolder,
+    getFolderItemCount,
     isFavorited,
   };
 };

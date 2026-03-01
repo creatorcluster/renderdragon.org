@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { IconFolder, IconFolderOpen, IconPlus, IconSearch, IconDotsVertical, IconEdit, IconTrash, IconDownload } from '@tabler/icons-react';
+import { IconFolder, IconFolderOpen, IconPlus, IconSearch, IconDotsVertical, IconEdit, IconTrash, IconDownload, IconAlertTriangle } from '@tabler/icons-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -13,6 +13,7 @@ import {
 import { useFavoriteFolders, FavoriteFolder } from '@/hooks/useFavoriteFolders';
 import { cn } from '@/lib/utils';
 import { useDroppable } from '@dnd-kit/core';
+import { UserFavorite, MAX_FOLDER_ITEMS } from '@/hooks/useUserFavorites';
 
 interface FavoritesSidebarProps {
     selectedFolderId: string | null;
@@ -23,6 +24,7 @@ interface FavoritesSidebarProps {
     onDownloadFolder: (folder: FavoriteFolder) => void;
     searchQuery: string;
     onSearchChange: (query: string) => void;
+    favoritesData: UserFavorite[];
 }
 
 const FolderItem = ({
@@ -33,7 +35,8 @@ const FolderItem = ({
     onEdit,
     onDelete,
     onDownload,
-    getChildren
+    getChildren,
+    folderItemCount
 }: {
     folder: FavoriteFolder;
     level?: number;
@@ -43,6 +46,7 @@ const FolderItem = ({
     onDelete: (id: string) => void;
     onDownload: (folder: FavoriteFolder) => void;
     getChildren: (parentId: string) => FavoriteFolder[];
+    folderItemCount: number;
 }) => {
     const [isOpen, setIsOpen] = useState(false);
 
@@ -57,6 +61,7 @@ const FolderItem = ({
     const childrenFolders = getChildren(folder.id);
     const hasChildren = childrenFolders.length > 0;
     const isSelected = selectedFolderId === folder.id;
+    const isFull = folderItemCount >= MAX_FOLDER_ITEMS;
 
     return (
         <div>
@@ -89,6 +94,15 @@ const FolderItem = ({
                     <span className="truncate text-sm font-medium">
                         {folder.name}
                     </span>
+                    <span className={cn(
+                        "text-[10px] font-mono ml-auto flex-shrink-0",
+                        isFull ? "text-amber-500 font-bold" : "text-muted-foreground/60"
+                    )}>
+                        {folderItemCount}/{MAX_FOLDER_ITEMS}
+                    </span>
+                    {isFull && (
+                        <IconAlertTriangle size={13} className="text-amber-500 flex-shrink-0 ml-0.5" />
+                    )}
                 </div>
 
                 <DropdownMenu>
@@ -128,6 +142,7 @@ const FolderItem = ({
                             onDelete={onDelete}
                             onDownload={onDownload}
                             getChildren={getChildren}
+                            folderItemCount={0}
                         />
                     ))}
                 </div>
@@ -144,7 +159,8 @@ const FavoritesSidebar = ({
     onDeleteFolder,
     onDownloadFolder,
     searchQuery,
-    onSearchChange
+    onSearchChange,
+    favoritesData
 }: FavoritesSidebarProps) => {
     const { folders, isLoading } = useFavoriteFolders();
 
@@ -161,6 +177,10 @@ const FavoritesSidebar = ({
 
     const getChildren = (parentId: string) => {
         return folders.filter(f => f.parent_id === parentId);
+    };
+
+    const getFolderItemCount = (folderId: string) => {
+        return favoritesData.filter(f => f.folder_id === folderId).length;
     };
 
     const filteredFolders = useMemo(() => {
@@ -228,6 +248,7 @@ const FavoritesSidebar = ({
                                         onDelete={onDeleteFolder}
                                         onDownload={onDownloadFolder}
                                         getChildren={getChildren}
+                                        folderItemCount={getFolderItemCount(folder.id)}
                                     />
                                 ))
                             ) : (
@@ -241,6 +262,7 @@ const FavoritesSidebar = ({
                                         onDelete={onDeleteFolder}
                                         onDownload={onDownloadFolder}
                                         getChildren={getChildren}
+                                        folderItemCount={getFolderItemCount(folder.id)}
                                     />
                                 ))
                             )}
