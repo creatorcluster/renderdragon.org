@@ -69,7 +69,12 @@ const CreateCreatorPackPage = () => {
 
         let coverUrl: string | null = null;
         if (coverFile) {
-            coverUrl = await uploadCoverImage(coverFile);
+            const uploaded = await uploadCoverImage(coverFile);
+            if (!uploaded) {
+                setIsSubmitting(false);
+                return;
+            }
+            coverUrl = uploaded;
         }
 
         const input: CreateCreatorPackInput = {
@@ -162,8 +167,8 @@ const CreateCreatorPackPage = () => {
                                             type="button"
                                             onClick={() => toggleTag(tag)}
                                             className={`px-3 py-1 rounded-full text-sm font-medium transition-colors border ${selectedTags.includes(tag)
-                                                    ? 'bg-cow-purple text-white border-cow-purple'
-                                                    : 'bg-muted/50 text-muted-foreground border-border hover:bg-muted'
+                                                ? 'bg-cow-purple text-white border-cow-purple'
+                                                : 'bg-muted/50 text-muted-foreground border-border hover:bg-muted'
                                                 }`}
                                         >
                                             {tag}
