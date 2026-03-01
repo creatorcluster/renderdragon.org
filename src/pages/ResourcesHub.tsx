@@ -10,11 +10,12 @@ import ResourceFilters from '@/components/resources/ResourceFilters';
 import SortSelector from '@/components/resources/SortSelector';
 import ResourcesList from '@/components/resources/ResourcesList';
 import FavoritesTab from '@/components/resources/FavoritesTab';
+import CreatorPacksTab from '@/components/resources/CreatorPacksTab';
 import McSoundsBrowser from '@/components/resources/McSoundsBrowser';
 import McIconsBrowser from '@/components/resources/McIconsBrowser';
 import AuthDialog from '@/components/auth/AuthDialog';
 import { Button } from '@/components/ui/button';
-import { IconArrowUp, IconHeart, IconSearch } from '@tabler/icons-react';
+import { IconArrowUp, IconHeart, IconSearch, IconPackage } from '@tabler/icons-react';
 import { Helmet } from "react-helmet-async";
 
 
@@ -30,7 +31,7 @@ const LoadingSpinner = () => (
 const ResourcesHub = () => {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
-  const [showFavorites, setShowFavorites] = useState(false);
+  const [activeTab, setActiveTab] = useState<'resources' | 'favorites' | 'creator-packs'>('resources');
 
 
   const {
@@ -44,6 +45,8 @@ const ResourcesHub = () => {
     isSearching,
     loadedFonts,
     setLoadedFonts,
+    fontPreviewText,
+    setFontPreviewText,
     filteredResources,
     hasCategoryResources,
     handleSearchSubmit,
@@ -92,7 +95,7 @@ const ResourcesHub = () => {
     };
 
     const handleShowFavorites = () => {
-      setShowFavorites(true);
+      setActiveTab('favorites');
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -106,9 +109,9 @@ const ResourcesHub = () => {
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('tab') === 'favorites') {
-      setShowFavorites(true);
-    }
+    const tabParam = urlParams.get('tab');
+    if (tabParam === 'favorites') setActiveTab('favorites');
+    else if (tabParam === 'creator-packs') setActiveTab('creator-packs');
   }, []);
 
   const scrollToTop = () => {
@@ -146,7 +149,8 @@ const ResourcesHub = () => {
         onSortOrderChange={handleSortOrderChange}
         isMobile={isMobile}
         inputRef={inputRef}
-
+        fontPreviewText={fontPreviewText}
+        onFontPreviewTextChange={setFontPreviewText}
       />
 
       {(selectedCategory === 'minecraft-icons' || selectedCategory === 'mcsounds') && (
@@ -165,6 +169,7 @@ const ResourcesHub = () => {
         onSelectResource={setSelectedResource}
         onClearFilters={handleClearSearch}
         hasCategoryResources={hasCategoryResources}
+        fontPreviewText={fontPreviewText}
       />
     </>
   );
@@ -203,35 +208,64 @@ const ResourcesHub = () => {
           >
             <div className="flex items-center justify-center gap-2 mb-6">
               <Button
-                variant={!showFavorites ? 'default' : 'outline'}
+                variant={activeTab === 'resources' ? 'default' : 'outline'}
                 size="sm"
-                onClick={() => setShowFavorites(false)}
+                onClick={() => setActiveTab('resources')}
                 className="pixel-corners"
               >
                 <IconSearch className="h-4 w-4 mr-2" />
                 Resources
               </Button>
-              <Button
-                variant={showFavorites ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setShowFavorites(true)}
-                className="pixel-corners"
-              >
-                <IconHeart className="h-4 w-4 mr-2" />
-                Favorites
-              </Button>
+              <div className="relative">
+                <Button
+                  variant={activeTab === 'favorites' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setActiveTab('favorites')}
+                  className="pixel-corners"
+                >
+                  <IconHeart className="h-4 w-4 mr-2" />
+                  Favorites
+                </Button>
+                <span className="absolute -top-2 -right-3 bg-cow-purple text-white text-[10px] px-1.5 py-0.5 rounded leading-none uppercase tracking-wide border border-background shadow-sm z-10 pointer-events-none">
+                  NEW
+                </span>
+              </div>
+              <div className="relative">
+                <Button
+                  variant={activeTab === 'creator-packs' ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setActiveTab('creator-packs')}
+                  className="pixel-corners"
+                >
+                  <IconPackage className="h-4 w-4 mr-2" />
+                  Creator Packs
+                </Button>
+                <span className="absolute -top-2 -right-3 bg-cow-purple text-white text-[10px] px-1.5 py-0.5 rounded leading-none uppercase tracking-wide border border-background shadow-sm z-10 pointer-events-none">
+                  NEW
+                </span>
+              </div>
             </div>
             <AnimatePresence mode="wait">
-              {showFavorites ? (
+              {activeTab === 'favorites' ? (
                 <motion.div
-                  key="submit"
+                  key="favorites"
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.3 }}
-                  className="text-center max-w-4xl mx-auto"
+                  className="max-w-7xl mx-auto"
                 >
                   <FavoritesTab onSelectResource={setSelectedResource} />
+                </motion.div>
+              ) : activeTab === 'creator-packs' ? (
+                <motion.div
+                  key="creator-packs"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <CreatorPacksTab />
                 </motion.div>
               ) : (
                 <motion.div
@@ -290,7 +324,7 @@ const ResourcesHub = () => {
           setLoadedFonts={setLoadedFonts}
           filteredResources={filteredResources}
           onSelectResource={setSelectedResource}
-          isFavoritesView={showFavorites}
+          isFavoritesView={activeTab === 'favorites'}
         />
       </Suspense>
 

@@ -10,6 +10,7 @@ import AdminPageSkeleton from '@/components/skeletons/AdminPageSkeleton';
 
 const AdminResourcesManager = lazy(() => import('@/components/admin/AdminResourcesManager'));
 const AdminBlogsManager = lazy(() => import('@/components/admin/AdminBlogsManager'));
+const AdminCreatorPacksManager = lazy(() => import('@/components/admin/AdminCreatorPacksManager'));
 
 const Admin = () => {
   const { user, loading } = useAuth();
@@ -63,6 +64,8 @@ const Admin = () => {
 
             <Suspense fallback={<AdminPageSkeleton />}>
               <div className="space-y-12">
+                <AdminCreatorPacksManager />
+                <div className="h-px bg-border/50" />
                 <AdminBlogsManager />
                 <div className="h-px bg-border/50" />
                 <AdminResourcesManager />

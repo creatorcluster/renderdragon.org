@@ -27,6 +27,7 @@ export interface AuthContextType {
     signOut: () => Promise<AuthResult>;
     signInWithGitHub: () => Promise<AuthResult>;
     signInWithDiscord: () => Promise<AuthResult>;
+    signInWithGoogle: () => Promise<AuthResult>;
     refreshUser: () => Promise<void>;
 }
 

@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { IconFilter, IconMusic, IconFileMusic, IconPhoto, IconVideo, IconFileText, IconX, IconSearch } from '@tabler/icons-react';
+import { motion } from 'framer-motion';
 import {
   Select,
   SelectContent,
@@ -25,17 +26,19 @@ type ResourceFiltersProps = {
   isMobile: boolean;
   inputRef: React.MutableRefObject<HTMLInputElement | null>;
   availableSubcategories: string[];
+  fontPreviewText?: string;
+  onFontPreviewTextChange?: (text: string) => void;
 };
 
 const groupMcsoundsSubcategories = (subcategories: string[]): { parent: string; label: string; value: string }[] => {
   const result: { parent: string; label: string; value: string }[] = [];
-  
+
   const formatLabel = (sub: string): string => {
-    return sub.split('/').map(part => 
+    return sub.split('/').map(part =>
       part.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
     ).join(' > ');
   };
-  
+
   subcategories.sort().forEach(sub => {
     const parts = sub.split('/');
     result.push({
@@ -44,7 +47,7 @@ const groupMcsoundsSubcategories = (subcategories: string[]): { parent: string; 
       value: sub,
     });
   });
-  
+
   return result;
 };
 
@@ -61,6 +64,8 @@ const ResourceFilters = ({
   isMobile,
   inputRef,
   availableSubcategories,
+  fontPreviewText,
+  onFontPreviewTextChange,
 }: ResourceFiltersProps) => {
   return (
     <div className={`mb-8 flex gap-4 ${isMobile ? 'flex-row items-center' : 'flex-col'}`}>
@@ -92,6 +97,22 @@ const ResourceFilters = ({
 
           <Button type="submit" className="sr-only">Search</Button>
         </form>
+
+        {selectedCategory === 'fonts' && onFontPreviewTextChange && (
+          <motion.div
+            initial={{ opacity: 0, height: 0, marginTop: 0 }}
+            animate={{ opacity: 1, height: 'auto', marginTop: 12 }}
+            className="relative w-full lg:w-1/2"
+          >
+            <Input
+              placeholder="Type to preview fonts..."
+              value={fontPreviewText}
+              onChange={(e) => onFontPreviewTextChange(e.target.value)}
+              className="pixel-input w-full font-geist"
+              maxLength={40}
+            />
+          </motion.div>
+        )}
       </div>
 
       {isMobile ? (
@@ -128,7 +149,7 @@ const MobileFilters = ({
   onCategoryChange: (category: string | null) => void;
   onSubcategoryChange: (subcategory: string | null) => void;
 }) => {
-  const groupedMcsoundsSubcategories = useMemo(() => 
+  const groupedMcsoundsSubcategories = useMemo(() =>
     selectedCategory === 'mcsounds' ? groupMcsoundsSubcategories(availableSubcategories) : [],
     [availableSubcategories, selectedCategory]
   );
@@ -277,7 +298,7 @@ const DesktopFilters = ({
   onCategoryChange: (category: string | null) => void;
   onSubcategoryChange: (subcategory: string | null) => void;
 }) => {
-  const groupedMcsoundsSubcategories = useMemo(() => 
+  const groupedMcsoundsSubcategories = useMemo(() =>
     selectedCategory === 'mcsounds' ? groupMcsoundsSubcategories(availableSubcategories) : [],
     [availableSubcategories, selectedCategory]
   );

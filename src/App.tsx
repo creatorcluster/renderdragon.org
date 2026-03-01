@@ -59,6 +59,10 @@ const Profile = lazy(() => import("@/pages/Profile"));
 const Blogs = lazy(() => import("@/pages/Blogs"));
 const BlogView = lazy(() => import("@/pages/BlogView"));
 const NativeApplication = lazy(() => import("@/pages/NativeApplication"));
+const CreateCreatorPackPage = lazy(() => import("@/pages/CreateCreatorPackPage"));
+const ManageCreatorPacksPage = lazy(() => import("@/pages/ManageCreatorPacksPage"));
+const EditCreatorPackPage = lazy(() => import("@/pages/EditCreatorPackPage"));
+const CreatorPackPage = lazy(() => import("@/pages/CreatorPackPage"));
 
 const LoadingFallback = ({ message = "Loading..." }: { message?: string }) => (
   <div className="flex flex-col items-center justify-center min-h-screen gap-4">
@@ -153,6 +157,10 @@ const App = () => {
                     <Route path="/blogs" element={<Blogs />} />
                     <Route path="/blogs/:slug" element={<BlogView />} />
                     <Route path="/native-application" element={<NativeApplication />} />
+                    <Route path="/creator-packs/new" element={<CreateCreatorPackPage />} />
+                    <Route path="/creator-packs/manage" element={<ManageCreatorPacksPage />} />
+                    <Route path="/creator-packs/:slug/edit" element={<EditCreatorPackPage />} />
+                    <Route path="/creator-packs/:slug" element={<CreatorPackPage />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </Suspense>

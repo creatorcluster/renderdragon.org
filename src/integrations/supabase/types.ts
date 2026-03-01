@@ -155,6 +155,51 @@ export type Database = {
         }
         Relationships: []
       }
+      creator_packs: {
+        Row: {
+          id: string
+          user_id: string
+          title: string
+          slug: string
+          small_description: string
+          description: string
+          cover_image_url: string | null
+          external_link: string
+          tags: string[]
+          status: 'pending' | 'approved' | 'rejected'
+          review_reason: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          title: string
+          slug: string
+          small_description: string
+          description: string
+          cover_image_url?: string | null
+          external_link: string
+          tags?: string[]
+          status?: 'pending' | 'approved' | 'rejected'
+          review_reason?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          title?: string
+          slug?: string
+          small_description?: string
+          description?: string
+          cover_image_url?: string | null
+          external_link?: string
+          tags?: string[]
+          status?: 'pending' | 'approved' | 'rejected'
+          review_reason?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

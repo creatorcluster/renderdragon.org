@@ -67,6 +67,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                             avatarUrl = `https://cdn.discordapp.com/embed/avatars/0.png`;
                         }
                     }
+                    // Google exposes avatar_url or picture
+                    if (!avatarUrl && provider === 'google') {
+                        avatarUrl = (data.avatar_url as string | undefined) || (data.picture as string | undefined);
+                    }
                 }
             }
 
@@ -199,6 +203,24 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return { success: true };
     };
 
+    const signInWithGoogle = async (): Promise<AuthResult> => {
+        const { error } = await supabase.auth.signInWithOAuth({
+            provider: "google",
+            options: {
+                redirectTo: window.location.origin,
+                queryParams: {
+                    access_type: 'offline',
+                    prompt: 'consent',
+                },
+            },
+        });
+        if (error) {
+            console.error("Google sign in error:", error);
+            return { success: false, error: error.message };
+        }
+        return { success: true };
+    };
+
     const refreshUser = async () => {
         const { data, error } = await supabase.auth.refreshSession();
         if (error) {
@@ -221,6 +243,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 signOut,
                 signInWithGitHub,
                 signInWithDiscord,
+                signInWithGoogle,
                 refreshUser,
             }}
         >

@@ -161,6 +161,16 @@ const Hero = () => {
         animate="visible"
         variants={containerVariants}
       >
+        <motion.div variants={itemVariants} className="mb-6 flex justify-center">
+          <Link
+            to="/resources?tab=creator-packs"
+            className="inline-flex items-center rounded-full border border-cow-purple/30 bg-cow-purple/10 px-4 py-1.5 text-sm font-medium text-cow-purple transition-colors hover:bg-cow-purple/20 font-geist"
+          >
+            <span className="mr-2 px-2 py-0.5 rounded-full bg-cow-purple text-white text-xs font-bold">NEW</span>
+            Creator Packs are here! <IconArrowRight className="ml-2 h-4 w-4" />
+          </Link>
+        </motion.div>
+
         <motion.h1
           className="text-4xl md:text-6xl font-bold mb-6 text-foreground dark:text-white leading-tight"
           style={{

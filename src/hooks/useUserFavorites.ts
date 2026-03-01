@@ -4,12 +4,17 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { toast } from 'sonner';
 
+export interface UserFavorite {
+  resource_url: string;
+  folder_id: string | null;
+}
+
 export const useUserFavorites = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [isSchemaReady, setIsSchemaReady] = useState(true);
 
-  const { data: favorites = [], isLoading } = useQuery({
+  const { data: favoritesData = [], isLoading } = useQuery({
     queryKey: ['userFavorites', user?.id],
     queryFn: async () => {
       if (!user?.id) return [];
@@ -17,7 +22,7 @@ export const useUserFavorites = () => {
 
       const { data, error } = await supabase
         .from('user_favorites')
-        .select('resource_url')
+        .select('resource_url, folder_id')
         .eq('user_id', user.id);
 
       if (error) {
@@ -31,11 +36,13 @@ export const useUserFavorites = () => {
         throw error;
       }
 
-      return data?.filter(fav => fav.resource_url != null).map(fav => fav.resource_url) || [];
+      return (data as UserFavorite[])?.filter(fav => fav.resource_url != null) || [];
     },
     enabled: !!user?.id,
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
   });
+
+  const favorites = favoritesData.map(f => f.resource_url);
 
   const toggleMutation = useMutation({
     mutationFn: async (resourceUrl: string) => {
@@ -78,6 +85,29 @@ export const useUserFavorites = () => {
     }
   });
 
+  const moveFavoriteMutation = useMutation({
+    mutationFn: async ({ resourceUrl, folderId }: { resourceUrl: string, folderId: string | null }) => {
+      if (!user) throw new Error('User not authenticated');
+
+      const { error } = await supabase
+        .from('user_favorites')
+        .update({ folder_id: folderId })
+        .eq('user_id', user.id)
+        .eq('resource_url', resourceUrl);
+
+      if (error) throw error;
+      return { resourceUrl, folderId };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['userFavorites', user?.id] });
+      toast.success('Favorite moved to folder');
+    },
+    onError: (error) => {
+      console.error('Error moving favorite:', error);
+      toast.error('Failed to move favorite');
+    }
+  });
+
   const toggleFavorite = (resourceUrl: string) => {
     if (!user) {
       toast.error('Please sign in to save favorites');
@@ -94,12 +124,19 @@ export const useUserFavorites = () => {
     toggleMutation.mutate(resourceUrl);
   };
 
+  const moveFavorite = (resourceUrl: string, folderId: string | null) => {
+    if (!user || !resourceUrl) return;
+    moveFavoriteMutation.mutate({ resourceUrl, folderId });
+  };
+
   const isFavorited = (resourceUrl: string) => favorites.includes(resourceUrl);
 
   return {
+    favoritesData,
     favorites,
     isLoading,
     toggleFavorite,
+    moveFavorite,
     isFavorited,
   };
 };

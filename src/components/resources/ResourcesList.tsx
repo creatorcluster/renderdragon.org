@@ -26,6 +26,7 @@ interface ResourcesListProps {
   onClearFilters: () => void;
   hasCategoryResources: boolean;
   filteredResources: Resource[];
+  fontPreviewText?: string;
 }
 
 const ResourcesList = ({
@@ -38,6 +39,7 @@ const ResourcesList = ({
   onClearFilters,
   hasCategoryResources,
   filteredResources,
+  fontPreviewText,
 }: ResourcesListProps) => {
   const [currentPage, setCurrentPage] = React.useState(1);
   const itemsPerPage = 12;
@@ -180,6 +182,7 @@ const ResourcesList = ({
             <ResourceCard
               resource={resource}
               onClick={onSelectResource}
+              fontPreviewText={fontPreviewText}
             />
           </motion.div>
         ))}

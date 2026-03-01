@@ -31,13 +31,14 @@ export const useResources = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [lastAction, setLastAction] = useState<string>("");
   const [loadedFonts, setLoadedFonts] = useState<string[]>([]);
+  const [fontPreviewText, setFontPreviewText] = useState<string>("Aa Bb Cc");
   const [availableCategories, setAvailableCategories] = useState<string[]>([]);
   const [refreshKey, setRefreshKey] = useState(0);
   const fetchIdRef = useRef(0);
 
   useEffect(() => {
     const currentFetchId = ++fetchIdRef.current;
-    
+
     const loadResources = async () => {
       setIsLoading(true);
       setResources([]);
@@ -49,7 +50,7 @@ export const useResources = () => {
         }
 
         let data: Resource[];
-        
+
         if (selectedCategory === null || selectedCategory === "favorites") {
           data = await fetchAllResources();
         } else {
@@ -163,10 +164,10 @@ export const useResources = () => {
       );
     }
 
-if (selectedSubcategory && selectedSubcategory !== "all") {
+    if (selectedSubcategory && selectedSubcategory !== "all") {
       if (selectedCategory === "mcsounds" || selectedCategory === "minecraft-icons") {
-        result = result.filter((r) => 
-          r.subcategory === selectedSubcategory || 
+        result = result.filter((r) =>
+          r.subcategory === selectedSubcategory ||
           r.subcategory?.startsWith(selectedSubcategory + "/")
         );
       } else if (availableSubcategories.includes(selectedSubcategory)) {
@@ -279,6 +280,8 @@ if (selectedSubcategory && selectedSubcategory !== "all") {
     lastAction,
     loadedFonts,
     setLoadedFonts,
+    fontPreviewText,
+    setFontPreviewText,
     filteredResources,
     availableSubcategories,
     availableCategories,
