@@ -107,13 +107,16 @@ export const fetchCategories = async (): Promise<ApiCategories | null> => {
 };
 
 export const fetchCategory = async (category: string): Promise<Resource[]> => {
-  const cacheKey = `${CATEGORY_CACHE_PREFIX}${category}`;
+  const normalized = normalizeCategory(category);
+  if (!normalized) return [];
+
+  const cacheKey = `${CATEGORY_CACHE_PREFIX}${normalized}`;
   const cached = readCache<ApiResource[]>(cacheKey);
   if (cached && cached.length > 0) {
-    return cached.map(item => normalizeApiResource(item, category)).filter((r): r is Resource => r !== null);
+    return cached.map(item => normalizeApiResource(item, normalized)).filter((r): r is Resource => r !== null);
   }
 
-  const apiCategory = toApiCategory(category);
+  const apiCategory = toApiCategory(normalized);
   const data = await fetchJson<{ category: string; files: ApiResource[] }>(
     `${API_BASE}/category/${apiCategory}`
   );
@@ -121,18 +124,20 @@ export const fetchCategory = async (category: string): Promise<Resource[]> => {
     try {
       writeCache(cacheKey, data.files);
     } catch (e) {
-      console.warn(`Failed to cache category ${category}:`, e);
+      console.warn(`Failed to cache category ${normalized}:`, e);
     }
-    return data.files.map(item => normalizeApiResource(item, category)).filter((r): r is Resource => r !== null);
+    return data.files.map(item => normalizeApiResource(item, normalized)).filter((r): r is Resource => r !== null);
   }
-  console.error(`Failed to fetch category ${category} from API`);
+  console.error(`Failed to fetch category ${normalized} from API`);
   return [];
 };
 
 export const fetchAllResources = async (): Promise<Resource[]> => {
   const cached = readCache<ApiAllResources>(ALL_RESOURCES_CACHE_KEY);
   if (cached && cached.categories && Object.keys(cached.categories).length > 0) {
-    const categoryNames = Object.keys(cached.categories);
+    const categoryNames = Object.keys(cached.categories)
+      .map(normalizeCategory)
+      .filter((c): c is Resource["category"] => c !== null);
     const existingCategoriesCache = readCache<ApiCategories>(CATEGORIES_CACHE_KEY);
     if (!existingCategoriesCache) {
       writeCache(CATEGORIES_CACHE_KEY, {
@@ -149,7 +154,9 @@ export const fetchAllResources = async (): Promise<Resource[]> => {
   if (data?.categories && Object.keys(data.categories).length > 0) {
     try {
       writeCache(ALL_RESOURCES_CACHE_KEY, data);
-      const categoryNames = Object.keys(data.categories);
+      const categoryNames = Object.keys(data.categories)
+        .map(normalizeCategory)
+        .filter((c): c is Resource["category"] => c !== null);
       writeCache(CATEGORIES_CACHE_KEY, {
         categories: categoryNames,
         total: categoryNames.length
