@@ -1,0 +1,10 @@
+{
+    "$schema": "https://opencode.ai/config.json",
+    "mcp": {
+        "supabase": {
+            "type": "remote",
+            "url": "https://mcp.supabase.com/mcp?project_ref=bmywdrwjdqmrkafhiuwn&features=docs%2Cdatabase%2Cdebugging%2Cdevelopment%2Cfunctions%2Cbranching",
+            "enabled": true
+        }
+    }
+}

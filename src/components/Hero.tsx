@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
-import { IconArrowRight, IconExternalLink, IconFolderOpen, IconMusic } from "@tabler/icons-react"
+import { IconArrowRight, IconExternalLink, IconFolderOpen, IconMusic, IconPackage } from "@tabler/icons-react"
 import { useIsMobile } from "@/hooks/use-mobile"
 import * as motion from "motion/react-client"
 
@@ -143,13 +143,14 @@ const Hero = () => {
             </motion.p>
 
             <motion.div className="flex flex-col sm:flex-row gap-4 mt-8" variants={itemVariants}>
-              <Link to="/resources?tab=music-packs" className="pixel-btn-primary inline-flex items-center justify-center gap-2 px-6 py-3 text-sm">
-                <IconMusic className="w-4 h-4" />
-                Open Music Packs
+              <Link to="/resources?tab=creator-packs" className="pixel-btn-primary inline-flex items-center justify-center gap-2 px-6 py-3 text-sm">
+                <IconPackage className="w-4 h-4" />
+                Creator Packs
                 <IconArrowRight className="w-4 h-4" />
               </Link>
-              <Link to="/resources" className="pixel-btn-secondary inline-flex items-center justify-center gap-2 px-6 py-3 text-sm">
-                Browse All Resources
+              <Link to="/resources?tab=music-packs" className="pixel-btn-secondary inline-flex items-center justify-center gap-2 px-6 py-3 text-sm">
+                <IconMusic className="w-4 h-4" />
+                Music Packs
               </Link>
             </motion.div>
 

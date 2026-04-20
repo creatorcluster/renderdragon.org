@@ -116,10 +116,21 @@ export const useCreatorPacks = () => {
                 .eq('status', 'approved')
                 .order('created_at', { ascending: false });
 
-            if (error) throw error;
+            if (error) {
+                console.error('Supabase error details:', {
+                    message: error.message,
+                    details: error.details,
+                    hint: error.hint,
+                    code: error.code
+                });
+                throw error;
+            }
             setPacks((data as CreatorPackWithProfiles[])?.map(mapToCreatorPack) || []);
         } catch (error: unknown) {
-            console.error('Error fetching creator packs:', getErrorMessage(error));
+            console.error('Error fetching creator packs:', error);
+            if (error && typeof error === 'object' && 'message' in error) {
+                console.error('Error details:', (error as { message: unknown }).message);
+            }
         } finally {
             setIsLoading(false);
         }
