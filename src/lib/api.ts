@@ -91,6 +91,7 @@ const normalizeApiResource = (item: ApiResource, category: string): Resource | n
     image_url: undefined,
     software: undefined,
     description: undefined,
+    filename: item.filename,
   };
 };
 

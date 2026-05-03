@@ -15,6 +15,7 @@ export interface Resource {
   download_count?: number;
   created_at?: string;
   updated_at?: string;
+  filename?: string;
 }
 
 export const getResourceUrl = (resource: Resource): string => {

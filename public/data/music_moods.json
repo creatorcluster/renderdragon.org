@@ -1,0 +1,282 @@
+[
+  {
+    "filename": "welcome to chaos - ross bugden.mp3",
+    "moods": ["chaotic", "intense", "dark"],
+    "source": "web search"
+  },
+  {
+    "filename": "unstoppable force.mp3",
+    "moods": ["heroic", "epic", "intense", "driving", "aggressive"],
+    "source": "web search"
+  },
+  {
+    "filename": "undertale ost spear of justice.mp3",
+    "moods": ["fighting", "energetic", "boss battle", "powerful"],
+    "source": "web search"
+  },
+  {
+    "filename": "totally not a rickroll.mp3",
+    "moods": ["happy", "energetic", "fun"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "toad factory - mario kart wii.mp3",
+    "moods": ["classic", "upbeat", "racing", "energetic"],
+    "source": "web search"
+  },
+  {
+    "filename": "synthatiger - beyond the grid.mp3",
+    "moods": ["synthwave", "electronic", "retro", "energetic", "adventure"],
+    "source": "web search"
+  },
+  {
+    "filename": "sparkling stars.mp3",
+    "moods": ["calm", "dreamy", "relaxing"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "shake down - jules gaia.mp3",
+    "moods": ["energetic", "driving"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "run fast instrumental.mp3",
+    "moods": ["energetic", "action", "upbeat", "motivational", "intense"],
+    "source": "web search"
+  },
+  {
+    "filename": "quo vadis.mp3",
+    "moods": ["classic", "dramatic", "epic", "oratorio"],
+    "source": "web search"
+  },
+  {
+    "filename": "qbedwars music.mp3",
+    "moods": ["gaming", "intense", "action"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "popcorn castle.mp3",
+    "moods": ["playful", "happy", "whimsical"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "playboi carti x yeat type beat - shädöw.mp3",
+    "moods": ["modern", "trap", "intense"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "playboi carti x yeat type beat - sega+.mp3",
+    "moods": ["modern", "trap", "energetic"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "playboi carti x yeat type beat - prey.mp3",
+    "moods": ["modern", "trap", "aggressive"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "playboi carti x yeat type beat - explosion.mp3",
+    "moods": ["modern", "trap", "intense", "aggressive"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "playboi carti x yeat type beat - enough.mp3",
+    "moods": ["modern", "trap", "energetic"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "playboi carti x yeat type beat - black.mp3",
+    "moods": ["modern", "trap", "dark", "intense"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "orange marmalade.mp3",
+    "moods": ["playful", "happy", "fun"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "oh what a whirl - jules gaia.mp3",
+    "moods": ["energetic", "upbeat"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "new world.mp3",
+    "moods": ["adventure", "inspiring", "epic"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "move like this - jules gaia.mp3",
+    "moods": ["energetic", "upbeat", "groovy"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "local forecast - kevin macleod.mp3",
+    "moods": ["upbeat", "jazzy", "energetic", "sprightly", "danceable"],
+    "source": "web search"
+  },
+  {
+    "filename": "king pig and his manic minions.mp3",
+    "moods": ["intense", "fun", "adventure"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "journey through the woods.mp3",
+    "moods": ["adventure", "calm", "mysterious"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "infraction - atlas.mp3",
+    "moods": ["epic", "cinematic", "intense"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "iby - dj b-duke.mp3",
+    "moods": ["electronic", "energetic"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "haunted mansion.mp3",
+    "moods": ["spooky", "mysterious", "eerie", "adventure"],
+    "source": "web search"
+  },
+  {
+    "filename": "happy energetic boogie fun.mp3",
+    "moods": ["happy", "energetic", "fun", "playful", "bouncy"],
+    "source": "web search"
+  },
+  {
+    "filename": "end of a long journey.mp3",
+    "moods": ["adventure", "emotional", "reflective"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "dramatic violin.mp3",
+    "moods": ["dramatic", "intense", "emotional"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "dragon castle___makai symphony - dragon castle_ is under a creative commons (by-nc 3.0) license_ @makai-symphony   music powered by breakingcopyright_    • 🔥 epic battle music .mp3",
+    "moods": ["epic", "fighting", "intense", "orchestral"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "deer immaterial anbr adrian berenguer.mp3",
+    "moods": ["calm", "relaxing", "ambient"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "deep in the forest.mp3",
+    "moods": ["adventure", "calm", "mysterious"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "corneria.mp3",
+    "moods": ["classic", "adventure", "upbeat"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "cjbeards - fire and thunder.mp3",
+    "moods": ["epic", "intense", "dramatic"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "chased by fate.mp3",
+    "moods": ["suspense", "intense", "dramatic"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "chaos construct (by azali).mp3",
+    "moods": ["chaotic", "intense", "dark"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "camellia - the world revolving (camellia remix).mp3",
+    "moods": ["intense", "energetic", "electronic"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "break free.mp3",
+    "moods": ["epic", "inspiring", "adventure"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "blizzard peaks - sonic rush adventure.mp3",
+    "moods": ["adventure", "classic", "energetic"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "black mass.mp3",
+    "moods": ["dark", "ominous", "intense"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "battle of birds and pigs.mp3",
+    "moods": ["fighting", "fun", "adventure"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "battle against an empire.mp3",
+    "moods": ["epic", "fighting", "dramatic"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "background music.mp3",
+    "moods": ["ambient", "calm", "relaxing"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "azali x arcerion - zephaniah.mp3",
+    "moods": ["epic", "intense"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "at the speed of light.mp3",
+    "moods": ["fast", "energetic", "adventure"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "apassionato orchestral dramatic music.mp3",
+    "moods": ["classic", "dramatic", "epic"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "anthony vega - johnny vespa.mp3",
+    "moods": ["classic", "energetic", "adventure"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "adventurous.mp3",
+    "moods": ["adventure", "inspiring", "epic"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "action suspense.mp3",
+    "moods": ["suspense", "intense", "dramatic"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "action suspense 2.mp3",
+    "moods": ["suspense", "intense", "dramatic"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "ace - verdant green swans.mp3",
+    "moods": ["calm", "relaxing", "ambient"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "a shattered illusion.mp3",
+    "moods": ["dramatic", "emotional", "mysterious"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "Windmill Isle - Day.mp3",
+    "moods": ["classic", "adventure", "calm"],
+    "source": "filename inference"
+  },
+  {
+    "filename": "Last Chance - Music for FlameFrags 0.mp3",
+    "moods": ["intense", "action", "gaming"],
+    "source": "filename inference"
+  }
+]
