@@ -65,16 +65,6 @@ const UserMenu = ({ onShowFavorites }: UserMenuProps) => {
   // Choose the first safe candidate among profile, metadata, identities
   const candidates = [profile?.avatar_url, meta.avatar_url, meta.picture, identityAvatar].filter(Boolean) as string[];
   const safeAvatarUrl = candidates.map(toSafeHttpUrl).find((u) => !!u);
-  if (process.env.NODE_ENV !== 'production') {
-    console.debug('[UserMenu] avatar candidates', {
-      profileAvatar: profile?.avatar_url,
-      metaAvatar: meta.avatar_url,
-      metaPicture: meta.picture,
-      identityAvatar,
-      chosen: safeAvatarUrl,
-      displayName,
-    });
-  }
 
   return (
     <DropdownMenu>

@@ -168,7 +168,7 @@ const PlayerRenderer = () => {
               transition={{ duration: 0.5 }}
               className="text-center mb-8"
             >
-              <h1 className="text-4xl md:text-5xl font-vt323 mb-4">
+              <h1 className="text-4xl md:text-5xl font-minecraftia mb-4">
                 Player <span className="text-cow-purple">Renderer</span>
               </h1>
               <p className="text-muted-foreground max-w-2xl mx-auto">

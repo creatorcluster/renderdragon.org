@@ -107,8 +107,8 @@ export default function Blogs() {
             <main className="flex-grow pt-24 pb-16 cow-grid-bg">
                 <div className="container mx-auto px-4">
                     <div className="flex items-center gap-3 mb-8">
-                        <h1 className="text-4xl md:text-5xl font-vt323">
-                            Latest <span className="text-cow-purple">Blogs</span>
+<h1 className="text-4xl md:text-5xl font-minecraftia">
+                             Latest <span className="text-cow-purple">Blogs</span>
                         </h1>
                     </div>
 
@@ -130,7 +130,7 @@ export default function Blogs() {
                                     <Link key={blog.id} to={`/blogs/${blog.slug}`} className="block group h-full">
                                         <Card className="h-full pixel-corners bg-card/60 backdrop-blur border-border/50 hover:border-cow-purple/50 transition-colors">
                                             <CardHeader>
-                                                <CardTitle className="font-geist text-xl leading-snug group-hover:text-cow-purple transition-colors">
+                                                <CardTitle className="font-minecraftia text-xl leading-snug group-hover:text-cow-purple transition-colors">
                                                     {blog.title}
                                                 </CardTitle>
                                                 <div className="flex items-center gap-2 mt-2">
@@ -144,7 +144,7 @@ export default function Blogs() {
                                                 </div>
                                             </CardHeader>
                                             <CardContent>
-                                                <p className="text-sm text-muted-foreground line-clamp-3 font-geist-mono">
+                                                <p className="text-sm text-muted-foreground line-clamp-3 font-vt323">
                                                     {removeMarkdown(blog.content || "").slice(0, 150)}...
                                                 </p>
                                             </CardContent>

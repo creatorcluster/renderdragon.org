@@ -89,7 +89,7 @@ export default function BlogView() {
                 <Navbar />
                 <main className="flex-grow pt-24 pb-16 cow-grid-bg">
                     <div className="container mx-auto px-4 text-center">
-                        <h1 className="text-2xl font-vt323 text-red-400">Error</h1>
+                        <h1 className="text-2xl font-minecraftia text-red-400">Error</h1>
                         <p className="text-muted-foreground">{error || "Blog post not found"}</p>
                         <Link to="/blogs" className="text-cow-purple hover:underline mt-4 inline-block">Back to Blogs</Link>
                     </div>

@@ -6,68 +6,55 @@ import { Resource } from "@/types/resources";
 import ResourceCard from "@/components/resources/ResourceCard";
 import ResourceCardSkeleton from "./resources/ResourceCardSkeleton";
 
+const FEATURED_CATEGORIES = ["music", "images", "sfx", "fonts"];
+
 const FeaturedResources = () => {
-  const [hoveredId, setHoveredId] = useState<number | string | null>(null);
   const [featuredResources, setFeaturedResources] = useState<Resource[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchResources = async () => {
+    const fetchFeatured = async () => {
       try {
         setIsLoading(true);
-        let resourcesData: any = null;
 
-        const allResponse = await fetch("/resources.all.json");
-        if (allResponse.ok) {
-          resourcesData = await allResponse.json();
-        } else {
-          const legacyResponse = await fetch("/resources.json");
-          if (!legacyResponse.ok) {
-            throw new Error(
-              `Failed to fetch resources: ${legacyResponse.status} ${legacyResponse.statusText}`,
-            );
-          }
-          resourcesData = await legacyResponse.json();
-        }
+        const indexRes = await fetch("/resources.index.json");
+        if (!indexRes.ok) throw new Error("Failed to fetch index");
+        const index = await indexRes.json();
 
-        const allResources: Resource[] = Array.isArray(resourcesData)
-          ? resourcesData.map((resource) => ({
-              ...resource,
-              category: resource.category as
-                | "music"
-                | "sfx"
-                | "images"
-                | "animations"
-                | "fonts"
-                | "presets"
-                | "minecraft-icons",
-            }))
-          : Object.entries(resourcesData).flatMap(([category, resources]) =>
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              (resources as any[]).map((resource) => ({
-                ...resource,
-                category: category as
-                  | "music"
-                  | "sfx"
-                  | "images"
-                  | "animations"
-                  | "fonts"
-                  | "presets"
-                  | "minecraft-icons",
-              })),
-            );
+        const catKeys = Object.keys(index.categories || {}).filter(
+          (c) => FEATURED_CATEGORIES.includes(c),
+        );
+        if (catKeys.length === 0) return;
 
-        const sortedResources = [...allResources].slice(0, 4);
+        const catRes = await fetch(`/resources/${catKeys[0]}.json`);
+        if (!catRes.ok) return;
 
-        setFeaturedResources(sortedResources);
-        setIsLoading(false);
+        const rawItems = await catRes.json();
+        const resources: Resource[] = (Array.isArray(rawItems) ? rawItems : [])
+          .slice(0, 4)
+          .map((item: any, idx: number) => ({
+            id: item.id ?? `${catKeys[0]}-${idx}`,
+            title: String(item?.title || "").trim() || `Resource ${idx + 1}`,
+            category: catKeys[0] as Resource["category"],
+            subcategory: item.subcategory || undefined,
+            credit: item.credit || undefined,
+            filetype: item.filetype || item.ext || undefined,
+            download_url: item.download_url || item.url || undefined,
+            preview_url: item.preview_url || undefined,
+            image_url: item.image_url || undefined,
+            software: item.software || undefined,
+            description: item.description || undefined,
+          }));
+
+        setFeaturedResources(resources);
       } catch (error) {
-        console.error("Error fetching resources:", error);
+        console.error("Error fetching featured resources:", error);
+      } finally {
         setIsLoading(false);
       }
     };
 
-    fetchResources();
+    fetchFeatured();
   }, []);
 
   const containerVariants = {
@@ -93,20 +80,22 @@ const FeaturedResources = () => {
   };
 
   return (
-    <section className="py-20 bg-background cow-grid-bg">
+    <section className="py-20 md:py-28 bg-background border-y-4 border-cow-purple cow-grid-bg">
       <div className="container mx-auto px-4">
         <motion.div
-          className="text-center mb-12"
+          className="text-center mb-14 md:mb-16 max-w-3xl mx-auto"
           initial={{ opacity: 0, y: -20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
         >
-          <h2 className="text-3xl md:text-4xl font-vt323 mb-4">
+          <h2
+            className="font-minecraftia text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-6 text-foreground leading-tight"
+          >
             Featured <span className="text-cow-purple">Resources</span>
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            Check out some of our most popular resources to get started.
+          <p className="font-vt323 text-xl md:text-2xl text-foreground/70 leading-tight">
+            A taste of what's inside. Browse the full library anytime.
           </p>
         </motion.div>
 
@@ -128,8 +117,6 @@ const FeaturedResources = () => {
               <motion.div key={resource.id} variants={itemVariants}>
                 <Link
                   to="/resources"
-                  onMouseEnter={() => setHoveredId(resource.id)}
-                  onMouseLeave={() => setHoveredId(null)}
                   className="block group"
                 >
                   <ResourceCard resource={resource} onClick={() => {}} />
@@ -140,7 +127,7 @@ const FeaturedResources = () => {
         )}
 
         <motion.div
-          className="text-center mt-10"
+          className="text-center mt-12"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
@@ -148,10 +135,10 @@ const FeaturedResources = () => {
         >
           <Link
             to="/resources"
-            className="pixel-btn-secondary inline-flex items-center space-x-2 group"
+            className="pixel-btn-secondary inline-flex items-center space-x-2 group text-base md:text-lg"
           >
-            <span>View All</span>
-            <IconArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+            <span>View All Resources</span>
+            <IconArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </Link>
         </motion.div>
       </div>

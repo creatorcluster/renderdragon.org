@@ -29,7 +29,7 @@ export function AdBlockDetector() {
             if (dismissedAt) {
                 const timePassed = Date.now() - parseInt(dismissedAt, 10);
                 if (timePassed < CACHE_DURATION) {
-                    console.log('AdBlock warning recently dismissed, skipping check.');
+                    
                     return;
                 }
             }
@@ -40,7 +40,8 @@ export function AdBlockDetector() {
                 // We use string concatenation to ensure the URL is well-formed
                 const url = `${host}/decide?v=3&ip=1&_=`;
 
-                console.log(`Checking adblock against: ${url}`);
+
+
 
                 await fetch(url + Date.now(), {
                     method: 'POST', // POST requests to tracking endpoints are more likely to be blocked

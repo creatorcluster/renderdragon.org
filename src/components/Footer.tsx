@@ -1,10 +1,7 @@
-import React, { Fragment, useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { IconShoppingCart, IconChevronDown, IconCheck } from '@tabler/icons-react';
+import { IconShoppingCart } from '@tabler/icons-react';
 import { toast } from 'sonner';
-import confetti from 'canvas-confetti';
-import { Menu, Transition } from '@headlessui/react';
-import { motion, AnimatePresence } from 'framer-motion';
 import Logo from './Logo';
 import HyperpingBadge from '@/components/ui/StatusBadge';
 
@@ -20,8 +17,10 @@ const Footer = () => {
   const cartButtonRef = useRef<HTMLButtonElement>(null);
   const currentYear = new Date().getFullYear();
 
-  const handleCartClick = () => {
+  const handleCartClick = async () => {
     if (cartClicked) return;
+
+    const confetti = (await import('canvas-confetti')).default;
 
     const canvas = document.createElement('canvas');
     canvas.style.position = 'fixed';
@@ -72,7 +71,7 @@ const Footer = () => {
               <div className="flex items-center justify-center">
                 <Logo size="sm" />
               </div>
-              <span className="font-pixel">Renderdragon</span>
+              <span className="font-minecraftia">Renderdragon</span>
             </Link>
 
             <p className="text-white/70 mb-6 max-w-md">
@@ -84,7 +83,7 @@ const Footer = () => {
                 href="https://discord.renderdragon.org"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 bg-white/10 hover:bg-white/20 rounded-md transition-colors"
+                className="p-2 bg-white/10 hover:bg-white/20 pixel-corners transition-colors"
                 aria-label="Discord"
               >
                 <img className="w-6 h-6" src="/assets/discord_icon.png" alt="Discord" loading="lazy" />
@@ -94,7 +93,7 @@ const Footer = () => {
                 href="https://x.com/_renderdragon"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 bg-white/10 hover:bg-white/20 rounded-md transition-colors"
+                className="p-2 bg-white/10 hover:bg-white/20 pixel-corners transition-colors"
                 aria-label="Twitter"
               >
                 <img className="w-6 h-6" src="/assets/twitter_icon.png" alt="Twitter" loading="lazy" />
@@ -104,7 +103,7 @@ const Footer = () => {
                 href="https://www.youtube.com/channel/UCOheNYpPEHcS2ljttRmllxg"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 bg-white/10 hover:bg-white/20 rounded-md transition-colors"
+                className="p-2 bg-white/10 hover:bg-white/20 pixel-corners transition-colors"
                 aria-label="YouTube"
               >
                 <img className="w-6 h-6" src="/assets/youtube_icon.png" alt="YouTube" loading="lazy" />
@@ -114,7 +113,7 @@ const Footer = () => {
                 href="https://github.com/Yxmura/renderdragon"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 bg-white/10 hover:bg-white/20 rounded-md transition-colors"
+                className="p-2 bg-white/10 hover:bg-white/20 pixel-corners transition-colors"
                 aria-label="GitHub"
               >
                 <img className="w-6 h-6" src="/assets/github_icon.png" alt="GitHub" loading="lazy" />

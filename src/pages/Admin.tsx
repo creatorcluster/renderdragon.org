@@ -56,7 +56,7 @@ const Admin = () => {
           >
             <div className="flex items-center gap-3 mb-8">
               <IconShield className="h-8 w-8 text-cow-purple" />
-              <h1 className="text-4xl md:text-5xl font-vt323">
+              <h1 className="text-4xl md:text-5xl font-minecraftia">
                 Admin <span className="text-cow-purple">Panel</span>
               </h1>
             </div>

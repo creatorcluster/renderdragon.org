@@ -1,21 +1,18 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import {
-  IconMusic,
-  IconPhoto,
   IconVideo,
-  IconFileText,
-  IconFileMusic,
   IconCheck,
   IconHeart,
-  IconBoxModel,
 } from "@tabler/icons-react";
 import { Resource } from "@/types/resources";
 import { cn } from "@/lib/utils";
 import { useUserFavorites } from "@/hooks/useUserFavorites";
 import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 import AudioPlayer from "@/components/AudioPlayer";
+import { getCategoryIcon, getCategoryColor } from "@/utils/resourceCategories";
 
 interface ResourceCardProps {
   resource: Resource;
@@ -50,6 +47,7 @@ const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
   };
 
   const [isInView, setIsInView] = useState(false);
+  const [isFontLoaded, setIsFontLoaded] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -80,70 +78,35 @@ const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
     const fontName = resource.title;
 
     // Check if font is already loaded
-    if (document.fonts.check(`1em "${fontName}"`)) return;
+    if (document.fonts.check(`1em "${fontName}"`)) {
+      setIsFontLoaded(true);
+      return;
+    }
 
     const font = new FontFace(fontName, `url(${fontUrl})`);
     font
       .load()
       .then((loadedFont) => {
         document.fonts.add(loadedFont);
+        setIsFontLoaded(true);
       })
       .catch((err) => {
         console.error(`Failed to load font "${fontName}":`, err);
       });
-  }, [resource, isInView]);
-
-  const getCategoryIcon = (category: string) => {
-    switch (category) {
-      case "music":
-        return <IconMusic className="h-5 w-5" />;
-      case "sfx":
-        return <IconFileMusic className="h-5 w-5" />;
-      case "images":
-        return <IconPhoto className="h-5 w-5" />;
-      case "animations":
-        return <IconVideo className="h-5 w-5" />;
-      case "fonts":
-      case "presets":
-        return <IconFileText className="h-5 w-5" />;
-      case "minecraft-icons":
-        return <IconBoxModel className="h-5 w-5" />;
-      default:
-        return <IconFileText className="h-5 w-5" />;
-    }
-  };
-
-  const getCategoryColor = (category: string) => {
-    switch (category) {
-      case "music":
-        return "bg-blue-500/10 text-blue-500";
-      case "sfx":
-        return "bg-yellow-500/10 text-yellow-500";
-      case "images":
-        return "bg-purple-500/10 text-purple-500";
-      case "animations":
-        return "bg-red-500/10 text-red-500";
-      case "fonts":
-        return "bg-green-500/10 text-green-500";
-      case "presets":
-        return "bg-gray-500/10 text-gray-500";
-      case "minecraft-icons":
-        return "bg-green-500/10 text-green-600";
-      default:
-        return "bg-gray-500/10 text-gray-500";
-    }
-  };
-
-  const handleFavoriteClick = useCallback(
-    (e: React.MouseEvent) => {
-      e.stopPropagation();
-      toggleFavorite(String(resource.id));
-    },
-    [toggleFavorite, resource.id],
-  );
+  }, [resource.id, resource.download_url, isInView]);
 
   const handlePreviewClick = (e: React.MouseEvent) => {
     e.stopPropagation();
+  };
+
+  const handleFavoriteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (!user) {
+      toast.error("Sign in to save favorites");
+      return;
+    }
+    toggleFavorite(String(resource.id));
   };
 
   const renderPreview = () => {
@@ -180,16 +143,22 @@ const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
             onClick={handlePreviewClick}
             className="relative aspect-[4/1] bg-muted/20 rounded-md overflow-hidden mb-3 cursor-default"
           >
-            <div
-              className="absolute inset-0 flex items-center justify-center text-lg font-medium"
-              style={{ fontFamily: resource.title }}
-            >
-              Aa Bb Cc
-            </div>
+            {isFontLoaded ? (
+              <div
+                className="absolute inset-0 flex items-center justify-center text-lg font-medium"
+                style={{ fontFamily: resource.title }}
+              >
+                Aa Bb Cc
+              </div>
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-5 h-5 border-2 border-cow-purple border-t-transparent rounded-full animate-spin" />
+              </div>
+            )}
           </div>
         );
       case "music":
-        return isHovered ? (
+        return (
           <div
             onClick={handlePreviewClick}
             className="relative aspect-video bg-muted/5 rounded-md overflow-hidden mb-3 cursor-default flex items-center justify-center"
@@ -199,17 +168,10 @@ const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
               isInView={isInView}
               className="w-full shadow-none border-none bg-transparent p-0"
             />
-          </div>
-        ) : (
-          <div className="relative aspect-video bg-muted/10 rounded-md overflow-hidden mb-3 cursor-default flex items-center justify-center text-muted-foreground text-xs">
-            <div className="flex items-center gap-2">
-              <IconMusic className="h-5 w-5" />
-              <span>Hover to preview</span>
-            </div>
           </div>
         );
       case "sfx":
-        return isHovered ? (
+        return (
           <div
             onClick={handlePreviewClick}
             className="relative aspect-video bg-muted/5 rounded-md overflow-hidden mb-3 cursor-default flex items-center justify-center"
@@ -219,13 +181,6 @@ const ResourceCard = ({ resource, onClick }: ResourceCardProps) => {
               isInView={isInView}
               className="w-full shadow-none border-none bg-transparent p-0"
             />
-          </div>
-        ) : (
-          <div className="relative aspect-video bg-muted/10 rounded-md overflow-hidden mb-3 cursor-default flex items-center justify-center text-muted-foreground text-xs">
-            <div className="flex items-center gap-2">
-              <IconFileMusic className="h-5 w-5" />
-              <span>Hover to preview</span>
-            </div>
           </div>
         );
       case "animations":

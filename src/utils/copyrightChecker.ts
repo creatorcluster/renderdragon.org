@@ -15,8 +15,8 @@ export async function checkCopyrightStatus(query: { artist: string; title: strin
   try {
     // Use the correct API URL - this appears to be an external service
     const apiUrl = "https://ltazpjoqbhtqxqvrvnka.supabase.co/functions/v1/check";
-    const apiKey = "gappa_prod_d3cc029d4c6bd5f646ebbbff0842e2c7bf33cec584588b3087e0d65adb2622f1";
-    const anonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx0YXpwam9xYmh0cXhxdnJ2bmthIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5MTUyMDYsImV4cCI6MjA2NTQ5MTIwNn0.-s6KS8ocMGjHCX6eEOEy_pX39QW1-GtfvglpQwsjqOw";
+    const apiKey = import.meta.env.VITE_GAPPA_API_KEY as string || "gappa_prod_d3cc029d4c6bd5f646ebbbff0842e2c7bf33cec584588b3087e0d65adb2622f1";
+    const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx0YXpwam9xYmh0cXhxdnJ2bmthIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5MTUyMDYsImV4cCI6MjA2NTQ5MTIwNn0.-s6KS8ocMGjHCX6eEOEy_pX39QW1-GtfvglpQwsjqOw";
 
     const body = query;
 

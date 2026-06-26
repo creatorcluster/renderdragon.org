@@ -5,8 +5,6 @@ import path from "path";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
-  // Load env file based on `mode` in the current working directory.
-  // Set the third parameter to '' to load all env regardless of the `VITE_` prefix.
   const env = loadEnv(mode, process.cwd(), '');
 
   return {
@@ -57,9 +55,18 @@ export default defineConfig(({ mode }) => {
       commonjsOptions: {
         include: [/node_modules/],
         transformMixedEsModules: true
-      }
+      },
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'vendor-framer': ['framer-motion', 'motion'],
+            'vendor-icons': ['@tabler/icons-react'],
+            'vendor-video': ['video.js'],
+            'vendor-audio': ['wavesurfer.js'],
+          },
+        },
+      },
     },
-    // Vite env configuration
     define: {
       'process.env': env
     }

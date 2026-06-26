@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const {
             data: { subscription },
         } = supabase.auth.onAuthStateChange((event, session) => {
-            console.log("Auth state changed:", event, session?.user?.email);
+            
             setSession(session);
             setUser(session?.user ?? null);
             setLoading(false);
@@ -92,7 +92,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                         { onConflict: 'id' }
                     );
                 if (error) console.warn('Avatar sync warning:', error.message);
-                else console.debug('Avatar synced to profiles:', avatarUrl);
+
             } catch (e) {
                 console.warn('Avatar sync error:', e);
             }
@@ -204,7 +204,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         if (error) {
             console.error("Failed to refresh user:", error);
         } else {
-            console.log("User refreshed successfully:", data.user);
+            
             setSession(data.session);
             setUser(data.user ?? null);
         }

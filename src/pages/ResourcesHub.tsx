@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, lazy, Suspense } from 'react';
+import { useRef, useEffect, useState, useMemo, useCallback, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -7,28 +7,88 @@ import { toast } from 'sonner';
 import { useResources } from '@/hooks/useResources';
 import { Resource } from '@/types/resources';
 import ResourceFilters from '@/components/resources/ResourceFilters';
-import SortSelector from '@/components/resources/SortSelector';
 import ResourcesList from '@/components/resources/ResourcesList';
 import AuthDialog from '@/components/auth/AuthDialog';
 import { Button } from '@/components/ui/button';
-import { IconArrowUp, IconHeart, IconSearch } from '@tabler/icons-react';
+import { IconArrowUp, IconMusic, IconPhoto, IconVideo, IconFileText, IconFileMusic, IconLayoutGrid } from '@tabler/icons-react';
 import { Helmet } from "react-helmet-async";
-
-
 
 const ResourceDetailDialog = lazy(() => import('@/components/resources/ResourceDetailDialog'));
 
-const LoadingSpinner = () => (
-  <div className="flex justify-center items-center p-8">
-    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-cow-purple"></div>
-  </div>
-);
+const categoryMeta: Record<string, { icon: React.ReactNode; label: string }> = {
+  music: { icon: <IconMusic className="h-10 w-10" />, label: 'Music' },
+  sfx: { icon: <IconFileMusic className="h-10 w-10" />, label: 'SFX' },
+  images: { icon: <IconPhoto className="h-10 w-10" />, label: 'Images' },
+  animations: { icon: <IconVideo className="h-10 w-10" />, label: 'Animations' },
+  fonts: { icon: <IconFileText className="h-10 w-10" />, label: 'Fonts' },
+  presets: { icon: <IconFileText className="h-10 w-10" />, label: 'Presets' },
+  'minecraft-icons': {
+    icon: <IconLayoutGrid className="h-10 w-10" />,
+    label: 'Minecraft Icons',
+  },
+};
+
+function CategoryCards({
+  indexData,
+  onSelectCategory,
+}: {
+  indexData: { categories?: Record<string, { count: number }> } | null;
+  onSelectCategory: (cat: string) => void;
+}) {
+  if (!indexData?.categories) {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {Array.from({ length: 7 }).map((_, i) => (
+          <div key={i} className="pixel-card p-6 animate-pulse">
+            <div className="h-10 w-10 bg-muted rounded mb-3" />
+            <div className="h-5 bg-muted rounded w-24 mb-2" />
+            <div className="h-4 bg-muted rounded w-16" />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  const entries = Object.entries(indexData.categories);
+
+  return (
+    <motion.div
+      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 0.2 }}
+    >
+      {entries.map(([key, info], idx) => {
+        const meta = categoryMeta[key] || {
+          icon: <IconFileText className="h-10 w-10" />,
+          label: key,
+        };
+        return (
+          <motion.button
+            key={key}
+            onClick={() => onSelectCategory(key)}
+            className="pixel-card p-6 text-left hover:border-cow-purple transition-colors cursor-pointer"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: idx * 0.05, duration: 0.3 }}
+            whileHover={{ y: -4, transition: { duration: 0.15 } }}
+          >
+            <div className="text-cow-purple mb-3">{meta.icon}</div>
+            <h3 className="font-minecraftia text-lg">{meta.label}</h3>
+            <p className="text-sm text-muted-foreground">
+              {info.count.toLocaleString()} resources
+            </p>
+          </motion.button>
+        );
+      })}
+    </motion.div>
+  );
+}
 
 const ResourcesHub = () => {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
-
 
   const {
     resources,
@@ -52,22 +112,30 @@ const ResourcesHub = () => {
     handleSearch,
     handleDownload,
     availableSubcategories,
+    indexData,
   } = useResources();
 
   const inputRef = useRef<HTMLInputElement>(null);
   const isMobile = useIsMobile();
 
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      const scrolled = window.pageYOffset > 400;
-      setShowScrollTop(scrolled);
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const scrolled = window.pageYOffset > 400;
+          setShowScrollTop(scrolled);
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
 
     const handleShowFavorites = () => {
       setShowFavorites(true);
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     window.addEventListener('showFavorites', handleShowFavorites);
 
     return () => {
@@ -76,7 +144,6 @@ const ResourcesHub = () => {
     };
   }, []);
 
-  // Check URL params for favorites tab
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('tab') === 'favorites') {
@@ -85,13 +152,10 @@ const ResourcesHub = () => {
   }, []);
 
   const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const onDownload = (resource: Resource) => {
+  const onDownload = useMemo(() => (resource: Resource) => {
     const success = handleDownload(resource);
     if (success) {
       toast.info('Download starting...', {
@@ -101,7 +165,9 @@ const ResourcesHub = () => {
     } else {
       toast.error('Download error');
     }
-  };
+  }, [handleDownload]);
+
+  const handleCloseDetail = useCallback(() => setSelectedResource(null), [setSelectedResource]);
 
   return (
     <div className="min-h-screen flex flex-col relative">
@@ -126,11 +192,9 @@ const ResourcesHub = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <h1 className="text-4xl md:text-5xl font-vt323 font-bold mb-2 text-center">Resources Hub</h1>
+              <h1 className="text-4xl md:text-5xl font-minecraftia font-bold mb-2 text-center">Resources Hub</h1>
               <p className="text-lg text-muted-foreground text-center max-w-2xl mx-auto">Discover and download a wide range of resources to enhance your RenderDragon experience.</p>
             </motion.div>
-
-
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -140,16 +204,19 @@ const ResourcesHub = () => {
               <AnimatePresence mode="wait">
                 {showFavorites ? (
                   <motion.div
-                    key="submit"
+                    key="favorites"
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20 }}
                     transition={{ duration: 0.3 }}
-                    className="text-center"
+                    className="text-center py-12"
                   >
                     <Button onClick={() => setShowFavorites(false)} className="mb-6">
                       Back to Resources
                     </Button>
+                    <p className="text-muted-foreground">
+                      Your favorited resources are available on the <a href="/account" className="text-cow-purple underline">Account page</a>.
+                    </p>
                   </motion.div>
                 ) : (
                   <motion.div
@@ -173,7 +240,6 @@ const ResourcesHub = () => {
                       onSortOrderChange={handleSortOrderChange}
                       isMobile={isMobile}
                       inputRef={inputRef}
-
                     />
 
                     {selectedCategory === 'minecraft-icons' && (
@@ -182,17 +248,24 @@ const ResourcesHub = () => {
                       </p>
                     )}
 
-                    <ResourcesList
-                      resources={resources}
-                      filteredResources={filteredResources}
-                      isLoading={isLoading}
-                      isSearching={isSearching}
-                      selectedCategory={selectedCategory}
-                      searchQuery={searchQuery}
-                      onSelectResource={setSelectedResource}
-                      onClearFilters={handleClearSearch}
-                      hasCategoryResources={hasCategoryResources}
-                    />
+                    {selectedCategory === null && !isSearching ? (
+                      <CategoryCards
+                        indexData={indexData}
+                        onSelectCategory={handleCategoryChange}
+                      />
+                    ) : (
+                      <ResourcesList
+                        resources={resources}
+                        filteredResources={filteredResources}
+                        isLoading={isLoading}
+                        isSearching={isSearching}
+                        selectedCategory={selectedCategory}
+                        searchQuery={searchQuery}
+                        onSelectResource={setSelectedResource}
+                        onClearFilters={handleClearSearch}
+                        hasCategoryResources={hasCategoryResources}
+                      />
+                    )}
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -203,11 +276,10 @@ const ResourcesHub = () => {
 
       <Footer />
 
-
       <Suspense fallback={null}>
         <ResourceDetailDialog
           resource={selectedResource}
-          onClose={() => setSelectedResource(null)}
+          onClose={handleCloseDetail}
           onDownload={onDownload}
           loadedFonts={loadedFonts}
           setLoadedFonts={setLoadedFonts}
@@ -221,9 +293,6 @@ const ResourcesHub = () => {
         open={authDialogOpen}
         onOpenChange={setAuthDialogOpen}
       />
-
-
-
 
       <AnimatePresence>
         {showScrollTop && (

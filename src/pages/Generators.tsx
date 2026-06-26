@@ -29,7 +29,7 @@ const Generators = () => {
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
-            <h1 className="text-4xl md:text-5xl font-vt323 mb-8 text-center">
+            <h1 className="text-4xl md:text-5xl font-minecraftia mb-8 text-center">
               Content <span className="text-cow-purple">Generators</span>
             </h1>
 

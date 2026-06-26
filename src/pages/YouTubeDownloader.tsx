@@ -271,7 +271,7 @@ const YouTubeDownloader: React.FC = () => {
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto">
-            <h1 className="text-4xl md:text-5xl font-vt323 mb-8 text-center">
+            <h1 className="text-4xl md:text-5xl font-minecraftia mb-8 text-center">
               <span className="text-cow-purple">Youtube</span> Tools
             </h1>
 

@@ -12,6 +12,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { IconLoader2 } from "@tabler/icons-react";
 import DonateButton from "@/components/DonateButton";
 import { AdBlockDetector } from "@/components/AdBlockDetector";
+import Navbar from "@/components/Navbar";
 
 // Global components wrapper to use hooks like useLocation
 const GlobalComponents = () => {
@@ -121,8 +122,11 @@ const App = () => {
                     <Route path="/renderbot" element={<Renderbot />} />
                     <Route path="/account" element={<Account />} />
                     <Route path="/account/profile" element={
-                      <div className="min-h-screen pt-24 pb-16 px-4 container mx-auto cow-grid-bg bg-background text-foreground">
-                        <ProfileEditor />
+                      <div className="min-h-screen flex flex-col cow-grid-bg bg-background text-foreground">
+                        <Navbar />
+                        <main className="flex-grow pt-24 pb-16 px-4 container mx-auto">
+                          <ProfileEditor />
+                        </main>
                       </div>
                     } />
                     <Route path="/admin" element={<Admin />} />

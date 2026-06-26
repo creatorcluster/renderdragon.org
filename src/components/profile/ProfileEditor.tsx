@@ -249,14 +249,19 @@ const ProfileEditor: React.FC = () => {
                 })
                 .eq('id', user.id);
 
-            if (error) throw error;
+            if (error) {
+                if (error.code === '23505' && error.message?.includes('profiles_username_key')) {
+                    throw new Error('This username is already taken. Please choose another one.');
+                }
+                throw error;
+            }
 
             // Clear draft on successful save
             localStorage.removeItem(`${DRAFT_KEY}_${user.id}`);
             toast.success('Profile published successfully!');
             setShowShare(true);
         } catch (error: any) {
-            toast.error('Failed to save profile');
+            toast.error(error?.message || 'Failed to save profile');
             console.error(error);
         } finally {
             setSaving(false);

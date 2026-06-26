@@ -199,7 +199,7 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
       <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
         <DialogContent className="max-w-5xl bg-popover/95 border-white/10">
           <DialogHeader>
-            <DialogTitle className="font-vt323">Preview</DialogTitle>
+            <DialogTitle className="font-minecraftia">Preview</DialogTitle>
           </DialogHeader>
           <div className="w-full max-h-[80vh] flex items-center justify-center">
             {(() => {
@@ -240,7 +240,7 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
                 <button
                   type="button"
                   className="pixel-corners border border-white/10 bg-background/40 hover:bg-background/60 text-white text-sm px-3 py-1"
-                  onClick={() => window.open(previewAsset.url, '_blank', 'noopener')}
+                  onClick={() => window.open(previewAsset.url, '_blank', 'noopener,noreferrer')}
                 >
                   Open
                 </button>
@@ -249,7 +249,7 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
                   download
                   target="_blank"
                   rel="noreferrer"
-                  className="pixel-corners bg-cow-purple hover:bg-cow-purple/90 text-white text-sm px-3 py-1"
+                  className="pixel-btn-primary text-sm px-3 py-1"
                 >
                   Download
                 </a>
@@ -384,7 +384,7 @@ const ShowcasePage: React.FC = () => {
           <meta name="description" content="Share your art with images and videos." />
         </Helmet>
         <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3 mb-6">
-          <h1 className="text-3xl md:text-4xl font-vt323">Community <span className="text-cow-purple">Assets</span></h1>
+          <h1 className="text-3xl md:text-4xl font-minecraftia">Community <span className="text-cow-purple">Assets</span></h1>
           <div className="flex-1" />
           <div className="flex items-center gap-2 w-full md:w-auto">
             <div className="relative w-full md:w-80">
@@ -396,10 +396,10 @@ const ShowcasePage: React.FC = () => {
                 className="pl-9 bg-background/60"
               />
             </div>
-            <Button variant="secondary" onClick={() => { }} className="pixel-corners">Search</Button>
+            <Button variant="secondary" onClick={() => { }} className="pixel-btn-secondary">Search</Button>
             <Dialog open={open} onOpenChange={setOpen}>
               <Button
-                className="pixel-corners bg-cow-purple hover:bg-cow-purple/90"
+                className="pixel-btn-primary"
                 onClick={() => {
                   if (!user) {
                     setAuthOpen(true);
@@ -412,7 +412,7 @@ const ShowcasePage: React.FC = () => {
               </Button>
               <DialogContent className="bg-popover/90 border-white/10">
                 <DialogHeader>
-                  <DialogTitle className="font-vt323">Create Showcase</DialogTitle>
+                  <DialogTitle className="font-minecraftia">Create Showcase</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4">
                   <div className="space-y-2">
@@ -462,7 +462,7 @@ const ShowcasePage: React.FC = () => {
                     <Button
                       onClick={onCreate}
                       disabled={submitting || !selectedFile}
-                      className="pixel-corners bg-cow-purple hover:bg-cow-purple/90"
+                      className="pixel-btn-primary"
                     >
                       {submitting ? (
                         <>
@@ -486,7 +486,7 @@ const ShowcasePage: React.FC = () => {
           </div>
         ) : items.length === 0 ? (
           <div className="flex flex-col items-center justify-center text-center text-white/70 min-h-[40vh] py-16">
-            <div className="text-2xl font-vt323 mb-2">No showcases yet</div>
+            <div className="text-2xl font-minecraftia mb-2">No showcases yet</div>
             <p className="max-w-md">Be the first to share your art! Click "Create Showcase" to upload an image, video, or audio file.</p>
           </div>
         ) : (

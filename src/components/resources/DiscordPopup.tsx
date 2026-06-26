@@ -31,7 +31,7 @@ const DiscordPopup = ({ isOpen, onClose, onNeverShowAgain }: DiscordPopupProps) 
           </div>
           <DialogFooter className="gap-2 sm:justify-center">
             <Button 
-              onClick={() => window.open('https://discord.renderdragon.org', '_blank')}
+              onClick={() => window.open('https://discord.renderdragon.org', '_blank', 'noopener,noreferrer')}
               className="pixel-corners bg-cow-purple hover:bg-cow-purple-dark"
             >
               Join Now

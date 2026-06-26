@@ -25,14 +25,14 @@ const FAQ = () => {
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto">
-            <h1 className="text-4xl md:text-5xl font-vt323 mb-8 text-center">
-              Frequently Asked <span className="text-cow-purple">Questions</span>
+<h1 className="text-4xl md:text-5xl font-minecraftia mb-8 text-center">
+               Frequently Asked <span className="text-cow-purple">Questions</span>
             </h1>
 
             <div className="pixel-card space-y-6">
               <div className="space-y-8 text-muted-foreground">
                 <div>
-                  <h2 className="text-2xl font-vt323 text-foreground mb-4">General Questions</h2>
+                  <h2 className="text-2xl font-minecraftia text-foreground mb-4">General Questions</h2>
 
                   <div className="space-y-6">
                     <div>

@@ -133,13 +133,13 @@ const Contact = () => {
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto">
-            <h1 className="text-4xl md:text-5xl font-vt323 mb-8 text-center">
-              <span className="text-cow-purple">Contact</span> Us
+<h1 className="text-4xl md:text-5xl font-minecraftia mb-8 text-center">
+               <span className="text-cow-purple">Contact</span> Us
             </h1>
 
             <div className="bg-card pixel-corners border-2 border-primary/50 p-8 mb-12">
               <div className="mb-8">
-                <h2 className="text-2xl font-vt323 mb-4">Get In Touch</h2>
+                <h2 className="text-2xl font-minecraftia mb-4">Get In Touch</h2>
                 <p className="text-muted-foreground mb-6">
                   Have questions, feedback, or just want to say hello? We'd love
                   to hear from you!
@@ -191,7 +191,7 @@ const Contact = () => {
               </div>
 
               <div>
-                <h2 className="text-2xl font-vt323 mb-4">Support Hours</h2>
+                <h2 className="text-2xl font-minecraftia mb-4">Support Hours</h2>
                 <p className="text-muted-foreground">
                   Well, we do what we can! We're all volunteers, not benefiting
                   from the project, but if you join our Discord, we'll really
@@ -201,15 +201,15 @@ const Contact = () => {
             </div>
 
             <div>
-              <h2 className="text-2xl font-vt323 mb-6 text-center">
-                Meet The Team
+<h2 className="text-2xl font-minecraftia mb-6 text-center">
+                 Meet The Team
               </h2>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {teamMembers.map((member, index) => (
                   <div
                     key={index}
-                    className={`bg-card hover:bg-accent/20 border border-border hover:border-cow-purple transition-all duration-300 rounded-lg p-4 flex flex-col items-center text-center
+                    className={`bg-card hover:bg-accent/20 border border-border hover:border-cow-purple transition-all duration-300 pixel-corners p-4 flex flex-col items-center text-center
                       ${activeCard === index ? "scale-105 shadow-lg shadow-cow-purple/20" : ""}`}
                     onMouseEnter={() => setActiveCard(index)}
                     onMouseLeave={() => setActiveCard(null)}
@@ -223,7 +223,7 @@ const Contact = () => {
                       />
                     </div>
                     <h3 className="text-lg font-medium">{member.name}</h3>
-                    <p className="text-sm text-cow-purple font-bold mb-2">
+                    <p className="text-sm text-cow-purple font-semibold mb-2">
                       {member.role}
                     </p>
 

@@ -16,46 +16,51 @@ const cardVariants: any = {
   }),
 };
 
+const partners = [
+  {
+    name: "Creators' Kingdom",
+    description: 'A community for creators to collaborate and grow together.',
+    logo: "https://cdn.bsky.app/img/avatar/plain/did:plc:2v6n63ayh4zfevupgxrkufx4/bafkreibufdbu2k76p5mdnwo64bmptl6g2wnl6imd3wxm3nvkstoqgjkz2q@jpeg",
+    url: "https://bsky.app/profile/creatorskingdom.bsky.social",
+  },
+  {
+    name: "Proger's Kitchen",
+    description: 'A place for Minecraft content creators to share their creations and get feedback.',
+    logo: "/assets/progerskitchen.webp",
+    url: "https://discord.gg/wXhHe5bVgz",
+  },
+  {
+    name: "Decour SMP",
+    description: 'A friendly and welcoming Minecraft SMP server.',
+    logo: "/assets/Decour.jpg",
+    url: "https://dsc.gg/decoursmp",
+  },
+];
+
 const Partnership = () => {
-  const partners = [
-    {
-      name: "Creators' Kingdom",
-      description: 'A community for creators to collaborate and grow together.',
-      logo: "https://cdn.bsky.app/img/avatar/plain/did:plc:2v6n63ayh4zfevupgxrkufx4/bafkreibufdbu2k76p5mdnwo64bmptl6g2wnl6imd3wxm3nvkstoqgjkz2q@jpeg",
-      url: "https://bsky.app/profile/creatorskingdom.bsky.social",
-    },
-    {
-      name: "Proger's Kitchen",
-      description: 'A place for Minecraft content creators to share their creations and get feedback.',
-      logo: "/assets/progerskitchen.webp",
-      url: "https://discord.gg/wXhHe5bVgz",
-    },
-    {
-      name: "Decour SMP",
-      description: 'A friendly and welcoming Minecraft SMP server.',
-      logo: "/assets/Decour.jpg",
-      url: "https://dsc.gg/decoursmp",
-    },
-  ];
   return (
-    <section className="py-24 bg-background dark:bg-black/20 cow-grid-bg">
-      <div className="container mx-auto px-4">
+    <section className="relative py-20 md:py-28 bg-background overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none cow-grid-bg opacity-30" />
+
+      <div className="relative container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-14 md:mb-16 max-w-3xl mx-auto"
         >
-          <h2 className="text-4xl md:text-5xl font-vt323 mb-4 tracking-wider">
-            Our Partners
+          <h2
+            className="font-minecraftia text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-6 text-foreground leading-tight"
+          >
+            Our <span className="text-cow-purple">Partners</span>
           </h2>
-          <p className="text-muted-foreground text-lg max-w-3xl mx-auto">
-            We are proud to partner with these amazing communities.
+          <p className="font-vt323 text-xl md:text-2xl text-foreground/70 leading-tight">
+            Communities we work with to make RenderDragon better for everyone.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {partners.map((partner, i) => (
             <motion.div
               key={partner.name}
@@ -70,22 +75,26 @@ const Partnership = () => {
                 href={partner.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block h-full pixel-card bg-card/50 backdrop-blur-sm border-border/20 hover:border-cow-purple/50 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-2xl hover:shadow-cow-purple/10"
+                className="block h-full pixel-card bg-card border-2 border-border hover:border-cow-purple p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-cow-purple/20"
               >
-                <div className="p-6 flex flex-col items-center text-center h-full">
-                  <div className="w-28 h-28 mb-5 relative">
-                    <img
-                      src={partner.logo}
-                      alt={`${partner.name} logo`}
-                      className="w-full h-full rounded-full object-cover border-4 border-background group-hover:border-cow-purple/30 transition-all duration-300"
-                      loading="lazy"
-                    />
-                    <div className="absolute -bottom-1 -right-1 bg-cow-purple text-white p-1 rounded-full border-2 border-background">
-                      <IconArrowRight className="w-4 h-4" />
+                <div className="flex flex-col items-center text-center h-full">
+                  <div className="relative mb-5">
+                    <div className="w-24 h-24 border-2 border-cow-purple pixel-corners overflow-hidden group-hover:scale-105 transition-transform">
+                      <img
+                        src={partner.logo}
+                        alt={`${partner.name} logo`}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                    </div>
+                    <div className="absolute -bottom-1 -right-1 bg-cow-purple p-1.5 border-2 border-card pixel-corners">
+                      <IconArrowRight className="w-3.5 h-3.5 text-white" />
                     </div>
                   </div>
-                  <h3 className="text-2xl font-vt323 mb-2">{partner.name}</h3>
-                  <p className="text-muted-foreground text-sm flex-grow">
+                  <h3 className="font-vt323 text-2xl text-foreground uppercase tracking-wider mb-2">
+                    {partner.name}
+                  </h3>
+                  <p className="font-vt323 text-base text-foreground/70 leading-snug flex-grow">
                     {partner.description}
                   </p>
                 </div>
@@ -95,18 +104,18 @@ const Partnership = () => {
         </div>
 
         <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-             className="text-center mt-16"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="text-center mt-14"
         >
-            <a
-                href="/contact"
-                className="font-vt323 inline-block bg-transparent border-2 border-cow-purple text-cow-purple font-bold text-lg py-3 px-8 rounded-lg hover:bg-cow-purple hover:text-white transition-all duration-300 transform hover:scale-105"
-            >
-                Become a Partner
-            </a>
+          <a
+            href="/contact"
+            className="pixel-btn-secondary inline-block text-base md:text-lg"
+          >
+            Become a Partner
+          </a>
         </motion.div>
       </div>
     </section>

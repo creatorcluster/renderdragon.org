@@ -238,7 +238,7 @@ const BackgroundGenerator = () => {
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="container mx-auto px-4">
           <div className="max-w-7xl mx-auto">
-            <h1 className="text-4xl md:text-5xl font-vt323 mb-8 text-center">
+            <h1 className="text-4xl md:text-5xl font-minecraftia mb-8 text-center">
               <span className="text-cow-purple">Background</span> Generator
             </h1>
 
@@ -520,7 +520,7 @@ const BackgroundGenerator = () => {
             </div>
 
             <div className="mt-12 max-w-2xl mx-auto">
-              <h2 className="text-2xl font-vt323 mb-4 text-center">
+              <h2 className="text-2xl font-minecraftia mb-4 text-center">
                 How to Use
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">

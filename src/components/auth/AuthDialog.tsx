@@ -35,8 +35,6 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('handleSubmit triggered');
-
     // Prevent submission if already loading from CAPTCHA verification or previous auth attempt
     if (loading) {
       return;
@@ -57,7 +55,6 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
     }
 
     setLoading(true); // Set loading for the actual auth attempt
-    console.log('Set loading to true for auth submission.');
     try {
       const { error } = isLogin
         ? await signIn(email, password, null)
@@ -90,7 +87,6 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
       setEmail('');
       setPassword('');
       setDisplayName('');
-      console.log('Auth successful, form reset.');
     } catch (error) {
       console.error('Auth unexpected error:', error);
       toast.error('Something went wrong during authentication.');
@@ -104,7 +100,6 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
     setEmail('');
     setPassword('');
     setDisplayName('');
-    console.log('Toggling mode, resetting form state.');
   }, []);
 
   const isFormValid = useCallback(() => {
@@ -117,7 +112,6 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
     // The form is valid if all fields are good AND not currently loading
     const formReady = fieldsValid && !loading;
 
-    // console.log('isFormValid check:', { fieldsValid, captchaVerified, loading, formReady });
     return formReady;
   }, [email, password, displayName, isLogin, loading]);
 

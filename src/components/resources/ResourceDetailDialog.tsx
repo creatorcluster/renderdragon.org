@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Resource } from '@/types/resources';
 import {
   Dialog,
@@ -10,7 +10,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import ResourcePreview from './ResourcePreview';
-import { IconDownload, IconCopy, IconCheck, IconBrandGithub, IconMusic, IconPhoto, IconVideo, IconFileText, IconFileMusic, IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
+import { getCategoryIcon, getCategoryColor } from '@/utils/resourceCategories';
+import { IconDownload, IconCopy, IconCheck, IconBrandGithub, IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -95,44 +96,6 @@ const ResourceDetailDialog = ({
       });
     }
   }, [resource, loadedFonts, setLoadedFonts]);
-
-  const getCategoryIcon = (category: string) => {
-    switch (category) {
-      case 'music':
-        return <IconMusic className="h-5 w-5" />;
-      case 'sfx':
-        return <IconFileMusic className="h-5 w-5" />;
-      case 'images':
-        return <IconPhoto className="h-5 w-5" />;
-      case 'animations':
-        return <IconVideo className="h-5 w-5" />;
-      case 'fonts':
-        return <IconFileText className="h-5 w-5" />;
-      case 'presets':
-        return <IconFileText className="h-5 w-5" />;
-      default:
-        return <IconFileText className="h-5 w-5" />;
-    }
-  };
-
-  const getCategoryColor = (category: string) => {
-    switch (category) {
-      case 'music':
-        return 'bg-blue-500/10 text-blue-500';
-      case 'sfx':
-        return 'bg-yellow-500/10 text-yellow-500';
-      case 'images':
-        return 'bg-purple-500/10 text-purple-500';
-      case 'animations':
-        return 'bg-red-500/10 text-red-500';
-      case 'fonts':
-        return 'bg-green-500/10 text-green-500';
-      case 'presets':
-        return 'bg-gray-500/10 text-gray-500';
-      default:
-        return 'bg-gray-500/10 text-gray-500';
-    }
-  };
 
   const copyCredit = () => {
     if (!resource?.credit) return;
@@ -275,4 +238,4 @@ const ResourceDetailDialog = ({
   );
 };
 
-export default ResourceDetailDialog;
+export default React.memo(ResourceDetailDialog);

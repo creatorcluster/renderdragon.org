@@ -1,153 +1,105 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { IconDownload, IconMusic, IconRobot, IconPhoto, IconUser } from '@tabler/icons-react';
-import { cn } from '@/lib/utils';
+import React from "react"
+import { Link } from "react-router-dom"
+import { motion } from 'framer-motion'
+import { IconArrowRight, IconDownload, IconMusic, IconRobot, IconPhoto, IconUser } from '@tabler/icons-react'
 
-interface Tool {
-  id: number;
-  title: string;
-  description: string;
-  icon: React.ElementType;
-  path: string;
-  color: string;
+const tools = [
+  {
+    id: 1,
+    title: 'Copyright Checker',
+    description: 'Check if a song is safe to use before it gets your video copyright-striked.',
+    icon: IconMusic,
+    path: '/music-copyright',
+  },
+  {
+    id: 2,
+    title: 'YouTube Tools',
+    description: 'Grab thumbnails, peek at analytics, and download videos for reference.',
+    icon: IconDownload,
+    path: '/youtube-downloader',
+  },
+  {
+    id: 3,
+    title: 'Background Gen',
+    description: 'Generate stunning, unique backgrounds for your thumbnails in seconds.',
+    icon: IconPhoto,
+    path: '/background-generator',
+  },
+  {
+    id: 4,
+    title: 'Player Renderer',
+    description: 'Render a 3D model of any Minecraft player skin. Pose it. Screenshot it.',
+    icon: IconUser,
+    path: '/player-renderer',
+  },
+]
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.2 } }
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } }
 }
 
 const PopularTools = () => {
-  const tools: Tool[] = [
-    {
-      id: 1,
-      title: 'Music Copyright Checker',
-      description: 'Check if a song is copyrighted before using it in your videos.',
-      icon: IconMusic,
-      path: '/gappa',
-      color: 'from-blue-500/80 to-blue-600/80'
-    },
-    {
-      id: 2,
-      title: 'YouTube Tools',
-      description: 'Download YouTube thumbnails and see detail analytics of a video.',
-      icon: IconDownload,
-      path: '/youtube-downloader',
-      color: 'from-purple-500/80 to-purple-600/80'
-    },
-    {
-      id: 3,
-      title: 'Background Generator',
-      description: 'Create unique and stunning backgrounds for your thumbnails.',
-      icon: IconPhoto,
-      path: '/background-generator',
-      color: 'from-green-500/80 to-green-600/80'
-    },
-    {
-      id: 4,
-      title: 'Player Renderer',
-      description: 'Render a 3D model of a Minecraft player skin.',
-      icon: IconUser,
-      path: '/player-renderer',
-      color: 'from-red-500/80 to-red-600/80'
-    }
-  ];
-  const [hoveredId, setHoveredId] = useState<number | null>(null);
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.15,
-        delayChildren: 0.2
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6
-      }
-    }
-  };
-
   return (
-    <section className="py-20 bg-card/50">
-      <div className="container mx-auto px-4">
-        <motion.div 
-          className="text-center mb-12"
+    <section className="relative py-20 md:py-28 bg-background">
+      <div className="absolute inset-0 pointer-events-none cow-grid-bg opacity-20" />
+
+      <div className="relative container mx-auto px-4">
+        <motion.div
+          className="text-center mb-14 md:mb-16 max-w-3xl mx-auto"
           initial={{ opacity: 0, y: -20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
         >
-          <h2 className="text-3xl md:text-4xl font-vt323 mb-4">
-            Popular <span className="text-cow-purple">Tools</span>
+          <h2
+            className="font-minecraftia text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-6 text-foreground leading-tight"
+          >
+            Creator <span className="text-cow-purple">Tools</span>
           </h2>
-          <p className=" max-w-2xl mx-auto">
-            A collection of our most used tools to help you with your content creation.
+          <p className="font-vt323 text-xl md:text-2xl text-foreground/70 leading-tight">
+            Built for the boring parts so you can focus on the fun.
           </p>
         </motion.div>
 
-        <motion.div 
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+        <motion.div
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true }}
+          viewport={{ once: true, amount: 0.2 }}
         >
           {tools.map((tool) => (
-            <motion.div
-              key={tool.id}
-              variants={itemVariants}
-            >
-              <Link 
+            <motion.div key={tool.id} variants={itemVariants}>
+              <Link
                 to={tool.path}
-                className="block"
-                onMouseEnter={() => setHoveredId(tool.id)}
-                onMouseLeave={() => setHoveredId(null)}
+                className="group block h-full pixel-card bg-card hover:bg-cow-purple/5 border-2 border-border hover:border-cow-purple p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-cow-purple/20"
               >
-                <div 
-                  className={cn(
-                    "h-full pixel-corners flex flex-col p-6 bg-gradient-to-br border-2",
-                    tool.color,
-                    "border-white/10 text-white transition-all duration-300",
-                    hoveredId === tool.id ? "border-white/30 shadow-lg scale-[1.02]" : ""
-                  )}
-                >
-                  <motion.div 
-                    className="p-3 bg-white/10 rounded-md w-fit mb-4"
-                    whileHover={{ rotate: [0, -10, 10, -5, 5, 0] }}
-                    transition={{ duration: 0.5 }}
-                  >
-                    <tool.icon className="h-6 w-6" />
-                  </motion.div>
-                  
-                  <h3 className="text-xl font-vt323 mb-2">{tool.title}</h3>
-                  
-                  <p className="text-white/70 text-sm flex-grow">
-                    {tool.description}
-                  </p>
-                  
-                  <motion.div 
-                    className={cn(
-                      "mt-4 text-sm font-semibold",
-                      "transition-transform duration-300",
-                      hoveredId === tool.id ? "translate-x-2" : ""
-                    )}
-                    whileHover={{ x: 5 }}
-                  >
-                    Try it now
-                  </motion.div>
+                <div className="flex items-start justify-between mb-5">
+                  <div className="w-12 h-12 bg-cow-purple/15 border-2 border-cow-purple pixel-corners flex items-center justify-center group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300">
+                    <tool.icon className="w-6 h-6 text-cow-purple" stroke={2.5} />
+                  </div>
+                  <IconArrowRight className="w-5 h-5 text-cow-purple opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                 </div>
+
+                <h3 className="font-vt323 text-xl md:text-2xl text-foreground mb-2 tracking-wide uppercase">
+                  {tool.title}
+                </h3>
+                <p className="font-vt323 text-base text-foreground/70 leading-snug">
+                  {tool.description}
+                </p>
               </Link>
             </motion.div>
           ))}
         </motion.div>
       </div>
     </section>
-  );
-};
+  )
+}
 
-export default React.memo(PopularTools);
+export default React.memo(PopularTools)

@@ -109,7 +109,7 @@ const Renderbot = () => {
                   <IconRobot className="w-12 h-12 text-cow-purple" />
                 </motion.div>
               </div>
-              <h1 className="text-4xl md:text-5xl font-vt323 mb-4">
+              <h1 className="text-4xl md:text-5xl font-minecraftia mb-4">
                 Meet <span className="text-cow-purple">Renderbot</span>
               </h1>
               <p className="text-muted-foreground max-w-2xl mx-auto mb-8">
@@ -129,7 +129,7 @@ const Renderbot = () => {
 
             {/* Commands Section */}
             <motion.div variants={itemVariants}>
-              <h2 className="text-2xl md:text-3xl font-vt323 text-center mb-8">
+              <h2 className="text-2xl md:text-3xl font-minecraftia text-center mb-8">
                 Available <span className="text-cow-purple">Commands</span>
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

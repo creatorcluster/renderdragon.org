@@ -17,8 +17,13 @@ import { toast } from 'sonner';
 import TextGeneratorControlsSkeleton from '@/components/skeletons/TextGeneratorControlsSkeleton';
 
 const TextGenerator = () => {
-  const { resources, isLoading: isLoadingResources } = useResources();
+  const { resources, isLoading: isLoadingResources, handleCategoryChange } = useResources();
   const [fonts, setFonts] = useState<Resource[]>([]);
+
+  // Load fonts on mount
+  useEffect(() => {
+    handleCategoryChange('fonts');
+  }, [handleCategoryChange]);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [settings, setSettings] = useState<TextSettings>({
     text: 'Renderdragon',
@@ -113,7 +118,7 @@ const TextGenerator = () => {
       <main className="flex-grow pt-24 pb-16 cow-grid-bg custom-scrollbar">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
-            <h1 className="text-4xl md:text-5xl font-vt323 mb-8 text-center">
+            <h1 className="text-4xl md:text-5xl font-minecraftia mb-8 text-center">
               <span className="text-cow-purple">Minecraft</span> Text Generator
             </h1>
 

@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import type { JSX } from 'react';
-import { motion, PanInfo, useMotionValue, useTransform } from 'framer-motion';
+import { motion, PanInfo, useMotionValue, useTransform, MotionValue } from 'framer-motion';
 // replace icons with your own if needed
 import { IconCircle, IconCode, IconFileText, IconLayers, IconLayout } from '@tabler/icons-react';
 import './Carousel.css';
@@ -61,6 +61,45 @@ export interface CarouselItem {
   const GAP = 16;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const SPRING_OPTIONS: any = { type: 'spring', stiffness: 300, damping: 30 };
+
+  interface CarouselTrackItemProps {
+    x: MotionValue<number>;
+    index: number;
+    trackItemOffset: number;
+    itemWidth: number;
+    round: boolean;
+    item: CarouselItem;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    effectiveTransition: any;
+  }
+
+  const CarouselTrackItem = ({ x, index, trackItemOffset, itemWidth, round, item, effectiveTransition }: CarouselTrackItemProps) => {
+    const range = [-(index + 1) * trackItemOffset, -index * trackItemOffset, -(index - 1) * trackItemOffset];
+    const outputRange = [90, 0, -90];
+    const rotateY = useTransform(x, range, outputRange, { clamp: false });
+    return (
+      <motion.div
+        key={index}
+        className={`carousel-item ${round ? 'round' : ''}`}
+        style={{
+          width: itemWidth,
+          height: round ? itemWidth : '100%',
+          rotateY: rotateY,
+          ...(round && { borderRadius: '50%' })
+        }}
+        transition={effectiveTransition}
+      >
+        <div className={`carousel-item-header ${round ? 'round' : ''}`}>
+          <span className="carousel-icon-container">{item.icon}</span>
+        </div>
+        <div className="carousel-item-content">
+          <div className="carousel-item-title">{item.title}</div>
+          <p className="carousel-item-description">{item.description}</p>
+        </div>
+      </motion.div>
+    );
+  };
+
   export default function Carousel({
     items = DEFAULT_ITEMS,
     baseWidth = 300,
@@ -176,33 +215,18 @@ export interface CarouselItem {
         transition={effectiveTransition}
         onAnimationComplete={handleAnimationComplete}
       >
-        {carouselItems.map((item, index) => {
-          const range = [-(index + 1) * trackItemOffset, -index * trackItemOffset, -(index - 1) * trackItemOffset];
-          const outputRange = [90, 0, -90];
-          // eslint-disable-next-line react-hooks/rules-of-hooks
-          const rotateY = useTransform(x, range, outputRange, { clamp: false });
-          return (
-            <motion.div
-              key={index}
-              className={`carousel-item ${round ? 'round' : ''}`}
-              style={{
-                width: itemWidth,
-                height: round ? itemWidth : '100%',
-                rotateY: rotateY,
-                ...(round && { borderRadius: '50%' })
-              }}
-              transition={effectiveTransition}
-            >
-              <div className={`carousel-item-header ${round ? 'round' : ''}`}>
-                <span className="carousel-icon-container">{item.icon}</span>
-              </div>
-              <div className="carousel-item-content">
-                <div className="carousel-item-title">{item.title}</div>
-                <p className="carousel-item-description">{item.description}</p>
-              </div>
-            </motion.div>
-          );
-        })}
+        {carouselItems.map((item, index) => (
+          <CarouselTrackItem
+            key={index}
+            x={x}
+            index={index}
+            trackItemOffset={trackItemOffset}
+            itemWidth={itemWidth}
+            round={round ?? false}
+            item={item}
+            effectiveTransition={effectiveTransition}
+          />
+        ))}
       </motion.div>
       <div className={`carousel-indicators-container ${round ? 'round' : ''}`}>
         <div className="carousel-indicators">

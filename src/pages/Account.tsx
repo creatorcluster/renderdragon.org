@@ -135,7 +135,7 @@ const Account = () => {
           >
             <div className="flex items-center gap-3 mb-8">
               <IconUser className="h-8 w-8 text-cow-purple" />
-              <h1 className="text-4xl md:text-5xl font-vt323">
+              <h1 className="text-4xl md:text-5xl font-minecraftia">
                 My <span className="text-cow-purple">Account</span>
               </h1>
             </div>

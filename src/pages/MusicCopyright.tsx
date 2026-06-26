@@ -126,7 +126,7 @@ const MusicCopyright = () => {
         <Navbar />
         <main className="flex-grow pt-24 pb-16 cow-grid-bg flex flex-col items-center justify-center">
           <div className="max-w-md w-full mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-vt323 mb-8 text-center">
+            <h1 className="text-4xl md:text-5xl font-minecraftia mb-8 text-center">
               <span className="text-cow-purple">Music Copyright</span> Checker
             </h1>
             <p className="mb-6 text-lg text-muted-foreground">You must be logged in to use the Music Copyright Checker.</p>

@@ -108,9 +108,24 @@ const Navbar = () => {
     localStorage.setItem('hideBlogsBanner', '1');
   };
 
-  // ... (lines 111-266 omitted for brevity, logic remains same)
+  useEffect(() => {
+    let ticking = false;
+    const handleScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const scrollY = window.scrollY;
+          const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+          setScrolled(scrollY > 50);
+          setScrollProgress(maxScroll > 0 ? Math.min(scrollY / maxScroll, 1) : 0);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
 
-  // ...
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
@@ -221,9 +236,9 @@ const Navbar = () => {
               <Logo size={isMobile ? "sm" : "md"} />
             </div>
             {!isMobile && (
-              <span className="hidden md:inline font-vt323">Renderdragon</span>
+              <span className="hidden md:inline font-minecraftia">Renderdragon</span>
             )}
-            {isMobile && <span className="font-vt323">RD</span>}
+            {isMobile && <span className="font-minecraftia">RD</span>}
           </Link>
 
           <nav className="hidden md:flex items-center space-x-6">

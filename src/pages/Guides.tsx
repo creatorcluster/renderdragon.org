@@ -146,11 +146,11 @@ const GuidesPage = () => {
 
       <Navbar />
 
-      <main className="flex-grow pt-24 pb-16 cow-grid-bg font-geist">
+      <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
-            <h1 className="text-4xl md:text-5xl font-vt323 mb-8 text-center">
-              <span className="text-cow-purple">Minecraft</span> Guides
+<h1 className="text-4xl md:text-5xl font-minecraftia mb-8 text-center">
+               <span className="text-cow-purple">Minecraft</span> Guides
             </h1>
 
             <p
@@ -188,7 +188,7 @@ const GuidesPage = () => {
                           </span>
                         </div>
                       </div>
-                      <CardTitle className="font-vt323 text-xl">
+                      <CardTitle className="font-minecraftia text-xl">
                         {guide.title}
                       </CardTitle>
                       <CardDescription

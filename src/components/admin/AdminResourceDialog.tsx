@@ -80,7 +80,6 @@ const AdminResourceDialog = ({ open, onOpenChange, resource, onSave }: AdminReso
           download_url: formData.download_url?.trim() || null,
         };
 
-        console.log('Creating new resource with data:', newResourceData);
 
         const { error, data } = await supabase
           .from('resources')
@@ -91,8 +90,8 @@ const AdminResourceDialog = ({ open, onOpenChange, resource, onSave }: AdminReso
           console.error('Supabase insert error:', error);
           throw error;
         }
+
         
-        console.log('Successfully created resource:', data);
         toast.success('Resource created successfully');
       }
 

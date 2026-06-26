@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Resource } from "@/types/resources";
 import { useDownloadCounts } from "@/hooks/useDownloadCounts";
 
@@ -16,15 +16,13 @@ type CachedPayload<T> = {
   data: T;
 };
 
-const CACHE_TTL_MS = 1000 * 60 * 60 * 7; // 7 hours to overlap with 6-hour cron
+const CACHE_TTL_MS = 1000 * 60 * 60 * 7; // 7 hours
 const INDEX_CACHE_KEY = "resources-cache:index-v1";
-const ALL_CACHE_KEY = "resources-cache:all-v1";
 const CATEGORY_CACHE_PREFIX = "resources-cache:category-v1:";
+const ALL_CACHE_KEY = "resources-cache:all-v1";
 
 const INDEX_URL = "/resources.index.json";
-const ALL_URL = "/resources.all.json";
 const LEGACY_URL = "/resources.json";
-const CATEGORY_DIR = "/resources";
 
 const isSafeUrl = (value?: string) => {
   if (!value || typeof value !== "string") return false;
@@ -96,35 +94,6 @@ const normalizeCategoryItems = (category: string, items: any[]): Resource[] => {
   return normalized;
 };
 
-const normalizeGroupedOrFlat = (data: Record<string, any[]>): Resource[] => {
-  if (!data || typeof data !== "object") return [];
-
-  const source =
-    typeof (data as any).categories === "object" &&
-    (data as any).categories !== null
-      ? ((data as any).categories as Record<string, any[]>)
-      : data;
-
-  return Object.entries(source).flatMap(([category, items]) =>
-    normalizeCategoryItems(category, items as any[]),
-  );
-};
-
-const normalizeAllArray = (items: any[]): Resource[] => {
-  const list = Array.isArray(items) ? items : [];
-  const byCategory = new Map<string, any[]>();
-
-  list.forEach((item) => {
-    const category = String(item?.category || "uncategorized");
-    if (!byCategory.has(category)) byCategory.set(category, []);
-    byCategory.get(category)!.push(item);
-  });
-
-  return Array.from(byCategory.entries()).flatMap(([category, items]) =>
-    normalizeCategoryItems(category, items),
-  );
-};
-
 const readCache = <T>(key: string): T | null => {
   try {
     const raw = localStorage.getItem(key);
@@ -181,7 +150,10 @@ export const useResources = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [lastAction, setLastAction] = useState<string>("");
   const [loadedFonts, setLoadedFonts] = useState<string[]>([]);
+  const [indexData, setIndexData] = useState<IndexFile | null>(null);
+  const [allResources, setAllResources] = useState<Resource[]>([]);
 
+  // Load index on mount
   const loadIndex = useCallback(async (): Promise<IndexFile | null> => {
     const cached = readCache<IndexFile>(INDEX_CACHE_KEY);
     if (cached) return cached;
@@ -194,29 +166,15 @@ export const useResources = () => {
     return null;
   }, []);
 
-  const loadAllResources = useCallback(async (): Promise<Resource[]> => {
-    const cached = readCache<any>(ALL_CACHE_KEY);
-    if (cached) {
-      if (Array.isArray(cached)) return normalizeAllArray(cached);
-      return normalizeGroupedOrFlat(cached);
-    }
+  useEffect(() => {
+    setIsLoading(true);
+    loadIndex().then((idx) => {
+      setIndexData(idx);
+      setIsLoading(false);
+    });
+  }, [loadIndex]);
 
-    const allJson = await fetchJson<any>(ALL_URL);
-    if (allJson) {
-      writeCache(ALL_CACHE_KEY, allJson);
-      if (Array.isArray(allJson)) return normalizeAllArray(allJson);
-      return normalizeGroupedOrFlat(allJson);
-    }
-
-    const legacy = await fetchJson<any>(LEGACY_URL);
-    if (legacy) {
-      writeCache(ALL_CACHE_KEY, legacy);
-      return normalizeGroupedOrFlat(legacy);
-    }
-
-    return [];
-  }, []);
-
+  // Load a single category file
   const loadCategoryResources = useCallback(
     async (category: string): Promise<Resource[]> => {
       const cacheKey = `${CATEGORY_CACHE_PREFIX}${category}`;
@@ -227,7 +185,7 @@ export const useResources = () => {
       const fileFromIndex = index?.categories?.[category]?.file;
       const categoryUrl = fileFromIndex
         ? `/${fileFromIndex}`
-        : `${CATEGORY_DIR}/${category}.json`;
+        : `/resources/${category}.json`;
 
       const categoryJson = await fetchJson<any>(categoryUrl);
       if (categoryJson) {
@@ -235,57 +193,97 @@ export const useResources = () => {
         return normalizeCategoryItems(category, categoryJson);
       }
 
-      const legacy = await fetchJson<any>(LEGACY_URL);
-      if (legacy) {
-        writeCache(ALL_CACHE_KEY, legacy);
-        const source =
-          typeof legacy.categories === "object" && legacy.categories !== null
-            ? legacy.categories
-            : legacy;
-        const items = source?.[category] || [];
-        return normalizeCategoryItems(category, items);
-      }
-
       return [];
     },
     [loadIndex],
   );
 
-  const fetchResources = useCallback(async () => {
-    try {
+  // Load all non-minecraft-icons categories in parallel (for search/favorites)
+  const loadAllCategories = useCallback(async (): Promise<Resource[]> => {
+    const cached = readCache<Resource[]>(ALL_CACHE_KEY);
+    if (cached) return cached;
+
+    const idx = indexData || (await loadIndex());
+    if (!idx?.categories) return [];
+
+    const categories = Object.keys(idx.categories).filter(
+      (c) => c !== "minecraft-icons",
+    );
+
+    const results = await Promise.all(
+      categories.map((cat) => loadCategoryResources(cat)),
+    );
+
+    const all = results.flat();
+    writeCache(ALL_CACHE_KEY, all);
+    return all;
+  }, [indexData, loadIndex, loadCategoryResources]);
+
+  // Main fetch: triggered when category changes
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchData = async () => {
       setIsLoading(true);
 
-      const mode =
-        selectedCategory === null || selectedCategory === "favorites"
-          ? "all"
-          : "category";
-
-      if (mode === "all") {
-        const all = await loadAllResources();
-        setResources(all);
+      if (selectedCategory === "favorites") {
+        if (allResources.length > 0) {
+          if (!cancelled) {
+            setResources(allResources);
+            setIsLoading(false);
+          }
+        } else {
+          const all = await loadAllCategories();
+          if (!cancelled) {
+            setAllResources(all);
+            setResources(all);
+            setIsLoading(false);
+          }
+        }
         return;
       }
 
-      const categoryItems = await loadCategoryResources(
-        selectedCategory as string,
-      );
-      setResources(categoryItems);
-    } catch (error) {
-      console.error("Error fetching resources:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [loadAllResources, loadCategoryResources, selectedCategory]);
+      if (selectedCategory === null) {
+        if (!cancelled) {
+          setResources([]);
+          setIsLoading(false);
+        }
+        return;
+      }
 
-  useEffect(() => {
-    fetchResources();
-  }, [fetchResources]);
+      // Specific category
+      const items = await loadCategoryResources(selectedCategory as string);
+      if (!cancelled) {
+        setResources(items);
+        setIsLoading(false);
+      }
+    };
 
-  const handleSearchSubmit = useCallback((e?: React.FormEvent) => {
-    e?.preventDefault();
-    setIsSearching(true);
-    setLastAction("search");
-  }, []);
+    fetchData();
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedCategory, allResources, loadAllCategories, loadCategoryResources]);
+
+  // When search is triggered on "All", load all non-icon categories
+  const handleSearchSubmit = useCallback(
+    async (e?: React.FormEvent) => {
+      e?.preventDefault();
+      setLastAction("search");
+
+      if (selectedCategory === null && allResources.length === 0) {
+        setIsLoading(true);
+        const all = await loadAllCategories();
+        if (all.length > 0) {
+          setAllResources(all);
+          setResources(all);
+        }
+        setIsLoading(false);
+      }
+      setIsSearching(true);
+    },
+    [selectedCategory, allResources.length, loadAllCategories],
+  );
 
   const handleClearSearch = useCallback(() => {
     setSearchQuery("");
@@ -295,6 +293,7 @@ export const useResources = () => {
 
   const handleCategoryChange = useCallback(
     (category: Category | null | "favorites") => {
+      setIsLoading(true);
       setSelectedCategory(category);
       setSelectedSubcategory(null);
       setLastAction("category");
@@ -328,27 +327,34 @@ export const useResources = () => {
     return Array.from(new Set(subs)).sort();
   }, [resources, selectedCategory]);
 
+  const getCount = useCallback(
+    (id: string | number) => {
+      if (typeof id === "number") return externalDownloadCounts[id] || 0;
+      if (String(id).startsWith("main-")) {
+        const numericId = String(id).replace("main-", "");
+        return externalDownloadCounts[numericId] || 0;
+      }
+      return externalDownloadCounts[String(id)] || 0;
+    },
+    [externalDownloadCounts],
+  );
+
+  const getNumericId = useCallback((id: Resource["id"]) => {
+    if (typeof id === "number") return id;
+    const parsed = Number(String(id).replace(/^[^0-9]+/, ""));
+    return Number.isFinite(parsed) ? parsed : 0;
+  }, []);
+
   const hasCategoryResources = useMemo(() => {
     if (!selectedCategory || selectedCategory === "favorites") return true;
     return resources.some((resource) => resource.category === selectedCategory);
   }, [resources, selectedCategory]);
 
   const filteredResources = useMemo(() => {
-    let result = [...resources];
-
-    const getCount = (id: string | number) => {
-      if (typeof id === "number") return externalDownloadCounts[id] || 0;
-      if (id.startsWith("main-")) {
-        const numericId = id.replace("main-", "");
-        return externalDownloadCounts[numericId] || 0;
-      }
-      return externalDownloadCounts[id] || 0;
-    };
+    let result = resources.slice();
 
     if (selectedCategory && selectedCategory !== "favorites") {
       result = result.filter((r) => r.category === selectedCategory);
-    } else if (selectedCategory === null) {
-      result = result.filter((r) => r.category !== "minecraft-icons");
     }
 
     if (selectedSubcategory && selectedSubcategory !== "all") {
@@ -361,12 +367,6 @@ export const useResources = () => {
       const query = searchQuery.toLowerCase();
       result = result.filter((r) => r.title.toLowerCase().includes(query));
     }
-
-    const getNumericId = (id: Resource["id"]) => {
-      if (typeof id === "number") return id;
-      const parsed = Number(id.toString().replace(/^[^0-9]+/, ""));
-      return Number.isFinite(parsed) ? parsed : 0;
-    };
 
     switch (sortOrder) {
       case "popular":
@@ -391,7 +391,8 @@ export const useResources = () => {
     selectedSubcategory,
     searchQuery,
     sortOrder,
-    externalDownloadCounts,
+    getCount,
+    getNumericId,
     availableSubcategories,
   ]);
 
@@ -491,5 +492,6 @@ export const useResources = () => {
     handleSortOrderChange: setSortOrder,
     handleSearch,
     handleDownload,
+    indexData,
   };
 };

@@ -317,7 +317,7 @@ const Community = () => {
   };
 
   const handleJoinServer = (server: DiscordServer) => {
-    window.open(server.inviteUrl, "_blank");
+    window.open(server.inviteUrl, "_blank", "noopener,noreferrer");
     toast.success(`Opening invite to ${server.name}`, {
       description: "You'll be redirected to Discord",
     });
@@ -592,7 +592,10 @@ const Community = () => {
           <div className="space-y-6 py-6">
             <div className="video-player-container rounded-lg overflow-hidden">
               <iframe
-                src={selectedVideo?.url.replace("watch?v=", "embed/")}
+                src={(() => {
+                  const id = selectedVideo?.url?.match(/(?:watch\?v=|youtu\.be\/|shorts\/)([a-zA-Z0-9_-]{11})/)?.[1];
+                  return id ? `https://www.youtube-nocookie.com/embed/${id}` : '';
+                })()}
                 title={selectedVideo?.title}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
@@ -602,7 +605,7 @@ const Community = () => {
 
             <Button
               className="w-full pixel-btn-primary py-3 text-base"
-              onClick={() => window.open(selectedVideo?.url, "_blank")}
+              onClick={() => window.open(selectedVideo?.url, "_blank", "noopener,noreferrer")}
             >
               Watch on YouTube
               <svg

@@ -1,7 +1,7 @@
-import { useRef } from 'react';
+import React, { useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { IconFilter, IconMusic, IconFileMusic, IconPhoto, IconVideo, IconFileText, IconX, IconSearch, IconHeart } from '@tabler/icons-react';
+import { IconFilter, IconMusic, IconFileMusic, IconPhoto, IconVideo, IconFileText, IconX, IconSearch, IconHeart, IconLayoutGrid } from '@tabler/icons-react';
 import {
   Select,
   SelectContent,
@@ -13,13 +13,13 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
 type ResourceFiltersProps = {
   searchQuery: string;
-  selectedCategory: string;
-  selectedSubcategory: string;
+  selectedCategory: string | null;
+  selectedSubcategory: string | null;
   onSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onClearSearch: () => void;
   onSearchSubmit: (e: React.FormEvent) => void;
-  onCategoryChange: (category: string) => void;
-  onSubcategoryChange: (subcategory: string) => void;
+  onCategoryChange: (category: string | null) => void;
+  onSubcategoryChange: (subcategory: string | null) => void;
   sortOrder: string;
   onSortOrderChange: (order: string) => void;
   isMobile: boolean;
@@ -181,7 +181,7 @@ const MobileFilters = ({
               onClick={() => onCategoryChange('minecraft-icons')}
               className="justify-start pixel-corners"
             >
-              <img src="/assets/mci_icon.png" className="h-4 w-4 mr-2" alt="MCI" onError={(e) => { e.currentTarget.style.display = 'none' }} />
+              <IconLayoutGrid className="h-4 w-4 mr-2" />
               Minecraft Icons
             </Button>
 
@@ -347,4 +347,4 @@ const DesktopFilters = ({
   );
 };
 
-export default ResourceFilters;
+export default React.memo(ResourceFilters);

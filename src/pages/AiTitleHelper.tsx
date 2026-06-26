@@ -83,7 +83,7 @@ const AiTitleHelper = () => {
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-8">
-            <h1 className="text-4xl md:text-5xl font-vt323">AI Title Helper</h1>
+            <h1 className="text-4xl md:text-5xl font-minecraftia">AI Title Helper</h1>
             <p className="text-neutral-300 mt-2 font-vt323">Generate multiple short, SEO-friendly YouTube titles. Only the titles are shown below.</p>
           </div>
 
@@ -137,7 +137,7 @@ const AiTitleHelper = () => {
               <Button
                 type="submit"
                 disabled={loading}
-                className="px-6 py-3 pixel-corners bg-cow-purple hover:bg-cow-purple/90 disabled:opacity-60 text-white font-semibold shadow-lg"
+                className="pixel-btn-primary"
               >
                 {loading ? 'Generating…' : 'Generate Titles'}
               </Button>
