@@ -42,7 +42,7 @@ interface NavDropdown {
 
 const mainLinks: (NavLink | NavDropdown)[] = [
   { name: 'Home', path: '/', icon: 'home' },
-  { name: 'Blogs', path: '/blogs', icon: 'text', tag: 'NEW' },
+  { name: 'Blogs', path: '/blogs', icon: 'text' },
   { name: 'Contact', path: '/contact', icon: 'contact' },
   {
     name: 'Resources',
@@ -57,11 +57,11 @@ const mainLinks: (NavLink | NavDropdown)[] = [
     name: 'Tools',
     icon: 'tools',
     links: [
-      { name: 'Looney Checks', path: '/gappa', icon: 'music' },
+      { name: 'Looney Checks', path: '/gappa', icon: 'music', tag: 'NEW' },
       { name: 'Background Generator', path: '/background-generator', icon: 'background' },
       { name: 'Player Renderer', path: '/player-renderer', icon: 'player' },
       { name: 'Text Generator', path: '/text-generator', icon: 'text' },
-      { name: 'Youtube Tools', path: '/youtube-downloader', icon: 'yt-downloader', tag: 'NEW' },
+      { name: 'Youtube Tools', path: '/youtube-downloader', icon: 'yt-downloader' },
       { name: 'Content Generators', path: '/generators', icon: 'text' }
     ]
   }

@@ -130,6 +130,7 @@ const BackgroundGenerator = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [recordingProgress, setRecordingProgress] = useState(0);
   const [isLoadingTextures, setIsLoadingTextures] = useState(true);
+  const [previewCardHeight, setPreviewCardHeight] = useState<number | null>(null);
   const [previewWidth, previewHeight] = size.split("x").map((dimension) => parseInt(dimension, 10));
   const spacingValue = spacing[0];
   const opacityValue = opacity[0];
@@ -140,9 +141,25 @@ const BackgroundGenerator = () => {
   const animationDistanceValue = animationDistance[0];
   const fileInputRef = useRef<HTMLInputElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const previewCardRef = useRef<HTMLDivElement>(null);
   const uploadIdRef = useRef(0);
   const generationIdRef = useRef(0);
   const recordingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    const previewCard = previewCardRef.current;
+    if (!previewCard) return;
+
+    const updatePreviewCardHeight = () => {
+      setPreviewCardHeight(previewCard.getBoundingClientRect().height);
+    };
+
+    updatePreviewCardHeight();
+    const observer = new ResizeObserver(updatePreviewCardHeight);
+    observer.observe(previewCard);
+
+    return () => observer.disconnect();
+  }, []);
 
   const invalidateGeneration = () => {
     generationIdRef.current += 1;
@@ -676,7 +693,10 @@ const BackgroundGenerator = () => {
              </Tabs>
 
               <div className="grid grid-cols-1 items-start gap-8 md:grid-cols-3">
-               <div className="pixel-card relative flex flex-col space-y-6 border-l-4 border-l-cow-purple/70 shadow-2xl shadow-cow-purple/10 md:sticky md:top-24 md:col-span-1 md:max-h-[calc(100vh-7rem)] md:overflow-y-auto md:overscroll-contain md:custom-scrollbar">
+                <div
+                  className="pixel-card relative flex flex-col space-y-6 border-l-4 border-l-cow-purple/70 shadow-2xl shadow-cow-purple/10 md:sticky md:top-24 md:col-span-1 md:h-[var(--preview-card-height)] md:max-h-[calc(100vh-7rem)] md:overflow-y-auto md:overscroll-contain md:custom-scrollbar"
+                  style={previewCardHeight ? ({ "--preview-card-height": `${previewCardHeight}px` } as React.CSSProperties) : undefined}
+                >
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Select images</label>
@@ -1057,7 +1077,7 @@ const BackgroundGenerator = () => {
                 </div>
               </div>
 
-               <div className="pixel-card flex h-fit flex-col self-start md:col-span-2">
+                <div ref={previewCardRef} className="pixel-card flex h-fit flex-col self-start md:col-span-2">
                 <div className="mb-4 text-center">
                   <h3 className="text-lg font-jetbrains-mono">Preview</h3>
                 </div>
