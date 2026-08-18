@@ -5,6 +5,10 @@ import { isAllowedOrigin } from './cors.js';
 const MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
 const DEFAULT_LOONEY_URL = 'https://looney.codersoft.xyz/check';
 const DAILY_CHECK_LIMIT = 5;
+// Hobby caps the whole invocation at 60s. Keep work inside a 50s budget so
+// request parsing, the quota RPC, the upstream call, and releaseRateLimit
+// cleanup all complete before the platform terminates the invocation.
+const INVOCATION_BUDGET_MS = 50000;
 
 function getHeader(request, name) {
   if (request.headers?.get) return request.headers.get(name);
@@ -235,7 +239,7 @@ export const config = {
     bodyParser: false,
     sizeLimit: '52mb',
   },
-  maxDuration: 300,
+  maxDuration: 60,
 };
 
 class ValidationError extends Error {}
@@ -271,6 +275,7 @@ export default async function handler(request) {
   }
 
   try {
+    const invocationDeadline = Date.now() + INVOCATION_BUDGET_MS;
     const upstream = await buildUpstreamRequest(request);
     const rateLimit = await consumeRateLimit(request);
     if (!rateLimit.allowed) {
@@ -280,11 +285,15 @@ export default async function handler(request) {
     }
     let response;
     try {
+      const remainingBudgetMs = Math.max(0, invocationDeadline - Date.now());
       response = await fetch(`${getLooneyBaseUrl()}/jobs`, {
         method: 'POST',
         headers: upstreamHeaders(upstream.contentType),
         body: upstream.body,
-        signal: AbortSignal.timeout(30000),
+        // Remote file checks may download and inspect the audio before returning a job ID.
+        // Bound the upstream call by the remaining request budget so the abort handler
+        // below can still release the rate-limit reservation before the 60s cap.
+        signal: AbortSignal.timeout(remainingBudgetMs),
       });
     } catch (error) {
       try {
