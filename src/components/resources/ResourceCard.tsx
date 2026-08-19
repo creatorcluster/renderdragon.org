@@ -187,19 +187,6 @@ const ResourceCard = ({ resource, onClick, onCheckCopyright }: ResourceCardProps
               isInView={isInView}
               className="w-full shadow-none border-none bg-transparent p-0"
             />
-            {(resource.category === "music" || resource.category === "minecraft-music") && onCheckCopyright && (
-              <button
-                type="button"
-                onClick={handleCopyrightClick}
-                aria-label={`Check ${resource.title} for copyright`}
-                className="group/check absolute right-2 top-2 z-10 inline-flex h-10 w-10 items-center justify-center rounded-md border border-white bg-white p-1.5 text-black shadow-lg backdrop-blur-sm transition-all hover:w-auto hover:bg-white/90 hover:text-black"
-              >
-                <img src="/assets/looney-icon.png" alt="" aria-hidden="true" className="h-6 w-6 shrink-0 object-contain" />
-                <span className="max-w-0 overflow-hidden whitespace-nowrap text-xs font-medium opacity-0 transition-all group-hover/check:max-w-32 group-hover/check:opacity-100">
-                  Check for copyright
-                </span>
-              </button>
-            )}
           </div>
         );
       case "minecraft-music":

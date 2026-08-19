@@ -57,7 +57,6 @@ const mainLinks: (NavLink | NavDropdown)[] = [
     name: 'Tools',
     icon: 'tools',
     links: [
-      { name: 'Looney Checks', path: '/gappa', icon: 'music', tag: 'NEW' },
       { name: 'Background Generator', path: '/background-generator', icon: 'background' },
       { name: 'Player Renderer', path: '/player-renderer', icon: 'player' },
       { name: 'Text Generator', path: '/text-generator', icon: 'text' },

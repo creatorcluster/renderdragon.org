@@ -17,14 +17,6 @@ type Tool = {
 const tools: Tool[] = [
   {
     id: 1,
-    title: 'Looney Checks',
-    description: 'Research a track before it gets your video copyright-striked.',
-    icon: IconMusic,
-    hoverImage: '/assets/looney-icon.png',
-    path: '/music-copyright',
-  },
-  {
-    id: 2,
     title: 'YouTube Tools',
     description: 'Grab thumbnails, peek at analytics, and download videos for reference.',
     icon: IconDownload,
@@ -32,7 +24,7 @@ const tools: Tool[] = [
     path: '/youtube-downloader',
   },
   {
-    id: 3,
+    id: 2,
     title: 'Background Gen',
     description: 'Generate stunning, unique backgrounds for your thumbnails in seconds.',
     icon: IconPhoto,
@@ -40,7 +32,7 @@ const tools: Tool[] = [
     path: '/background-generator',
   },
   {
-    id: 4,
+    id: 3,
     title: 'Player Renderer',
     description: 'Render a 3D model of any Minecraft player skin. Pose it. Screenshot it.',
     icon: IconUser,
@@ -99,7 +91,6 @@ const PopularTools = () => {
                      <img src={tool.backgroundImage} alt="" aria-hidden="true" className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
                      <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_35%,rgba(0,0,0,0.55)_100%)] opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
                    </>}
-                  {tool.id === 1 && <div className="pointer-events-none absolute right-5 top-5 w-32 translate-y-1 rounded-md border border-emerald-400/50 bg-[#0b1d19]/95 p-2 opacity-0 transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100"><div className="font-jetbrains-mono text-[9px] uppercase tracking-widest text-emerald-300">Check complete</div><div className="mt-1 text-xs font-semibold text-white">No match found</div></div>}
                   <div className="flex items-start justify-between mb-5">
                    <div className="relative z-10 w-12 h-12 bg-cow-purple/15 border-2 border-cow-purple pixel-corners flex items-center justify-center group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300">
                      <tool.icon className={`h-6 w-6 text-cow-purple transition-opacity duration-150 ${tool.hoverIcon || tool.hoverImage ? 'group-hover:opacity-0' : ''}`} stroke={2.5} />
