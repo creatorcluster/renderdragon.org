@@ -9,6 +9,7 @@ import {
     SelectLabel
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { fetchFromAssetsApi } from "@/lib/assetsApi";
 
 interface FontOption {
     id: number;
@@ -59,12 +60,11 @@ export const FontPicker: React.FC<FontPickerProps> = ({ value, onFontChange }) =
                     const timeoutId = setTimeout(() => controller.abort(), 10000);
 
                     try {
-                        const res = await fetch('https://hamburger-api.powernplant101-c6b.workers.dev/fonts', {
+                        const res = await fetchFromAssetsApi('/fonts', {
                             signal: controller.signal
                         });
                         clearTimeout(timeoutId);
 
-                        if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
                         const data = await res.json();
 
                         if (data && Array.isArray(data.files)) {

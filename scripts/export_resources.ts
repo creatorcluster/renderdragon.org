@@ -17,36 +17,40 @@ if (!supabaseUrl || !supabaseKey) {
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-const MCICONS_URL =
-  "https://hamburger-api.powernplant101-c6b.workers.dev/mcicons";
+const MCICONS_BASE_URLS = [
+  "https://assets.codersoft.xyz",
+  "https://hamburger-api.powernplant101-c6b.workers.dev",
+];
 
 const fetchMcicons = async () => {
-  try {
-    const response = await fetch(MCICONS_URL);
-    if (!response.ok) {
-      console.warn(`Failed to fetch mcicons: ${response.status}`);
-      return [];
+  for (const base of MCICONS_BASE_URLS) {
+    try {
+      const response = await fetch(`${base}/mcicons`);
+      if (!response.ok) {
+        console.warn(`Failed to fetch mcicons from ${base}: ${response.status}`);
+        continue;
+      }
+      const data = await response.json();
+      const files = Array.isArray(data?.files) ? data.files : [];
+      return files
+        .map((file) => {
+          const rawTitle = String(file.title || "").replace(/_/g, " ");
+          const title = rawTitle.replace(/\.[^/.]+$/, "").trim();
+          return {
+            id: `mcicons-${file.id ?? title ?? "unknown"}`,
+            title,
+            credit: file.credit || "",
+            filetype: file.ext || file.filetype,
+            download_url: file.url,
+            subcategory: file.subcategory,
+          };
+        })
+        .filter((item) => item.title);
+    } catch (error) {
+      console.warn(`Failed to fetch mcicons from ${base}:`, error);
     }
-    const data = await response.json();
-    const files = Array.isArray(data?.files) ? data.files : [];
-    return files
-      .map((file) => {
-        const rawTitle = String(file.title || "").replace(/_/g, " ");
-        const title = rawTitle.replace(/\.[^/.]+$/, "").trim();
-        return {
-          id: `mcicons-${file.id ?? title ?? "unknown"}`,
-          title,
-          credit: file.credit || "",
-          filetype: file.ext || file.filetype,
-          download_url: file.url,
-          subcategory: file.subcategory,
-        };
-      })
-      .filter((item) => item.title);
-  } catch (error) {
-    console.warn("Failed to fetch mcicons:", error);
-    return [];
   }
+  return [];
 };
 
 async function exportResources() {
