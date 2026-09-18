@@ -1,7 +1,7 @@
 import { readCache, writeCache, clearCache } from "@/lib/cache";
+import { fetchFromAssetsApi } from "@/lib/assetsApi";
 import { Resource } from "@/types/resources";
 
-const API_BASE = "https://hamburger-api.powernplant101-c6b.workers.dev";
 const ALL_RESOURCES_CACHE_KEY = "api:all-resources";
 const CATEGORIES_CACHE_KEY = "api:categories";
 const CATEGORY_CACHE_PREFIX = "api:category:";
@@ -28,21 +28,17 @@ export interface ApiAllResources {
   categories: Record<string, ApiResource[]>;
 }
 
-const fetchJson = async <T>(url: string): Promise<T | null> => {
+const fetchJson = async <T>(path: string): Promise<T | null> => {
   try {
-    const res = await fetch(url, {
+    const res = await fetchFromAssetsApi(path, {
       cache: "default",
       headers: {
         Accept: "application/json",
       },
     });
-    if (!res.ok) {
-      console.error(`API error: ${res.status} ${res.statusText} for ${url}`);
-      return null;
-    }
     return (await res.json()) as T;
   } catch (error) {
-    console.error(`Fetch error for ${url}:`, error);
+    console.error(`Fetch error for ${path}:`, error);
     return null;
   }
 };
@@ -99,7 +95,7 @@ export const fetchCategories = async (): Promise<ApiCategories | null> => {
   const cached = readCache<ApiCategories>(CATEGORIES_CACHE_KEY);
   if (cached) return cached;
 
-  const data = await fetchJson<ApiCategories>(`${API_BASE}/categories`);
+  const data = await fetchJson<ApiCategories>("/categories");
   if (data) {
     writeCache(CATEGORIES_CACHE_KEY, data);
     return data;
@@ -119,7 +115,7 @@ export const fetchCategory = async (category: string): Promise<Resource[]> => {
 
   const apiCategory = toApiCategory(normalized);
   const data = await fetchJson<{ category: string; files: ApiResource[] }>(
-    `${API_BASE}/category/${apiCategory}`
+    `/category/${apiCategory}`
   );
   if (data?.files && data.files.length > 0) {
     try {
@@ -151,7 +147,7 @@ export const fetchAllResources = async (): Promise<Resource[]> => {
     );
   }
 
-  const data = await fetchJson<ApiAllResources>(`${API_BASE}/all`);
+  const data = await fetchJson<ApiAllResources>("/all");
   if (data?.categories && Object.keys(data.categories).length > 0) {
     try {
       writeCache(ALL_RESOURCES_CACHE_KEY, data);
@@ -184,7 +180,7 @@ export const fetchAllResources = async (): Promise<Resource[]> => {
 };
 
 export const refreshAllResources = async (): Promise<Resource[]> => {
-  const data = await fetchJson<ApiAllResources>(`${API_BASE}/all`);
+  const data = await fetchJson<ApiAllResources>("/all");
   if (data?.categories) {
     writeCache(ALL_RESOURCES_CACHE_KEY, data);
     return Object.entries(data.categories).flatMap(([category, items]) =>

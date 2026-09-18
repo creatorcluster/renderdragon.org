@@ -26,6 +26,7 @@ import {
 } from "@tabler/icons-react";
 import { toast } from "sonner";
 import { Helmet } from "react-helmet-async";
+import { fetchFromAssetsApi } from "@/lib/assetsApi";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -192,8 +193,7 @@ const BackgroundGenerator = () => {
     const fetchTextures = async () => {
       try {
         setIsLoadingTextures(true);
-        const response = await fetch('https://hamburger-api.powernplant101-c6b.workers.dev/mcicons');
-        if (!response.ok) throw new Error('Failed to fetch textures');
+        const response = await fetchFromAssetsApi('/mcicons');
         const data = await response.json();
         if (data && data.files) {
           const filteredTextures = Array.isArray(data.files) ? data.files.filter(isTexture) : [];
