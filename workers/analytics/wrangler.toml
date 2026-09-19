@@ -1,0 +1,23 @@
+# Deploy steps:
+#   1. npx wrangler d1 create renderdragon-analytics
+#   2. paste the printed database_id below
+#   3. npx wrangler d1 execute renderdragon-analytics --remote --file schema.sql
+#   4. npx wrangler secret put STATS_TOKEN
+#   5. npx wrangler deploy
+#   6. custom domain analytics.codersoft.xyz is attached via the routes block below
+
+name = "renderdragon-analytics"
+main = "src/index.ts"
+compatibility_date = "2026-09-01"
+
+routes = [
+  { pattern = "analytics.codersoft.xyz", custom_domain = true }
+]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "renderdragon-analytics"
+database_id = "6fc5d7ca-40e3-4f03-b5e2-1d0c0ef1e07d"
+
+[vars]
+ALLOWED_ORIGIN = "https://renderdragon.org"

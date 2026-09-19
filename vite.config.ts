@@ -10,6 +10,16 @@ export default defineConfig(() => {
       host: "::",
       port: 8080,
       proxy: {
+        '/api/stats': {
+          target: 'https://analytics.codersoft.xyz',
+          changeOrigin: true,
+          secure: true,
+        },
+        '/api/track': {
+          target: 'https://analytics.codersoft.xyz',
+          changeOrigin: true,
+          secure: true,
+        },
         '/api': {
           target: 'http://localhost:3000',
           changeOrigin: true,

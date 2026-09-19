@@ -3,7 +3,9 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "prebuild": "node scripts/generate_sitemap.mjs && node -e \"const fs=require('fs'),p=require('path');fs.mkdirSync('dist',{recursive:true});const src='changelog.md',dst=p.join('public','changelog.md');if(fs.existsSync(src)){fs.mkdirSync('public',{recursive:true});fs.copyFileSync(src,dst);}\"",
     "dev": "concurrently \"pnpm run dev:vite\" \"pnpm run dev:server\"",
@@ -62,7 +64,6 @@
     "@radix-ui/react-use-layout-effect": "^1.1.1",
     "@radix-ui/react-use-previous": "^1.1.1",
     "@radix-ui/react-visually-hidden": "^1.2.4",
-    "@renderdragonorg/wisp": "^0.2.0",
     "@sentry/react": "^10.38.0",
     "@supabase/supabase-js": "^2.95.3",
     "@tabler/icons-react": "^3.36.1",
@@ -107,6 +108,7 @@
     "react-resizable-panels": "^2.1.9",
     "react-router-dom": "^6.30.3",
     "react-turnstile": "^1.1.5",
+    "recharts": "2.15.4",
     "remark-gfm": "^4.0.1",
     "sonner": "^2.0.7",
     "tailwind-merge": "^2.6.1",
@@ -132,7 +134,6 @@
     "@vitejs/plugin-react-swc": "^3.11.0",
     "autoprefixer": "^10.4.24",
     "concurrently": "^9.2.1",
-    "convex": "^1.42.1",
     "eslint": "^9.39.2",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.26",

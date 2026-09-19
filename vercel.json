@@ -43,6 +43,14 @@
       "destination": "https://hydrogenchloride.vercel.app/api/assets"
     },
     {
+      "source": "/api/track",
+      "destination": "https://analytics.codersoft.xyz/track"
+    },
+    {
+      "source": "/api/stats",
+      "destination": "https://analytics.codersoft.xyz/stats"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
