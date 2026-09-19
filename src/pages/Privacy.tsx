@@ -54,15 +54,17 @@ const Privacy = () => {
                 <h2 className="text-2xl font-jetbrains-mono text-foreground">3. Cookies</h2>
                 <p>
                   Renderdragon uses cookies for essential site functionality and user experience (e.g., remembering light/dark mode).
-                  These cookies do not contain personal data and are never used for advertising or tracking you across other websites.
+                  We also set one first-party cookie that stores a random, anonymous visitor ID. It is used only to tell new visitors
+                  apart from returning ones in our own traffic statistics. It is not linked to your account, contains no personal data,
+                  and is never used for advertising or to track you across other websites.
                   You can disable cookies in your browser settings, but some features may not work correctly.
                 </p>
 
-                <h2 className="text-2xl font-jetbrains-mono text-foreground">4. Third-Party Services</h2>
+                <h2 className="text-2xl font-jetbrains-mono text-foreground">4. Analytics</h2>
                 <p>
-                  We may use privacy-respecting analytics tools (like Google Analytics or alternatives such as Plausible)
-                  to understand aggregate website traffic and usage. These services may receive basic non-identifiable information
-                  (like your IP address or browser type). No personally identifying data is shared with them.
+                  Website traffic statistics are collected by our own analytics service running on a self-hosted Cloudflare Worker.
+                  It records page paths, referrers, and the country a request came from, along with the anonymous visitor ID
+                  described above. We do not store your IP address, and no data is shared with third-party analytics providers.
                 </p>
 
                 <h2 className="text-2xl font-jetbrains-mono text-foreground">5. External Links</h2>

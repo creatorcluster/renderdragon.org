@@ -4,7 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
-import VercelAnalytics from "@/components/VercelAnalytics";
+import CloudflareAnalytics from "@/components/CloudflareAnalytics";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import { AuthProvider } from "@/providers/AuthProvider";
 import { useAuth } from "@/hooks/useAuth";
@@ -49,6 +49,7 @@ const PlayerRenderer = lazy(() => import("@/pages/PlayerRenderer"));
 const Renderbot = lazy(() => import("@/pages/Renderbot"));
 const Account = lazy(() => import("@/pages/Account"));
 const Admin = lazy(() => import("@/pages/Admin"));
+const Analytics = lazy(() => import("@/pages/Analytics"));
 const BlogEditor = lazy(() => import("@/components/admin/BlogEditor"));
 const ProfileEditor = lazy(() => import("@/components/profile/ProfileEditor"));
 
@@ -149,6 +150,7 @@ const App = () => {
                       </div>
                     } />
                     <Route path="/admin" element={<Admin />} />
+                    <Route path="/analytics" element={<Analytics />} />
                     <Route path="/admin/blogs/new" element={
                       <div className="min-h-screen pt-24 pb-16 px-4 container mx-auto">
                         <BlogEditor />
@@ -183,10 +185,10 @@ const App = () => {
                   </Routes>
                 </Suspense>
                 <GlobalComponents />
+                <CloudflareAnalytics />
               </BrowserRouter>
               <Toaster />
               <Sonner />
-              <VercelAnalytics />
               <SpeedInsights />
             </TooltipProvider>
           </HelmetProvider>
