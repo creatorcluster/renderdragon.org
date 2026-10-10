@@ -275,8 +275,8 @@ const YouTubeDownloader: React.FC = () => {
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto">
-            <h1 className="text-4xl md:text-5xl font-minecraftia mb-8 text-center">
-              <span className="text-cow-purple">Youtube</span> Tools
+            <h1 className="text-4xl md:text-5xl mb-8 text-center">
+              <span className="text-primary">Youtube</span> Tools
             </h1>
 
             <p className="text-center text-muted-foreground mb-8 max-w-xl mx-auto">
@@ -284,24 +284,24 @@ const YouTubeDownloader: React.FC = () => {
               you have permission to use.
             </p>
 
-            <Alert className="mb-8 pixel-corners">
+            <Alert className="mb-8 ">
               <IconInfoCircle className="h-4 w-4" />
-              <AlertTitle className="font-minecraftia">Important Notice</AlertTitle>
+              <AlertTitle className="">Important Notice</AlertTitle>
               <AlertDescription>
                 This tool is for educational purposes only. You are responsible for ensuring you have the right to download
                 and use any content.
               </AlertDescription>
             </Alert>
 
-            <div className="pixel-card mb-8">
+            <div className="rounded-xl border border-border bg-card p-4 mb-8">
               <div className="flex flex-col md:flex-row gap-4">
                 <Input
                   placeholder="Paste YouTube URL or ID here"
                   value={youtubeUrl}
                   onChange={handleUrlChange}
-                  className={`pixel-corners flex-grow ${urlError ? 'border-red-500' : ''}`}
+                  className={` flex-grow ${urlError ? 'border-red-500' : ''}`}
                 />
-                <Button onClick={handleFetchInfo} disabled={isLoadingInfo} className="pixel-btn-primary flex items-center">
+                <Button onClick={handleFetchInfo} disabled={isLoadingInfo} className="inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 flex items-center">
                   {isLoadingInfo ? (
                     <>
                       <IconRefresh className="h-4 w-4 mr-2 animate-spin" /> <span>Processing...</span>
@@ -323,13 +323,13 @@ const YouTubeDownloader: React.FC = () => {
             {isLoadingInfo && <VideoInfoSkeleton />}
 
             {video && !isLoadingInfo && (
-              <div className="pixel-card space-y-6">
+              <div className="rounded-xl border border-border bg-card p-4 space-y-6">
                 <div className="flex flex-col md:flex-row gap-6">
                   <div className="w-full md:w-2/5">
                     <img src={getBestThumbnailUrl(video.thumbnails)} alt={video.title} className="rounded-md w-full h-auto" />
                   </div>
                   <div className="w-full md:w-3/5">
-                    <h2 className="text-xl font-jetbrains-mono mb-2">{video.title}</h2>
+                    <h2 className="text-xl mb-2">{video.title}</h2>
                     <div className="flex flex-wrap gap-3 mb-4">
                       <div className="bg-accent text-accent-foreground px-2 py-1 rounded-md text-xs flex items-center">
                         <span className="mr-1">Duration:</span> {humanizeDuration(video.duration)}
@@ -352,7 +352,7 @@ const YouTubeDownloader: React.FC = () => {
                       )}
                     </div>
 
-                    <Button onClick={handleDownloadThumbnail} disabled={isDownloadingThumb} className="w-full pixel-btn-primary flex items-center justify-center">
+                    <Button onClick={handleDownloadThumbnail} disabled={isDownloadingThumb} className="w-full inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 flex items-center justify-center">
                       {isDownloadingThumb ? (
                         <>
                           <IconRefresh className="h-5 w-5 mr-2 animate-spin" /> <span>Downloading...</span>
@@ -367,7 +367,7 @@ const YouTubeDownloader: React.FC = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <h3 className="font-jetbrains-mono text-lg">Description</h3>
+                  <h3 className="text-lg">Description</h3>
                   <p className="text-sm text-muted-foreground whitespace-pre-line">
                     {(() => {
                       const desc = video.description || '';
@@ -378,7 +378,7 @@ const YouTubeDownloader: React.FC = () => {
                     })()}
                   </p>
                   {video.description && video.description.length > 0 && (
-                    <Button variant="secondary" className="pixel-corners" onClick={() => setShowFullDesc(v => !v)}>
+                    <Button variant="secondary" className="" onClick={() => setShowFullDesc(v => !v)}>
                       {showFullDesc ? 'Show less' : 'Show more'}
                     </Button>
                   )}
@@ -387,7 +387,7 @@ const YouTubeDownloader: React.FC = () => {
                 {/* Tags */}
                 {video.tags && video.tags.length > 0 && (
                   <div className="space-y-2">
-                    <h3 className="font-jetbrains-mono text-lg">Tags</h3>
+                    <h3 className="text-lg">Tags</h3>
                     <div className="flex flex-wrap gap-2">
                       {video.tags.slice(0, 20).map((t) => (
                         <span key={t} className="bg-accent text-accent-foreground px-2 py-1 rounded-md text-xs">{t}</span>
@@ -398,7 +398,7 @@ const YouTubeDownloader: React.FC = () => {
 
                 {/* Channel section */}
                 <div className="space-y-2">
-                  <h3 className="font-jetbrains-mono text-lg">Channel</h3>
+                  <h3 className="text-lg">Channel</h3>
                   <div className="flex items-start gap-3">
                     {video.channel?.thumbnails && (
                       <img

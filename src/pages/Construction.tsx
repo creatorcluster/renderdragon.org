@@ -293,8 +293,8 @@ const Community = () => {
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
-            <h1 className="text-4xl md:text-5xl font-jetbrains-mono mb-8 text-center">
-              <span className="text-cow-purple">Creator</span> Community
+            <h1 className="text-4xl md:text-5xl mb-8 text-center">
+              <span className="text-primary">Creator</span> Community
             </h1>
 
             <p className="text-center text-muted-foreground mb-12 max-w-xl mx-auto">
@@ -304,20 +304,20 @@ const Community = () => {
 
             <Tabs defaultValue="videos" className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-8">
-                <TabsTrigger value="videos" className="text-lg font-jetbrains-mono">YouTube Tutorials</TabsTrigger>
-                <TabsTrigger value="servers" className="text-lg font-jetbrains-mono">Discord Servers</TabsTrigger>
+                <TabsTrigger value="videos" className="text-lg ">YouTube Tutorials</TabsTrigger>
+                <TabsTrigger value="servers" className="text-lg ">Discord Servers</TabsTrigger>
               </TabsList>
 
               <TabsContent value="videos">
                 {isLoading ? (
                   <div className="space-y-8">
                     {[1, 2, 3].map(i => (
-                      <div key={i} className="pixel-corners border border-border rounded-md overflow-hidden">
+                      <div key={i} className=" border border-border rounded-md overflow-hidden">
                         <div className="bg-card p-4">
                           <Skeleton className="h-8 w-1/2 mb-2" />
                           <Skeleton className="h-4 w-3/4" />
                         </div>
-                        <div className="p-4 bg-background/80">
+                        <div className="p-4 bg-background">
                           <div className="flex overflow-x-auto pb-4 space-x-4 custom-scrollbar">
                             {[...Array(4)].map((_, j) => <VideoCardSkeleton key={j} />)}
                           </div>
@@ -332,12 +332,12 @@ const Community = () => {
                         key={category.id}
                         open={openCategories.includes(category.id)}
                         onOpenChange={() => toggleCategory(category.id)}
-                        className="border border-border rounded-md pixel-corners overflow-hidden"
+                        className="border border-border rounded-md  overflow-hidden"
                       >
                         <CollapsibleTrigger asChild>
-                          <div className="bg-card p-4 flex justify-between items-center cursor-pointer hover:bg-accent/50 transition-colors">
+                          <div className="bg-card p-4 flex justify-between items-center cursor-pointer hover:bg-accent transition-colors">
                             <div>
-                              <h2 className="text-2xl font-jetbrains-mono">{category.name}</h2>
+                              <h2 className="text-2xl ">{category.name}</h2>
                               <p className="text-muted-foreground text-sm mt-1">
                                 {category.description}
                               </p>
@@ -347,13 +347,13 @@ const Community = () => {
                           </div>
                         </CollapsibleTrigger>
                         <CollapsibleContent>
-                          <div className="p-4 bg-background/80">
+                          <div className="p-4 bg-background">
                             <div className="relative">
                               <div className="flex overflow-x-auto pb-4 space-x-4 custom-scrollbar">
                                 {category.videos.map(video => (
                                   <div
                                     key={video.id}
-                                    className="min-w-[300px] max-w-[300px] pixel-card cursor-pointer hover:border-primary transition-all group"
+                                    className="min-w-[300px] max-w-[300px] rounded-xl border border-border bg-card p-4 cursor-pointer hover:border-primary transition-all group"
                                     onClick={() => setSelectedVideo(video)}
                                   >
                                     <div className="relative rounded-md overflow-hidden mb-3">
@@ -407,7 +407,7 @@ const Community = () => {
                     {servers.map(server => (
                       <div
                         key={server.id}
-                        className="pixel-card overflow-hidden p-6 flex flex-col h-full"
+                        className="rounded-xl border border-border bg-card p-4 overflow-hidden p-6 flex flex-col h-full"
                       >
                         <div className="flex items-center gap-4 mb-4">
                           {server.image && (
@@ -422,7 +422,7 @@ const Community = () => {
                           )}
 
                           <div className="flex flex-col">
-                            <h3 className="text-xl font-jetbrains-mono">
+                            <h3 className="text-xl ">
                               {server.name}
                             </h3>
                             <div className="flex items-center gap-2 mt-1">
@@ -452,7 +452,7 @@ const Community = () => {
                         <div className="mt-4">
                           <Button
                             onClick={() => handleJoinServer(server)}
-                            className="w-full pixel-btn-primary flex items-center justify-center"
+                            className="w-full inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 flex items-center justify-center"
                           >
                             Join Server
                             <JoinServerIcon />
@@ -473,9 +473,9 @@ const Community = () => {
 
       {/* Video Dialog */}
       <Dialog open={!!selectedVideo} onOpenChange={(open) => !open && setSelectedVideo(null)}>
-        <DialogContent className="sm:max-w-4xl pixel-corners overflow-y-auto max-h-[90vh] custom-scrollbar">
+        <DialogContent className="sm:max-w-4xl  overflow-y-auto max-h-[90vh] custom-scrollbar">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-jetbrains-mono">{selectedVideo?.title}</DialogTitle>
+            <DialogTitle className="text-2xl ">{selectedVideo?.title}</DialogTitle>
             <DialogDescription className="flex items-center gap-2">
               <Badge variant="secondary">
                 {selectedVideo?.creator}
@@ -501,7 +501,7 @@ const Community = () => {
             </div>
 
             <Button
-              className="w-full pixel-btn-primary"
+              className="w-full inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
               onClick={() => window.open(selectedVideo?.url, '_blank', 'noopener,noreferrer')}
             >
               Watch on YouTube

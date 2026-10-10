@@ -38,10 +38,10 @@ const MusicLinkDialog = ({ resource, link, onClose }: MusicLinkDialogProps) => {
 
   return (
     <Dialog open={!!resource} onOpenChange={(open) => { if (!open) onClose(); }}>
-      <DialogContent className="pixel-corners border-2 border-cow-purple sm:max-w-xl">
+      <DialogContent className=" border border-border sm:max-w-xl">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 font-jetbrains-mono text-xl">
-            <IconLink className="h-5 w-5 text-cow-purple" /> Music link
+          <DialogTitle className="flex items-center gap-2 text-xl">
+            <IconLink className="h-5 w-5 text-primary" /> Music link
           </DialogTitle>
           <DialogDescription>
             Share this link with others or use RenderBot to check copyright.
@@ -53,7 +53,7 @@ const MusicLinkDialog = ({ resource, link, onClose }: MusicLinkDialogProps) => {
             <Input
               readOnly
               value={link}
-              className="pixel-corners font-mono text-xs"
+              className=" font-mono text-xs"
               onFocus={(event) => event.currentTarget.select()}
               aria-label="Generated music link"
             />
@@ -61,7 +61,7 @@ const MusicLinkDialog = ({ resource, link, onClose }: MusicLinkDialogProps) => {
               type="button"
               variant="outline"
               size="icon"
-              className="pixel-corners shrink-0"
+              className=" shrink-0"
               onClick={copyLink}
               aria-label="Copy music link"
             >
@@ -69,7 +69,7 @@ const MusicLinkDialog = ({ resource, link, onClose }: MusicLinkDialogProps) => {
             </Button>
           </div>
 
-          <Button type="button" className="pixel-btn-primary w-full" onClick={openLink}>
+          <Button type="button" className="w-full" onClick={openLink}>
             <IconExternalLink className="mr-2 h-4 w-4" /> Open link
           </Button>
         </div>

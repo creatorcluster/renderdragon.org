@@ -20,11 +20,13 @@ export default {
 		},
 		extend: {
 			fontFamily: {
+				sans: ['Geist Sans', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+				mono: ['Geist Mono', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+				heading: ['Montserrat', 'Geist Sans', 'ui-sans-serif', 'system-ui', 'sans-serif'],
 				geist: ['Geist Sans', 'sans-serif'],
 				'geist-mono': ['Geist Mono', 'monospace'],
 			minecraftia: ['Minecraftia', 'monospace'],
 			minecraft: ['Minecraft', 'sans-serif'],
-			'jetbrains-mono': ['JetBrains Mono', 'monospace'],
 			},
 			colors: {
 				border: 'hsl(var(--border))',
@@ -60,15 +62,6 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
-				cow: {
-					dark: '#1A1F2C',
-					darker: '#121620',
-					purple: '#9b87f5',
-					'purple-dark': '#7E69AB',
-					blue: '#1EAEDB',
-					'neon-pink': '#FF00FF',
-					'neon-blue': '#00FFFF'
-				},
 				chart: {
 					'1': 'hsl(var(--chart-1))',
 					'2': 'hsl(var(--chart-2))',
@@ -93,14 +86,6 @@ export default {
 				sm: 'calc(var(--radius) - 4px)'
 			},
 			keyframes: {
-				'border-pulse': {
-					from: {
-						boxshadow: '0 0 0px rgba(255, 215, 0, 0.3)'
-					},
-					to: {
-						boxshadow: '0 0 20px -1px rgba(255, 215, 0, 0.4)'
-					}
-				},
 				'accordion-down': {
 					from: {
 						height: '0'
@@ -152,22 +137,6 @@ export default {
 					'50%': {
 						transform: 'translateY(-10px)'
 					}
-				},
-				'glow': {
-					'0%, 100%': {
-						filter: 'drop-shadow(0 0 2px rgba(155, 135, 245, 0.6))'
-					},
-					'50%': {
-						filter: 'drop-shadow(0 0 8px rgba(155, 135, 245, 0.9))'
-					}
-				},
-				'pulse-neon': {
-					'0%, 100%': {
-						boxShadow: '0 0 5px rgba(155, 135, 245, 0.7), 0 0 10px rgba(155, 135, 245, 0.5), inset 0 0 5px rgba(155, 135, 245, 0.2)'
-					},
-					'50%': {
-						boxShadow: '0 0 10px rgba(155, 135, 245, 0.9), 0 0 20px rgba(155, 135, 245, 0.7), inset 0 0 10px rgba(155, 135, 245, 0.5)'
-					}
 				}
 			},
 			animation: {
@@ -177,9 +146,7 @@ export default {
 				'fade-out': 'fade-out 0.5s ease-out',
 				'slide-in-right': 'slide-in-right 0.3s ease-out',
 				'slide-out-right': 'slide-out-right 0.3s ease-out',
-				'float': 'float 3s ease-in-out infinite',
-				'glow': 'glow 2s ease-in-out infinite',
-				'pulse-neon': 'pulse-neon 2s infinite'
+				'float': 'float 3s ease-in-out infinite'
 			}
 		}
 	},

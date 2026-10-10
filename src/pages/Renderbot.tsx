@@ -23,13 +23,13 @@ const Renderbot = () => (
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <div className="bg-card pixel-corners border-2 border-cow-purple/50 p-8 text-center">
-            <div className="inline-flex items-center gap-2 rounded-md border border-cow-purple/40 bg-cow-purple/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-cow-purple mb-5">
+          <div className="bg-card  border-2 border-primary/50 p-8 text-center">
+            <div className="inline-flex items-center gap-2 rounded-md border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-primary mb-5">
               <IconBrandDiscord className="h-4 w-4" />
               Official RenderDragon Discord
             </div>
-            <h2 className="text-2xl md:text-3xl font-minecraftia mb-4">
-              Renderbot lives in our <span className="text-cow-purple">Discord</span>
+            <h2 className="text-2xl md:text-3xl mb-4">
+              Renderbot lives in our <span className="text-primary">Discord</span>
             </h2>
             <p className="text-muted-foreground mb-7">
               You have to join the official RenderDragon Discord server to use Renderbot.
@@ -40,7 +40,7 @@ const Renderbot = () => (
               href={DISCORD_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="pixel-btn-primary inline-flex items-center space-x-2"
+              className="inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 inline-flex items-center space-x-2"
             >
               <span>join the discord</span>
               <img className="w-4 h-4" src="/assets/discord_icon.png" alt="" aria-hidden="true" />

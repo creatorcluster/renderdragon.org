@@ -40,8 +40,12 @@ const DonateButton = () => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       initial={false}
-      animate={{ opacity: isNearBottom ? 0 : 1 }}
-      transition={{ duration: 0.3, ease: "easeOut" }}
+      animate={
+        isNearBottom
+          ? { opacity: 0, scale: 0.5, y: 16 }
+          : { opacity: 1, scale: 1, y: 0 }
+      }
+      transition={{ type: "spring", stiffness: 420, damping: 28 }}
       style={{ pointerEvents: isNearBottom ? "none" : "auto" }}
       aria-hidden={isNearBottom}
     >
@@ -49,7 +53,7 @@ const DonateButton = () => {
         href="https://www.buymeacoffee.com/renderdragon"
         target="_blank"
         rel="noopener noreferrer"
-        className="flex items-center bg-cow-purple rounded-full h-12 shadow-lg border-2 border-black/20 overflow-hidden cursor-pointer"
+        className="flex items-center bg-primary rounded-full h-12 shadow-lg border-2 border-black/20 overflow-hidden cursor-pointer"
         initial={false}
         animate={{
           width: isHovered ? "200px" : "64px",
@@ -79,7 +83,7 @@ const DonateButton = () => {
               className="flex items-center pr-6 whitespace-nowrap"
             >
               <div className="h-5 w-[1px] bg-white/20 mr-4" />
-              <span className="text-white text-sm font-bold uppercase tracking-[0.2em] font-jetbrains-mono">
+              <span className="text-white text-sm font-bold uppercase tracking-[0.2em] ">
                 Donate 🍕
               </span>
             </motion.div>

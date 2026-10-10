@@ -68,7 +68,7 @@ const FolderDialog = ({ isOpen, onClose, onSave, initialData, mode }: FolderDial
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                    <DialogTitle className="font-minecraftia text-2xl">{mode === 'create' ? 'Create New Folder' : 'Edit Folder'}</DialogTitle>
+                    <DialogTitle className="text-2xl">{mode === 'create' ? 'Create New Folder' : 'Edit Folder'}</DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-6 pt-4">
                     <div className="space-y-2">
@@ -78,7 +78,7 @@ const FolderDialog = ({ isOpen, onClose, onSave, initialData, mode }: FolderDial
                             placeholder="e.g. My Awesome Assets"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
-                            className="pixel-corners"
+                            className=""
                             autoFocus
                         />
                     </div>
@@ -91,7 +91,7 @@ const FolderDialog = ({ isOpen, onClose, onSave, initialData, mode }: FolderDial
                                 onClick={() => setColor(null)}
                                 className={cn(
                                     "w-6 h-6 rounded-full flex items-center justify-center border-2",
-                                    color === null ? "border-primary" : "border-transparent bg-muted/20"
+                                    color === null ? "border-primary" : "border-transparent bg-muted"
                                 )}
                                 title="Default"
                             >
@@ -114,10 +114,10 @@ const FolderDialog = ({ isOpen, onClose, onSave, initialData, mode }: FolderDial
                     </div>
 
                     <DialogFooter>
-                        <Button type="button" variant="outline" onClick={onClose} className="pixel-corners">
+                        <Button type="button" variant="outline" onClick={onClose} className="">
                             Cancel
                         </Button>
-                        <Button type="submit" disabled={!name.trim() || isSaving} className="pixel-corners">
+                        <Button type="submit" disabled={!name.trim() || isSaving} className="">
                             {isSaving ? 'Saving...' : mode === 'create' ? 'Create' : 'Save Changes'}
                         </Button>
                     </DialogFooter>

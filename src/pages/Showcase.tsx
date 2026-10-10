@@ -66,7 +66,7 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
     }
     if (isAudio) {
       return (
-        <div className="w-full p-4 bg-muted/10">
+        <div className="w-full p-4 bg-muted">
           <AudioPlayer src={url} className="w-full shadow-none border-none bg-transparent" />
         </div>
       );
@@ -74,7 +74,7 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
     if (isFont) {
       const fontName = `font-${a.id}`;
       return (
-        <div className="w-full h-full flex flex-col items-center justify-center bg-muted/20 p-6 aspect-video relative overflow-hidden group/font">
+        <div className="w-full h-full flex flex-col items-center justify-center bg-muted p-6 aspect-video relative overflow-hidden group/font">
           <style>{`
             @font-face {
               font-family: '${fontName}';
@@ -97,9 +97,9 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
       return (
         <div className="w-full h-full flex flex-col items-center justify-center bg-[#1e1e1e] p-6 aspect-video relative group/json">
           <div className="absolute top-3 right-3 opacity-20 group-hover/json:opacity-40 transition-opacity">
-            <IconCode size={40} className="text-cow-purple" />
+            <IconCode size={40} className="text-primary" />
           </div>
-          <div className="font-mono text-xs text-cow-purple/80 w-full overflow-hidden opacity-60 group-hover:opacity-100 transition-opacity">
+          <div className="font-mono text-xs text-primary/80 w-full overflow-hidden opacity-60 group-hover:opacity-100 transition-opacity">
             <div className="mb-1">{"{"}</div>
             <div className="pl-4">"type": "asset",</div>
             <div className="pl-4">"format": "json",</div>
@@ -114,7 +114,7 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
     }
 
     return (
-      <div className="w-full h-full flex flex-col items-center justify-center bg-muted/20 p-6 aspect-video">
+      <div className="w-full h-full flex flex-col items-center justify-center bg-muted p-6 aspect-video">
         <IconFileText className="h-12 w-12 text-white/20 mb-4" />
         <div className="text-[10px] text-white/40 uppercase tracking-widest font-mono">
           Document File
@@ -124,7 +124,7 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
   };
 
   return (
-    <Card className="pixel-card bg-card/40 backdrop-blur-sm border-white/10 w-full flex flex-col h-full overflow-hidden hover:border-cow-purple/50 transition-all duration-300 group hover:shadow-2xl hover:shadow-cow-purple/10">
+    <Card className="rounded-xl border border-border bg-card p-4 bg-card backdrop-blur-sm border-white/10 w-full flex flex-col h-full overflow-hidden hover:border-primary/50 transition-all duration-300 group hover:shadow-2xl hover:shadow-primary/10">
       <div className="flex-grow flex flex-col">
         {/* Asset Preview at top */}
         <div className="w-full">
@@ -148,7 +148,7 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
                 }}
                 className={cn(
                   "overflow-hidden transition-all duration-200 w-full",
-                  isAudio ? "h-auto" : "aspect-video cursor-zoom-in group-hover:bg-background/40"
+                  isAudio ? "h-auto" : "aspect-video cursor-zoom-in group-hover:bg-background"
                 )}
               >
                 {renderAssetPreview(a)}
@@ -164,10 +164,10 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
                 <Link to={profileUrl} className="flex items-center gap-2 hover:opacity-90 transition-opacity min-w-0">
                   <Avatar className="h-7 w-7 ring-1 ring-white/10">
                     {avatar ? <AvatarImage src={avatar} alt={name} /> : null}
-                    <AvatarFallback className="bg-cow-purple/20 text-cow-purple text-[10px]">{name?.slice(0, 2)?.toUpperCase()}</AvatarFallback>
+                    <AvatarFallback className="bg-primary/20 text-primary text-[10px]">{name?.slice(0, 2)?.toUpperCase()}</AvatarFallback>
                   </Avatar>
                   <div className="min-w-0">
-                    <div className="text-sm font-jetbrains-mono truncate text-white/90 leading-none mb-1">{name}</div>
+                    <div className="text-sm truncate text-white/90 leading-none mb-1">{name}</div>
                     <div className="text-[9px] text-white/40 uppercase tracking-tighter">{formatDistanceToNow(new Date(item.created_at))} ago</div>
                   </div>
                 </Link>
@@ -175,10 +175,10 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
                 <>
                   <Avatar className="h-7 w-7 ring-1 ring-white/10">
                     {avatar ? <AvatarImage src={avatar} alt={name} /> : null}
-                    <AvatarFallback className="bg-cow-purple/20 text-cow-purple text-[10px]">{name?.slice(0, 2)?.toUpperCase()}</AvatarFallback>
+                    <AvatarFallback className="bg-primary/20 text-primary text-[10px]">{name?.slice(0, 2)?.toUpperCase()}</AvatarFallback>
                   </Avatar>
                   <div className="min-w-0">
-                    <div className="text-sm font-jetbrains-mono truncate text-white/90 leading-none mb-1">{name}</div>
+                    <div className="text-sm truncate text-white/90 leading-none mb-1">{name}</div>
                     <div className="text-[9px] text-white/40 uppercase tracking-tighter">{formatDistanceToNow(new Date(item.created_at))} ago</div>
                   </div>
                 </>
@@ -195,7 +195,7 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
       <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
         <DialogContent className="max-w-5xl bg-popover/95 border-white/10">
           <DialogHeader>
-            <DialogTitle className="font-minecraftia">Preview</DialogTitle>
+            <DialogTitle className="">Preview</DialogTitle>
           </DialogHeader>
           <div className="w-full max-h-[80vh] flex items-center justify-center">
             {(() => {
@@ -211,7 +211,7 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
               if (kind === "video") return <video src={url} controls autoPlay className="max-h-[80vh] w-auto h-auto object-contain" />;
               if (kind === "audio") return <audio src={url} controls className="w-full" />;
               return (
-                <a href={url} target="_blank" rel="noreferrer" className="underline text-cow-purple">Open file</a>
+                <a href={url} target="_blank" rel="noreferrer" className="underline text-primary">Open file</a>
               );
             })()}
           </div>
@@ -235,7 +235,7 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  className="pixel-corners border border-white/10 bg-background/40 hover:bg-background/60 text-white text-sm px-3 py-1"
+                  className=" border border-white/10 bg-background hover:bg-background text-white text-sm px-3 py-1"
                   onClick={() => window.open(previewAsset.url, '_blank', 'noopener,noreferrer')}
                 >
                   Open
@@ -245,7 +245,7 @@ const ShowcaseCard: React.FC<{ item: ShowcaseWithAssets }> = ({ item }) => {
                   download
                   target="_blank"
                   rel="noreferrer"
-                  className="pixel-btn-primary text-sm px-3 py-1"
+                  className="inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 text-sm px-3 py-1"
                 >
                   Download
                 </a>
@@ -381,7 +381,7 @@ const ShowcasePage: React.FC = () => {
           <meta name="description" content="Share your art with images and videos." />
         </Helmet>
         <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3 mb-6">
-          <h1 className="text-3xl md:text-4xl font-minecraftia">Community <span className="text-cow-purple">Assets</span></h1>
+          <h1 className="text-3xl md:text-4xl ">Community <span className="text-primary">Assets</span></h1>
           <div className="flex-1" />
           <div className="flex items-center gap-2 w-full md:w-auto">
             <div className="relative w-full md:w-80">
@@ -390,13 +390,13 @@ const ShowcasePage: React.FC = () => {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search messages..."
-                className="pl-9 bg-background/60"
+                className="pl-9 bg-background"
               />
             </div>
-            <Button variant="secondary" onClick={() => { }} className="pixel-btn-secondary">Search</Button>
+            <Button variant="secondary" onClick={() => { }} className="inline-flex items-center justify-center rounded-full border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent">Search</Button>
             <Dialog open={open} onOpenChange={setOpen}>
               <Button
-                className="pixel-btn-primary"
+                className="inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
                 onClick={() => {
                   if (!user) {
                     setAuthOpen(true);
@@ -409,7 +409,7 @@ const ShowcasePage: React.FC = () => {
               </Button>
               <DialogContent className="bg-popover/90 border-white/10">
                 <DialogHeader>
-                  <DialogTitle className="font-minecraftia">Create Showcase</DialogTitle>
+                  <DialogTitle className="">Create Showcase</DialogTitle>
                 </DialogHeader>
                 <div className="space-y-4">
                   <div className="space-y-2">
@@ -428,7 +428,7 @@ const ShowcasePage: React.FC = () => {
                     />
                     <Button
                       variant="outline"
-                      className="w-full pixel-corners border-dashed border-2 h-20 hover:bg-cow-purple/10 hover:border-cow-purple/50 transition-colors"
+                      className="w-full  border-dashed border-2 h-20 hover:bg-primary/10 hover:border-primary/50 transition-colors"
                       onClick={() => fileInputRef.current?.click()}
                     >
                       <div className="flex flex-col items-center gap-1">
@@ -439,7 +439,7 @@ const ShowcasePage: React.FC = () => {
 
                     {filePreview && (
                       <div className="mt-4">
-                        <div className="relative w-full aspect-video bg-background/40 pixel-corners border border-white/10 flex items-center justify-center overflow-hidden">
+                        <div className="relative w-full aspect-video bg-background  border border-white/10 flex items-center justify-center overflow-hidden">
                           {selectedFile?.type.startsWith('image/') ? (
                             <img src={filePreview} alt="preview" className="w-full h-full object-contain" />
                           ) : selectedFile?.type.startsWith('video/') ? (
@@ -459,7 +459,7 @@ const ShowcasePage: React.FC = () => {
                     <Button
                       onClick={onCreate}
                       disabled={submitting || !selectedFile}
-                      className="pixel-btn-primary"
+                      className="inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
                     >
                       {submitting ? (
                         <>
@@ -479,11 +479,11 @@ const ShowcasePage: React.FC = () => {
 
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <IconLoader2 className="h-6 w-6 animate-spin text-cow-purple" />
+            <IconLoader2 className="h-6 w-6 animate-spin text-primary" />
           </div>
         ) : items.length === 0 ? (
           <div className="flex flex-col items-center justify-center text-center text-white/70 min-h-[40vh] py-16">
-            <div className="text-2xl font-minecraftia mb-2">No showcases yet</div>
+            <div className="text-2xl mb-2">No showcases yet</div>
             <p className="max-w-md">Be the first to share your art! Click "Create Showcase" to upload an image, video, or audio file.</p>
           </div>
         ) : (

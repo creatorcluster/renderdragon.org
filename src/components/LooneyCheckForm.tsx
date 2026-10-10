@@ -206,11 +206,11 @@ const LooneyCheckForm = ({ initialResource, autoStart = false, onJobChange, onRe
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       {!autoStart && (
-         <div className="pixel-corners grid grid-cols-2 gap-2 border border-border bg-muted/30 p-1">
-            <button type="button" onClick={() => setSourceTab('file')} className={cn('pixel-corners flex items-center justify-center gap-1 whitespace-nowrap px-2 py-2 text-xs transition-colors sm:gap-2 sm:px-3 sm:text-sm', sourceTab === 'file' ? 'bg-cow-purple text-white' : 'text-muted-foreground hover:text-foreground')}>
+         <div className=" grid grid-cols-2 gap-2 border border-border bg-muted p-1">
+            <button type="button" onClick={() => setSourceTab('file')} className={cn(' flex items-center justify-center gap-1 whitespace-nowrap px-2 py-2 text-xs transition-colors sm:gap-2 sm:px-3 sm:text-sm', sourceTab === 'file' ? 'bg-primary text-white' : 'text-muted-foreground hover:text-foreground')}>
              <IconFileMusic className="h-4 w-4 shrink-0" /> Audio file
            </button>
-            <button type="button" onClick={() => setSourceTab('spotify')} className={cn('pixel-corners flex items-center justify-center gap-1 whitespace-nowrap px-2 py-2 text-xs transition-colors sm:gap-2 sm:px-3 sm:text-sm', sourceTab === 'spotify' ? 'bg-cow-purple text-white' : 'text-muted-foreground hover:text-foreground')}>
+            <button type="button" onClick={() => setSourceTab('spotify')} className={cn(' flex items-center justify-center gap-1 whitespace-nowrap px-2 py-2 text-xs transition-colors sm:gap-2 sm:px-3 sm:text-sm', sourceTab === 'spotify' ? 'bg-primary text-white' : 'text-muted-foreground hover:text-foreground')}>
              <IconLink className="h-4 w-4 shrink-0" /> Spotify URL
            </button>
         </div>
@@ -231,39 +231,39 @@ const LooneyCheckForm = ({ initialResource, autoStart = false, onJobChange, onRe
             aria-label="Choose an audio file to check"
             onDragOver={(event) => event.preventDefault()}
             onDrop={handleDrop}
-            className="pixel-corners cursor-pointer border-2 border-dashed border-cow-purple/50 bg-cow-purple/5 p-8 text-center transition-colors hover:border-cow-purple hover:bg-cow-purple/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cow-purple"
+            className=" cursor-pointer border-2 border-dashed border-primary/50 bg-primary/5 p-8 text-center transition-colors hover:border-primary hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
-            <IconUpload className="mx-auto h-8 w-8 text-cow-purple" />
-            <p className="mt-3 font-jetbrains-mono text-sm font-semibold">{file ? file.name : 'Drop an audio file here or browse'}</p>
+            <IconUpload className="mx-auto h-8 w-8 text-primary" />
+            <p className="mt-3 text-sm font-semibold">{file ? file.name : 'Drop an audio file here or browse'}</p>
             <p className="mt-1 text-xs text-muted-foreground">MP3, WAV, M4A, FLAC, OGG, AAC, or OPUS up to 50 MB</p>
           </div>
         </>
       ) : !autoStart ? (
         <div className="space-y-2">
           <label htmlFor="looney-spotify-url" className="text-sm font-medium">Spotify track URL</label>
-          <Input id="looney-spotify-url" value={spotifyUrl} onChange={(event) => setSpotifyUrl(event.target.value)} placeholder="https://open.spotify.com/track/..." className="pixel-corners" />
+          <Input id="looney-spotify-url" value={spotifyUrl} onChange={(event) => setSpotifyUrl(event.target.value)} placeholder="https://open.spotify.com/track/..." className="" />
           <p className="text-xs text-muted-foreground">Use a public Spotify track link. The audio is processed by the Looney API.</p>
         </div>
       ) : null}
 
       {error && (
-        <Alert variant="destructive" className="pixel-corners">
+        <Alert variant="destructive" className="">
           <IconAlertCircle className="h-4 w-4" />
-          <AlertTitle className="font-minecraftia">Check could not start</AlertTitle>
+          <AlertTitle className="">Check could not start</AlertTitle>
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
 
       {!autoStart && (
-        <Button type="submit" disabled={isLoading} className="pixel-btn-primary w-full">
+        <Button type="submit" disabled={isLoading} className="inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 w-full">
           {isLoading ? <><IconLoader2 className="mr-2 h-4 w-4 animate-spin" /> {progressMessage || 'Researching track...'}</> : <><IconFileMusic className="mr-2 h-4 w-4" /> Check for copyright</>}
         </Button>
       )}
 
       {autoStart && isLoading && (
-         <div className="pixel-corners border border-cow-purple/40 bg-cow-purple/5 p-8 text-center">
-          <IconLoader2 className="mx-auto h-10 w-10 animate-spin text-cow-purple" />
-          <p className="mt-4 font-minecraftia text-sm font-semibold">{progressMessage || 'Looney is researching this track...'}</p>
+         <div className=" border border-primary/40 bg-primary/5 p-8 text-center">
+          <IconLoader2 className="mx-auto h-10 w-10 animate-spin text-primary" />
+          <p className="mt-4 text-sm font-semibold">{progressMessage || 'Looney is researching this track...'}</p>
           {initialResource && <p className="mt-2 truncate text-xs text-muted-foreground">{initialResource.title}</p>}
           <p className="mt-2 text-xs text-muted-foreground">This can take a few minutes while sources are checked.</p>
         </div>

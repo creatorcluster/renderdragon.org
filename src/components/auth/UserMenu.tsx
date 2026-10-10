@@ -76,14 +76,14 @@ const UserMenu = ({ onShowFavorites }: UserMenuProps) => {
           >
             <Avatar className="h-8 w-8">
               {safeAvatarUrl && <AvatarImage src={safeAvatarUrl} alt="User avatar" referrerPolicy="no-referrer" />}
-              <AvatarFallback className="bg-cow-purple text-white text-xs">
+              <AvatarFallback className="bg-primary text-white text-xs">
                 {getInitials(displayName)}
               </AvatarFallback>
             </Avatar>
           </motion.div>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56 pixel-corners" align="end" forceMount>
+      <DropdownMenuContent className="w-56 " align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">Account</p>

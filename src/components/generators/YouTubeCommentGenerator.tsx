@@ -52,7 +52,7 @@ const YouTubeCommentGenerator = () => {
               value={avatarUrl}
               onChange={(e) => setAvatarUrl(e.target.value)}
               placeholder="Enter avatar URL"
-              className="pixel-corners"
+              className=""
             />
           </div>
 
@@ -63,7 +63,7 @@ const YouTubeCommentGenerator = () => {
               value={userName}
               onChange={(e) => setUserName(e.target.value)}
               placeholder="Enter user name"
-              className="pixel-corners"
+              className=""
             />
           </div>
 
@@ -74,7 +74,7 @@ const YouTubeCommentGenerator = () => {
               value={commentText}
               onChange={(e) => setCommentText(e.target.value)}
               placeholder="Enter comment"
-              className="pixel-corners"
+              className=""
             />
           </div>
 
@@ -85,7 +85,7 @@ const YouTubeCommentGenerator = () => {
               value={timeStamp}
               onChange={(e) => setTimeStamp(e.target.value)}
               placeholder="e.g., 2 hours ago"
-              className="pixel-corners"
+              className=""
             />
           </div>
 
@@ -99,10 +99,10 @@ const YouTubeCommentGenerator = () => {
           </div>
 
           <div className="flex gap-4">
-            <Button onClick={() => setIsDarkMode(!isDarkMode)} className="flex-1 pixel-btn-primary">
+            <Button onClick={() => setIsDarkMode(!isDarkMode)} className="flex-1 inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
               Toggle Theme
             </Button>
-            <Button onClick={exportAsPNG} className="flex-1 pixel-btn-primary">
+            <Button onClick={exportAsPNG} className="flex-1 inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
               Export as PNG
             </Button>
           </div>
@@ -110,7 +110,7 @@ const YouTubeCommentGenerator = () => {
       </div>
 
       <div className="space-y-4">
-        <h2 className="text-xl font-jetbrains-mono">YouTube Comment Preview</h2>
+        <h2 className="text-xl ">YouTube Comment Preview</h2>
         <div
           ref={commentCardRef}
           className="w-full max-w-xl"
@@ -165,10 +165,10 @@ const YouTubeCommentGenerator = () => {
           </div>
         </div>
         <div className="flex gap-4 mt-4">
-          <Button onClick={() => setIsDarkMode(!isDarkMode)} className="flex-1 pixel-btn-primary">
+          <Button onClick={() => setIsDarkMode(!isDarkMode)} className="flex-1 inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
             Toggle Theme
           </Button>
-          <Button onClick={exportAsPNG} className="flex-1 pixel-btn-primary">
+          <Button onClick={exportAsPNG} className="flex-1 inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
             Export as PNG
           </Button>
         </div>

@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { IconCopy, IconMail, IconCheck, IconBrandGithub, IconGlobe, IconExternalLink } from '@tabler/icons-react';
+import { useState } from "react";
+import { IconCopy, IconMail, IconCheck } from '@tabler/icons-react';
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -97,9 +97,20 @@ const teamMembers: TeamMember[] = [
   },
 ];
 
+const socialLink = (href: string, label: string, iconSrc: string) => (
+  <a
+    href={href}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="rounded-lg border border-border bg-accent p-2 transition-colors hover:border-primary/60"
+    aria-label={label}
+  >
+    <img className="h-4 w-4" src={iconSrc} alt="" loading="lazy" />
+  </a>
+);
+
 const Contact = () => {
   const [copied, setCopied] = useState(false);
-  const [activeCard, setActiveCard] = useState<number | null>(null);
   const email = "contact@renderdragon.org";
 
   const copyToClipboard = () => {
@@ -140,27 +151,32 @@ const Contact = () => {
 
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto">
-<h1 className="text-4xl md:text-5xl font-minecraftia mb-8 text-center">
-               <span className="text-cow-purple">Contact</span> Us
-            </h1>
+          <div className="max-w-5xl mx-auto">
+            <header className="text-center mb-12">
+              <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-3">
+                Contact us
+              </h1>
+              <p className="text-lg text-muted-foreground max-w-xl mx-auto">
+                Questions, feedback, or just want to say hello? We'd love to hear from you.
+              </p>
+            </header>
 
-            <div className="bg-card pixel-corners border-2 border-primary/50 p-8 mb-12">
-              <div className="mb-8">
-                 <h2 className="text-2xl font-geist mb-4">Get In Touch</h2>
-                <p className="text-muted-foreground mb-6">
-                  Have questions, feedback, or just want to say hello? We'd love
-                  to hear from you!
+            <div className="grid gap-6 md:grid-cols-3 mb-16">
+              <div className="md:col-span-2 rounded-xl border border-border bg-card p-6">
+                <h2 className="text-lg font-semibold mb-1">Email us</h2>
+                <p className="text-sm text-muted-foreground mb-4">
+                  We're all volunteers, but we usually reply within 48 hours.
                 </p>
-
-                <div className="flex items-center space-x-4">
-                  <IconMail className="h-5 w-5 text-primary" />
-                  <span className="font-medium">{email}</span>
+                <div className="flex flex-wrap items-center gap-3">
+                  <span className="inline-flex items-center gap-2 text-sm">
+                    <IconMail className="h-4 w-4 text-primary" />
+                    {email}
+                  </span>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={copyToClipboard}
-                    className="flex items-center space-x-1 h-8 text-xs pixel-corners"
+                    className="gap-1.5"
                   >
                     {copied ? (
                       <>
@@ -177,52 +193,32 @@ const Contact = () => {
                 </div>
               </div>
 
-              <div className="mb-8">
-                <h2 className="text-2xl font-jetbrains-mono mb-4">Join Our Community</h2>
-                <p className="text-muted-foreground mb-4">
-                  Connect with other creators and our team on Discord.
+              <div className="rounded-xl border border-border bg-card p-6 flex flex-col">
+                <h2 className="text-lg font-semibold mb-1">Join the community</h2>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Connect with creators and the team on Discord.
                 </p>
-
                 <a
                   href="https://discord.renderdragon.org"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="pixel-btn-primary inline-flex items-center space-x-2"
+                  className="mt-auto inline-flex items-center justify-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
                 >
-                  <span>join discord</span>
-                  <img
-                    className="w-4 h-4"
-                    src="/assets/discord_icon.png"
-                    alt="Discord"
-                  />
+                  <span>Join Discord</span>
+                  <img className="h-4 w-4" src="/assets/discord_icon.png" alt="" loading="lazy" />
                 </a>
-              </div>
-
-              <div>
-                 <h2 className="text-2xl font-geist mb-4">Support Hours</h2>
-                <p className="text-muted-foreground">
-                  Well, we do what we can! We're all volunteers, not benefiting
-                  from the project, but if you join our Discord, we'll really
-                  try to get you an answer within 48 hours.
-                </p>
               </div>
             </div>
 
-            <div>
-<h2 className="text-2xl font-minecraftia mb-6 text-center">
-                 Meet The Team
-              </h2>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {teamMembers.map((member, index) => (
+            <section>
+              <h2 className="text-2xl font-semibold tracking-tight mb-6">Meet the team</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                {teamMembers.map((member) => (
                   <div
-                    key={index}
-                    className={`bg-card border border-border hover:border-cow-purple transition-all duration-300 pixel-corners p-4 flex flex-col items-center text-center
-                      ${activeCard === index ? "scale-105 shadow-lg shadow-cow-purple/20" : ""}`}
-                    onMouseEnter={() => setActiveCard(index)}
-                    onMouseLeave={() => setActiveCard(null)}
+                    key={member.name}
+                    className="flex flex-col items-center rounded-xl border border-border bg-card p-5 text-center transition-all duration-300 hover:-translate-y-1 hover:border-primary/60"
                   >
-                    <div className="w-24 h-24 rounded-full overflow-hidden mb-4 pixel-corners border-2 border-cow-purple">
+                    <div className="w-20 h-20 rounded-full overflow-hidden border border-border mb-4">
                       <img
                         src={member.avatar}
                         alt={member.name}
@@ -233,68 +229,20 @@ const Contact = () => {
                         decoding="async"
                       />
                     </div>
-                     <h3 className="text-lg font-geist font-medium">{member.name}</h3>
-                    <p className="text-sm text-cow-purple font-semibold mb-2">
-                      {member.role}
-                    </p>
+                    <h3 className="font-medium">{member.name}</h3>
+                    <p className="text-xs text-muted-foreground mb-4">{member.role}</p>
 
-                    {/* socials */}
                     {member.socials && (
-                      <div className="flex space-x-3 mt-auto">
-                        {member.socials.github && (
-                          <a
-                            href={member.socials.github}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="bg-secondary hover:bg-primary hover:text-primary-foreground p-2 rounded-md transition-colors"
-                            aria-label={`${member.name}'s GitHub`}
-                          >
-                            <img
-                              className="w-4 h-4"
-                              src="/assets/github_icon.png"
-                              alt="GitHub"
-                              loading="lazy"
-                            />
-                          </a>
-                        )}
-                        {member.socials.website && (
-                          <a
-                            href={member.socials.website}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="bg-secondary hover:bg-primary hover:text-primary-foreground p-2 rounded-md transition-colors"
-                            aria-label={`${member.name}'s Website`}
-                          >
-                            <img
-                              className="w-4 h-4"
-                              src="/assets/domain_icon.png"
-                              alt="Website"
-                              loading="lazy"
-                            />
-                          </a>
-                        )}
-                        {member.socials.discord && (
-                          <a
-                            href={member.socials.discord}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="bg-secondary hover:bg-primary hover:text-primary-foreground p-2 rounded-md transition-colors"
-                            aria-label={`${member.name}'s Discord`}
-                          >
-                            <img
-                              className="w-4 h-4"
-                              src="/assets/discord_icon.png"
-                              alt="Discord"
-                              loading="lazy"
-                            />
-                          </a>
-                        )}
+                      <div className="mt-auto flex gap-2">
+                        {member.socials.github && socialLink(member.socials.github, `${member.name}'s GitHub`, "/assets/github_icon.png")}
+                        {member.socials.website && socialLink(member.socials.website, `${member.name}'s Website`, "/assets/domain_icon.png")}
+                        {member.socials.discord && socialLink(member.socials.discord, `${member.name}'s Discord`, "/assets/discord_icon.png")}
                       </div>
                     )}
                   </div>
                 ))}
               </div>
-            </div>
+            </section>
           </div>
         </div>
       </main>

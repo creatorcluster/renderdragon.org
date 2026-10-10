@@ -96,6 +96,12 @@ l195 0 0 203 c0 145 3 206 12 215 18 18 1251 17 1267 -1z m-3801 -2730 l2
       <path d="M4 4h16v2H4V4zm0 2h2v10H4V6zm14 0h2v10h-2V6zM8 8h2v2H8V8zm6 0h2v2h-2V8zM6 18h12v2H6v-2zm8-6h2v2h-2v-2zm-6 0h2v2H8v-2z"/>
     </svg>
   ),
+  sound: (
+    <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 2H3v20h18V2H4zm15 2v16H5V4h14zm-6 2h-2v2h2V6zm-5 4h8v6h-2v-4h-4v4H8v-6zm8 6H8v2h8v-2z" fill="currentColor"/></svg>
+  ),
+  icons: (
+    <svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 3H2v18h20V3H4zm16 2v14H4V5h16zm-6 4h-2v2h-2v2H8v2H6v2h2v-2h2v-2h2v-2h2v2h2v2h2v-2h-2v-2h-2V9zM8 7H6v2h2V7z" fill="currentColor"/></svg>
+  ),
 };
 
 const PixelSvgIcon: React.FC<PixelSvgIconProps> = ({ name, className }) => {

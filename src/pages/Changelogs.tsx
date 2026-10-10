@@ -49,8 +49,8 @@ export default function Changelogs() {
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
-            <h1 className="text-4xl md:text-5xl font-minecraftia mb-6 text-center">
-              <span className="text-cow-purple">Project</span> Changelogs
+            <h1 className="text-4xl md:text-5xl mb-6 text-center">
+              <span className="text-primary">Project</span> Changelogs
             </h1>
             <p className="text-center text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed" style={{ wordSpacing: '0.05em' }}>
               Keep up with new features, improvements, and fixes as we ship them.
@@ -58,7 +58,7 @@ export default function Changelogs() {
 
             {loading ? (
               <div className="flex items-center gap-3 text-muted-foreground">
-                <span className="inline-block w-5 h-5 rounded-full border-2 border-cow-purple border-t-transparent animate-spin" />
+                <span className="inline-block w-5 h-5 rounded-full border-2 border-primary border-t-transparent animate-spin" />
                 <span>Loading changelog...</span>
               </div>
             ) : error ? (

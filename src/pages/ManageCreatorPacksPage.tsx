@@ -67,7 +67,7 @@ const ManageCreatorPacksPage = () => {
                             <p className="text-muted-foreground mt-1">View, edit, or delete creator packs you have published.</p>
                         </div>
                         <Link to="/creator-packs/new">
-                            <Button className="pixel-corners bg-cow-purple hover:bg-cow-purple/90 font-geist">
+                            <Button className=" bg-primary hover:bg-primary/90 font-geist">
                                 Upload New Pack
                             </Button>
                         </Link>
@@ -75,7 +75,7 @@ const ManageCreatorPacksPage = () => {
 
                     {isLoading ? (
                         <div className="flex justify-center p-12">
-                            <IconLoader2 className="w-8 h-8 animate-spin text-cow-purple" />
+                            <IconLoader2 className="w-8 h-8 animate-spin text-primary" />
                         </div>
                     ) : userPacks.length === 0 ? (
                         <div className="text-center py-16 bg-card border border-border/50 rounded-xl shadow-sm">
@@ -83,7 +83,7 @@ const ManageCreatorPacksPage = () => {
                             <h3 className="text-xl font-geist font-medium mb-2">No packs published yet</h3>
                             <p className="text-muted-foreground mb-6">You haven't uploaded any creator packs.</p>
                             <Link to="/creator-packs/new">
-                                <Button className="pixel-corners bg-cow-purple hover:bg-cow-purple/90">
+                                <Button className=" bg-primary hover:bg-primary/90">
                                     Create Your First Pack
                                 </Button>
                             </Link>
@@ -101,7 +101,7 @@ const ManageCreatorPacksPage = () => {
                                         className="bg-card border border-border/50 rounded-xl p-4 sm:p-5 flex flex-col sm:flex-row gap-5 items-start sm:items-center shadow-sm hover:border-primary/50 transition-colors"
                                     >
                                         {/* Thumbnail */}
-                                        <div className="w-full sm:w-48 aspect-video bg-muted/20 rounded-md overflow-hidden flex-shrink-0">
+                                        <div className="w-full sm:w-48 aspect-video bg-muted rounded-md overflow-hidden flex-shrink-0">
                                             {pack.cover_image_url ? (
                                                 <img
                                                     src={pack.cover_image_url}
@@ -165,13 +165,13 @@ const ManageCreatorPacksPage = () => {
                                         {/* Actions */}
                                         <div className="flex flex-row sm:flex-col gap-2 w-full sm:w-auto mt-2 sm:mt-0 pt-4 sm:pt-0 border-t sm:border-t-0 border-border/50">
                                             <Link to={`/creator-packs/${pack.slug}/edit`} className="w-full">
-                                                <Button variant="outline" size="sm" className="w-full h-8 pixel-corners font-geist text-xs">
+                                                <Button variant="outline" size="sm" className="w-full h-8  font-geist text-xs">
                                                     <IconEdit size={14} className="mr-1.5" /> Edit
                                                 </Button>
                                             </Link>
 
                                             <a href={pack.external_link} target="_blank" rel="noopener noreferrer" className="w-full">
-                                                <Button variant="secondary" size="sm" className="w-full h-8 pixel-corners font-geist text-xs">
+                                                <Button variant="secondary" size="sm" className="w-full h-8  font-geist text-xs">
                                                     <IconExternalLink size={14} className="mr-1.5" /> Link
                                                 </Button>
                                             </a>
@@ -179,7 +179,7 @@ const ManageCreatorPacksPage = () => {
                                             <Button
                                                 variant="destructive"
                                                 size="sm"
-                                                className="w-full h-8 pixel-corners font-geist text-xs"
+                                                className="w-full h-8  font-geist text-xs"
                                                 onClick={() => handleDelete(pack.id)}
                                                 disabled={deletingId === pack.id}
                                             >

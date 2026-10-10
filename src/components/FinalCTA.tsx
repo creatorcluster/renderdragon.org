@@ -15,21 +15,21 @@ const FinalCTA = () => {
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         className="relative container mx-auto px-4"
       >
-        <div className="max-w-4xl mx-auto bg-cow-dark border-2 border-cow-purple pixel-corners p-10 md:p-16 text-center">
-          <h2 className="font-minecraftia text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-6 text-foreground leading-tight">
+        <div className="max-w-4xl mx-auto bg-background border-2 border-primary  p-10 md:p-16 text-center">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-6 text-foreground leading-tight">
             Your next video
             <br />
-            <span className="text-cow-purple">starts here.</span>
+            <span className="text-primary">starts here.</span>
           </h2>
 
-          <p className="font-jetbrains-mono text-xl md:text-2xl text-foreground/80 mb-10 max-w-2xl mx-auto leading-tight">
+          <p className="text-xl md:text-2xl text-foreground/80 mb-10 max-w-2xl mx-auto leading-tight">
             Browse the hub, run a tool, or hang out with the community. No strings, no waitlist, no watermarks.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link
               to="/resources"
-              className="pixel-btn-primary group flex items-center gap-2 text-base md:text-lg"
+              className="inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 group flex items-center gap-2 text-base md:text-lg"
             >
               <span>Browse Resources</span>
               <IconArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -38,7 +38,7 @@ const FinalCTA = () => {
               href="https://discord.renderdragon.org"
               target="_blank"
               rel="noopener noreferrer"
-              className="pixel-btn-secondary group flex items-center gap-2 text-base md:text-lg"
+              className="inline-flex items-center justify-center rounded-full border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent group flex items-center gap-2 text-base md:text-lg"
             >
               <IconBrandDiscord className="w-5 h-5" />
               <span>Join Discord</span>

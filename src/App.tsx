@@ -85,7 +85,7 @@ const CreatorPackPage = lazy(() => import("@/pages/CreatorPackPage"));
 
 const LoadingFallback = ({ message = "Loading..." }: { message?: string }) => (
   <div className="flex flex-col items-center justify-center min-h-screen gap-4">
-    <IconLoader2 className="w-12 h-12 animate-spin text-cow-purple" />
+    <IconLoader2 className="w-12 h-12 animate-spin text-primary" />
     <p className="text-white/80">{message}</p>
   </div>
 );
@@ -162,19 +162,6 @@ const HomeRedirect = () => {
 const App = () => {
   const [queryClient] = useState(() => new QueryClient());
 
-  // Global Theme Initialization
-  const [theme] = useState(() => {
-    return localStorage.getItem('theme') as 'light' | 'dark' ||
-      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-  });
-
-  useEffect(() => {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [theme]);
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>

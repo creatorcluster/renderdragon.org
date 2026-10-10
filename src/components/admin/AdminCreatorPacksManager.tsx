@@ -65,19 +65,19 @@ const AdminCreatorPacksManager = () => {
 
     if (isLoading) {
         return <div className="animate-pulse space-y-4">
-            <div className="h-20 bg-muted/20 rounded-xl" />
-            <div className="h-20 bg-muted/20 rounded-xl" />
+            <div className="h-20 bg-muted rounded-xl" />
+            <div className="h-20 bg-muted rounded-xl" />
         </div>;
     }
 
     return (
-        <section className="mt-12 bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl p-6 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-cow-purple/5 rounded-full blur-3xl -z-10 transform translate-x-1/2 -translate-y-1/2" />
+        <section className="mt-12 bg-card backdrop-blur-sm border border-border/50 rounded-xl p-6 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -z-10 transform translate-x-1/2 -translate-y-1/2" />
 
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                    <IconPackage className="h-6 w-6 text-cow-purple" />
-                    <h2 className="text-2xl font-jetbrains-mono">Pending Creator Packs</h2>
+                    <IconPackage className="h-6 w-6 text-primary" />
+                    <h2 className="text-2xl ">Pending Creator Packs</h2>
                 </div>
                 <div className="bg-muted px-3 py-1 rounded-full text-sm font-medium">
                     {pendingPacks.length} Pending
@@ -85,14 +85,14 @@ const AdminCreatorPacksManager = () => {
             </div>
 
             {pendingPacks.length === 0 ? (
-                <div className="text-center py-12 text-muted-foreground bg-muted/10 rounded-lg border border-dashed border-border/50">
+                <div className="text-center py-12 text-muted-foreground bg-muted rounded-lg border border-dashed border-border/50">
                     <IconPackage className="mx-auto h-8 w-8 mb-2 opacity-50" />
                     <p>No creator packs are pending review.</p>
                 </div>
             ) : (
                 <div className="space-y-4">
                     {pendingPacks.map(pack => (
-                        <div key={pack.id} className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-background border border-border/50 rounded-lg hover:border-cow-purple/30 transition-colors">
+                        <div key={pack.id} className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-background border border-border/50 rounded-lg hover:border-primary/30 transition-colors">
                             <div className="flex-1 min-w-0 mb-4 md:mb-0">
                                 <div className="flex items-center gap-2 mb-1">
                                     <h3 className="font-medium text-lg truncate">{pack.title}</h3>
@@ -106,7 +106,7 @@ const AdminCreatorPacksManager = () => {
                                 <div className="flex items-center gap-4 text-xs text-muted-foreground">
                                     <span>Submitted {formatDistanceToNow(new Date(pack.created_at), { addSuffix: true })}</span>
                                     {pack.external_link && (
-                                        <a href={pack.external_link} target="_blank" rel="noopener noreferrer" className="flex items-center hover:text-cow-purple transition-colors">
+                                        <a href={pack.external_link} target="_blank" rel="noopener noreferrer" className="flex items-center hover:text-primary transition-colors">
                                             <IconExternalLink className="w-3 h-3 mr-1" />
                                             View Source
                                         </a>
@@ -140,9 +140,9 @@ const AdminCreatorPacksManager = () => {
             )}
 
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent className="pixel-corners">
+                <DialogContent className="">
                     <DialogHeader>
-                        <DialogTitle className="font-jetbrains-mono text-2xl">Reject Creator Pack</DialogTitle>
+                        <DialogTitle className="text-2xl">Reject Creator Pack</DialogTitle>
                         <DialogDescription>
                             Please provide a reason for rejecting this pack. The creator will see this message and can resubmit after making changes.
                         </DialogDescription>
@@ -153,19 +153,19 @@ const AdminCreatorPacksManager = () => {
                             placeholder="e.g., The external link is invalid, or the cover image violates our guidelines..."
                             value={rejectionReason}
                             onChange={(e) => setRejectionReason(e.target.value)}
-                            className="pixel-input min-h-[100px]"
+                            className="rounded-lg border border-input bg-background px-3 py-2 min-h-[100px]"
                         />
                     </div>
 
                     <DialogFooter>
-                        <Button variant="outline" onClick={() => setIsDialogOpen(false)} className="pixel-corners">
+                        <Button variant="outline" onClick={() => setIsDialogOpen(false)} className="">
                             Cancel
                         </Button>
                         <Button
                             variant="destructive"
                             onClick={handleReject}
                             disabled={!rejectionReason.trim()}
-                            className="pixel-corners"
+                            className=""
                         >
                             Confirm Rejection
                         </Button>

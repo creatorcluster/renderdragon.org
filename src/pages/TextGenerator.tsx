@@ -124,13 +124,13 @@ const TextGenerator = () => {
       <main className="flex-grow pt-24 pb-16 cow-grid-bg custom-scrollbar">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
-            <h1 className="text-4xl md:text-5xl font-minecraftia mb-8 text-center">
-              <span className="text-cow-purple">Minecraft</span> Text Generator
+            <h1 className="text-4xl md:text-5xl mb-8 text-center">
+              <span className="text-primary">Minecraft</span> Text Generator
             </h1>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Preview Section */}
-              <div className="pixel-card p-6 bg-black/50 min-h-[400px] flex items-center ">
+              <div className="rounded-xl border border-border bg-card p-4 p-6 bg-black/50 min-h-[400px] flex items-center ">
                 <TextPreview settings={settings} canvasRef={canvasRef} />
               </div>
 
@@ -496,7 +496,7 @@ const TextGenerator = () => {
 
                 {/* Download Button */}
                 <Button
-                  className="w-full pixel-corners bg-cow-purple hover:bg-cow-purple/80"
+                  className="w-full  bg-primary hover:bg-primary/90"
                   onClick={handleDownload}
                 >
                   <IconDownload className="h-4 w-4 mr-2" />

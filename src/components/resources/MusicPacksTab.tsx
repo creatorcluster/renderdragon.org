@@ -2,8 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { IconChevronDown, IconChevronRight, IconExternalLink, IconFolder, IconFolderOpen, IconMusic, IconPlayerPlayFilled, IconSearch, IconX } from '@tabler/icons-react';
+import PixelSvgIcon from '@/components/PixelSvgIcon';
+import { IconBrandYoutube, IconChevronDown, IconChevronRight, IconExternalLink, IconFolder, IconFolderOpen, IconMusic, IconPlayerPlayFilled, IconSearch, IconX } from '@tabler/icons-react';
 
 interface MusicLinksMessage {
   links?: string[];
@@ -87,6 +87,71 @@ const getEmbedInfo = (link: string) => {
     thumbnailUrl: null,
     embedUrl: null,
   };
+};
+
+// YouTube titles via oEmbed (through noembed for CORS). Cached per video id so
+// repeated views don't refetch.
+const youtubeTitleCache = new Map<string, string | null>();
+const youtubeTitlePending = new Map<string, Promise<string | null>>();
+
+const fetchYoutubeTitle = (videoId: string): Promise<string | null> => {
+  if (youtubeTitleCache.has(videoId)) return Promise.resolve(youtubeTitleCache.get(videoId) ?? null);
+  const pending = youtubeTitlePending.get(videoId);
+  if (pending) return pending;
+
+  const request = (async () => {
+    try {
+      const res = await fetch(
+        `https://noembed.com/embed?url=${encodeURIComponent(`https://www.youtube.com/watch?v=${videoId}`)}`,
+      );
+      if (!res.ok) throw new Error(String(res.status));
+      const data: { title?: unknown } = await res.json();
+      const title = typeof data?.title === 'string' && data.title ? data.title : null;
+      youtubeTitleCache.set(videoId, title);
+      return title;
+    } catch {
+      youtubeTitleCache.set(videoId, null);
+      return null;
+    } finally {
+      youtubeTitlePending.delete(videoId);
+    }
+  })();
+
+  youtubeTitlePending.set(videoId, request);
+  return request;
+};
+
+const YoutubeLinkLabel = ({ item }: { item: MusicLinkItem }) => {
+  const videoId = extractYoutubeVideoId(item.link);
+  const [title, setTitle] = useState<string | null>(
+    videoId ? youtubeTitleCache.get(videoId) ?? null : null,
+  );
+
+  useEffect(() => {
+    if (!videoId) return;
+    let active = true;
+    fetchYoutubeTitle(videoId).then((resolved) => {
+      if (active) setTitle(resolved);
+    });
+    return () => {
+      active = false;
+    };
+  }, [videoId]);
+
+  const label = title ?? (videoId ? 'YouTube video' : item.link);
+
+  return (
+    <a
+      href={item.link}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex min-w-0 items-center gap-2 text-sm text-foreground transition-colors hover:text-primary"
+      title={item.link}
+    >
+      <IconBrandYoutube className="h-4 w-4 flex-shrink-0 text-red-500" />
+      <span className="truncate">{label}</span>
+    </a>
+  );
 };
 
 const MusicPacksTab = () => {
@@ -270,10 +335,10 @@ const MusicPacksTab = () => {
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-[320px_1fr] gap-6">
-        <div className="h-[70vh] rounded-lg border border-border bg-card/40 animate-pulse" />
+        <div className="h-[70vh] rounded-lg border border-border bg-card animate-pulse" />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {Array.from({ length: 8 }).map((_, idx) => (
-            <div key={`music-links-skeleton-${idx}`} className="aspect-video rounded-lg border border-border bg-card/40 animate-pulse" />
+            <div key={`music-links-skeleton-${idx}`} className="aspect-video rounded-lg border border-border bg-card animate-pulse" />
           ))}
         </div>
       </div>
@@ -284,19 +349,19 @@ const MusicPacksTab = () => {
     <div className="flex gap-6 max-w-7xl mx-auto">
       <div className="w-full md:w-80 flex-shrink-0">
         <div className="sticky top-28 h-[calc(100vh-8rem)]">
-          <div className="h-full flex flex-col bg-card/50 border border-border rounded-lg pixel-corners overflow-hidden">
+          <div className="h-full flex flex-col bg-card border border-border rounded-lg  overflow-hidden">
             <div className="p-3 border-b border-border">
-              <h3 className="text-sm font-jetbrains-mono text-muted-foreground mb-2 flex items-center gap-2">
-                <IconMusic className="h-4 w-4 text-cow-purple" />
+              <div className="text-sm text-muted-foreground mb-2 flex items-center gap-2">
+                <PixelSvgIcon name="music" className="h-4 w-4 text-primary" />
                 Music Packs Browser
-              </h3>
+              </div>
               <div className="relative">
                 <IconSearch className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search cato or sub cat..."
-                  className="h-8 pl-8 pr-8 text-sm pixel-input"
+                  className="h-8 pl-8 pr-8 text-sm "
                 />
                 {searchQuery && (
                   <Button
@@ -311,7 +376,7 @@ const MusicPacksTab = () => {
               </div>
             </div>
 
-            <ScrollArea className="flex-1">
+            <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar">
               <div className="p-2">
                 <motion.button
                   onClick={() => {
@@ -319,11 +384,11 @@ const MusicPacksTab = () => {
                     setSelectedChannel(null);
                   }}
                   whileHover={{ x: 2 }}
-                  className={`w-full text-left flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors ${!selectedCategory && !selectedChannel ? 'bg-cow-purple/20 text-cow-purple' : 'hover:bg-accent/50'}`}
+                  className={`w-full text-left flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors ${!selectedCategory && !selectedChannel ? 'bg-primary/20 text-primary' : 'hover:bg-accent'}`}
                 >
-                  <IconFolderOpen className="h-4 w-4 text-cow-purple" />
+                  <IconFolderOpen className="h-4 w-4 text-primary" />
                   <span className="text-sm font-medium">All Music Links</span>
-                  <span className="text-xs text-muted-foreground bg-secondary/50 px-1.5 py-0.5 rounded ml-auto">
+                  <span className="text-xs text-primary bg-primary/10 px-1.5 py-0.5 rounded ml-auto">
                     {allLinks.length}
                   </span>
                 </motion.button>
@@ -336,12 +401,12 @@ const MusicPacksTab = () => {
                     <div key={category.name} className="mt-1">
                       <button
                         onClick={() => toggleCategory(category.name)}
-                        className="w-full text-left flex items-center gap-2 rounded-md px-2 py-1.5 hover:bg-accent/50 transition-colors"
+                        className="w-full text-left flex items-center gap-2 rounded-md px-2 py-1.5 hover:bg-accent transition-colors"
                       >
                         {isExpanded ? <IconChevronDown className="h-3.5 w-3.5 text-muted-foreground" /> : <IconChevronRight className="h-3.5 w-3.5 text-muted-foreground" />}
                         {isExpanded ? <IconFolderOpen className="h-4 w-4 text-yellow-500" /> : <IconFolder className="h-4 w-4 text-yellow-500/80" />}
                         <span className="text-sm truncate">{normalizeLabel(category.name)}</span>
-                        <span className="text-xs text-muted-foreground bg-secondary/50 px-1.5 py-0.5 rounded ml-auto">
+                        <span className="text-xs text-primary bg-primary/10 px-1.5 py-0.5 rounded ml-auto">
                           {categoryCounts[category.name] || 0}
                         </span>
                       </button>
@@ -356,7 +421,7 @@ const MusicPacksTab = () => {
                           >
                             <button
                               onClick={() => handleSelectCategory(category.name)}
-                              className={`w-full text-left ml-6 mr-2 mt-1 flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors ${isCategorySelected ? 'bg-cow-purple/20 text-cow-purple' : 'hover:bg-accent/50'}`}
+                              className={`w-[calc(100%-1.5rem)] text-left ml-6 mt-1 flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors ${isCategorySelected ? 'bg-primary/20 text-primary' : 'hover:bg-accent'}`}
                             >
                               <IconFolder className="h-4 w-4 text-yellow-500/80" />
                               <span className="text-sm truncate">All in {normalizeLabel(category.name)}</span>
@@ -370,11 +435,11 @@ const MusicPacksTab = () => {
                                 <button
                                   key={`${category.name}-${channel.name}`}
                                   onClick={() => handleSelectChannel(category.name, channel.name)}
-                                  className={`w-full text-left ml-6 mr-2 mt-1 flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors ${isChannelSelected ? 'bg-cow-purple/20 text-cow-purple' : 'hover:bg-accent/50'}`}
+                                  className={`w-[calc(100%-1.5rem)] text-left ml-6 mt-1 flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors ${isChannelSelected ? 'bg-primary/20 text-primary' : 'hover:bg-accent'}`}
                                 >
                                   <IconFolder className="h-4 w-4 text-yellow-500/80" />
                                   <span className="text-sm truncate">{normalizeLabel(channel.name)}</span>
-                                  <span className="text-xs text-muted-foreground bg-secondary/50 px-1.5 py-0.5 rounded ml-auto">
+                                  <span className="text-xs text-primary bg-primary/10 px-1.5 py-0.5 rounded ml-auto">
                                     {channelCounts[countKey] || 0}
                                   </span>
                                 </button>
@@ -387,7 +452,7 @@ const MusicPacksTab = () => {
                   );
                 })}
               </div>
-            </ScrollArea>
+            </div>
           </div>
         </div>
       </div>
@@ -412,7 +477,7 @@ const MusicPacksTab = () => {
         </div>
 
         {displayedLinks.length === 0 ? (
-          <div className="rounded-lg border border-border bg-card/40 p-8 text-center text-muted-foreground">
+          <div className="rounded-lg border border-border bg-card p-8 text-center text-muted-foreground">
             No links found for this selection.
           </div>
         ) : (
@@ -426,9 +491,9 @@ const MusicPacksTab = () => {
                   key={item.id}
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="group block rounded-lg border border-border bg-card/50 p-3 hover:border-cow-purple/50 transition-colors pixel-corners"
+                  className="group block rounded-lg border border-border bg-card p-3 hover:border-primary/50 transition-colors "
                 >
-                  <div className="aspect-video rounded-md overflow-hidden border border-border/70 bg-muted/30 mb-3">
+                  <div className="aspect-video rounded-md overflow-hidden border border-border/70 bg-muted mb-3">
                     {embedInfo.isYoutube && embedInfo.embedUrl && isEmbedActive ? (
                       <iframe
                         src={embedInfo.embedUrl}
@@ -451,7 +516,7 @@ const MusicPacksTab = () => {
                           loading="lazy"
                         />
                         <div className="absolute inset-0 bg-black/20 group-hover/thumb:bg-black/35 transition-colors flex items-center justify-center">
-                          <span className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-cow-purple/90 text-white">
+                          <span className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-primary/90 text-primary-foreground">
                             <IconPlayerPlayFilled className="h-6 w-6 ml-0.5" />
                           </span>
                         </div>
@@ -464,16 +529,9 @@ const MusicPacksTab = () => {
                   </div>
 
                   <div className="flex items-start justify-between gap-3">
-                    <a
-                      href={item.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-muted-foreground break-all line-clamp-2 hover:text-cow-purple transition-colors"
-                    >
-                      {item.link}
-                    </a>
+                    <YoutubeLinkLabel item={item} />
                     <a href={item.link} target="_blank" rel="noopener noreferrer" className="mt-0.5 flex-shrink-0">
-                      <IconExternalLink className="h-4 w-4 text-cow-purple" />
+                      <IconExternalLink className="h-4 w-4 text-primary" />
                     </a>
                   </div>
 

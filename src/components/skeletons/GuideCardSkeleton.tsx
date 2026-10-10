@@ -1,7 +1,7 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
 const GuideCardSkeleton = () => (
-  <div className="pixel-corners border border-border p-4 space-y-3">
+  <div className=" border border-border p-4 space-y-3">
     <div className="flex justify-between items-start mb-2">
       <div className="flex gap-2">
         <Skeleton className="h-6 w-20 rounded-md" />

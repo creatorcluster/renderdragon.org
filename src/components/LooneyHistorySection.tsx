@@ -76,14 +76,14 @@ const LooneyHistorySection = ({ activeJobId, onSelectRecord }: LooneyHistorySect
   const historyRecords = records.filter((record) => !isRunning(record));
 
   return (
-    <section className="pixel-corners mx-auto mt-8 w-full max-w-6xl min-w-0 overflow-hidden border-2 border-foreground/10 bg-card p-5 shadow-sm sm:p-7">
+    <section className=" mx-auto mt-8 w-full max-w-6xl min-w-0 overflow-hidden border-2 border-foreground/10 bg-card p-5 shadow-sm sm:p-7">
       <div className="flex flex-wrap items-start justify-between gap-3">
          <div className="flex items-center gap-3">
-          <div className="pixel-corners flex h-10 w-10 shrink-0 items-center justify-center bg-cow-purple/15 text-cow-purple">
+          <div className=" flex h-10 w-10 shrink-0 items-center justify-center bg-primary/15 text-primary">
             <IconHistory className="h-6 w-6" />
           </div>
           <div>
-            <h2 className="font-minecraftia text-lg">Check history</h2>
+            <h2 className="text-lg">Check history</h2>
             <p className="mt-1 text-sm text-muted-foreground">Jobs continue on the server while this tab is closed.</p>
           </div>
         </div>
@@ -96,16 +96,16 @@ const LooneyHistorySection = ({ activeJobId, onSelectRecord }: LooneyHistorySect
 
       <div className="mt-6 grid min-w-0 gap-5 md:grid-cols-2">
         <div className="min-w-0">
-           <h3 className="mb-3 flex items-center gap-2 font-minecraftia text-sm"><IconActivity className="inline-flex h-4 w-4 shrink-0 text-cow-purple" /> Running checks</h3>
+           <h3 className="mb-3 flex items-center gap-2 text-sm"><IconActivity className="inline-flex h-4 w-4 shrink-0 text-primary" /> Running checks</h3>
           {runningRecords.length === 0 ? (
-            <p className="pixel-corners border border-border/70 bg-muted/20 p-4 text-sm text-muted-foreground">No checks are currently running.</p>
+            <p className=" border border-border/70 bg-muted p-4 text-sm text-muted-foreground">No checks are currently running.</p>
           ) : (
             <div className="space-y-2">
               {runningRecords.map((record) => (
-                <div key={record.jobId} className="pixel-corners border border-cow-purple/30 bg-cow-purple/5 p-3">
+                <div key={record.jobId} className=" border border-primary/30 bg-primary/5 p-3">
                   <div className="flex min-w-0 items-center justify-between gap-3">
                     <span className="min-w-0 break-words text-sm font-medium">{record.sourceLabel}</span>
-                    <span className="shrink-0 text-xs uppercase tracking-wide text-cow-purple">{record.status}</span>
+                    <span className="shrink-0 text-xs uppercase tracking-wide text-primary">{record.status}</span>
                   </div>
                   <p className="mt-1 text-xs text-muted-foreground">{record.progress || `Started ${formatDate(record.createdAt)}`}</p>
                 </div>
@@ -115,9 +115,9 @@ const LooneyHistorySection = ({ activeJobId, onSelectRecord }: LooneyHistorySect
         </div>
 
         <div className="min-w-0">
-           <h3 className="mb-3 flex items-center gap-2 font-minecraftia text-sm"><IconClock className="inline-flex h-4 w-4 shrink-0 text-cow-purple" /> Previous checks</h3>
+           <h3 className="mb-3 flex items-center gap-2 text-sm"><IconClock className="inline-flex h-4 w-4 shrink-0 text-primary" /> Previous checks</h3>
           {historyRecords.length === 0 ? (
-            <p className="pixel-corners border border-border/70 bg-muted/20 p-4 text-sm text-muted-foreground">Your completed checks will appear here.</p>
+            <p className=" border border-border/70 bg-muted p-4 text-sm text-muted-foreground">Your completed checks will appear here.</p>
           ) : (
             <div className="space-y-2">
               {historyRecords.map((record) => (
@@ -126,7 +126,7 @@ const LooneyHistorySection = ({ activeJobId, onSelectRecord }: LooneyHistorySect
                   type="button"
                   onClick={() => { if (!record.result) return; onSelectRecord?.(record); }}
                   disabled={!record.result}
-                  className="pixel-corners w-full border border-border/70 bg-muted/20 p-3 text-left transition-colors hover:border-cow-purple/50 disabled:cursor-default disabled:hover:border-border/70"
+                  className=" w-full border border-border/70 bg-muted p-3 text-left transition-colors hover:border-primary/50 disabled:cursor-default disabled:hover:border-border/70"
                 >
                   <div className="flex items-center justify-between gap-3">
                     <span className="min-w-0 break-words text-sm font-medium">{record.sourceLabel}</span>

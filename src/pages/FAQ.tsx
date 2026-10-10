@@ -66,15 +66,15 @@ const FAQ = () => {
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto">
-            <h1 className="text-4xl md:text-5xl font-minecraftia mb-8 text-center">
-              Frequently Asked <span className="text-cow-purple">Questions</span>
+            <h1 className="text-4xl md:text-5xl mb-8 text-center">
+              Frequently Asked <span className="text-primary">Questions</span>
             </h1>
 
-            <div className="pixel-card space-y-6">
+            <div className="rounded-xl border border-border bg-card p-4 space-y-6">
               <div className="space-y-8 text-muted-foreground">
                 {FAQ_GROUPS.map((group, groupIndex) => (
                   <div key={group.title}>
-                    <h2 className={`text-2xl ${groupIndex === 0 ? 'font-minecraftia' : 'font-jetbrains-mono'} text-foreground mb-4`}>
+                    <h2 className={`text-2xl ${groupIndex === 0 ? '' : ''} text-foreground mb-4`}>
                       {group.title}
                     </h2>
 

@@ -40,7 +40,7 @@ const partners = [
 const Partnership = () => {
   return (
     <section className="relative py-20 md:py-28 bg-background overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none cow-grid-bg opacity-50" />
+      <div className="absolute inset-0 pointer-events-none cow-grid-bg opacity-60" />
 
       <div className="relative container mx-auto px-4">
         <motion.div
@@ -50,12 +50,10 @@ const Partnership = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-14 md:mb-16 max-w-3xl mx-auto"
         >
-          <h2
-            className="font-minecraftia text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-6 text-foreground leading-tight"
-          >
-            Our <span className="text-cow-purple">Partners</span>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-4 text-foreground">
+            Our <span className="text-primary">Partners</span>
           </h2>
-          <p className="font-jetbrains-mono text-xl md:text-2xl text-foreground/70 leading-tight">
+          <p className="text-lg md:text-xl text-muted-foreground">
             Communities we work with to make RenderDragon better for everyone.
           </p>
         </motion.div>
@@ -75,11 +73,11 @@ const Partnership = () => {
                 href={partner.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block h-full pixel-card bg-card border-2 border-border hover:border-cow-purple p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-cow-purple/20"
+                className="block h-full rounded-xl border border-border bg-card p-6 transition-all duration-300 hover:-translate-y-1 hover:border-primary/60"
               >
                 <div className="flex flex-col items-center text-center h-full">
                   <div className="relative mb-5">
-                    <div className="w-24 h-24 border-2 border-cow-purple pixel-corners overflow-hidden group-hover:scale-105 transition-transform">
+                    <div className="w-24 h-24 rounded-xl border border-border overflow-hidden group-hover:scale-105 transition-transform">
                       <img
                         src={partner.logo}
                         alt={`${partner.name} logo`}
@@ -87,14 +85,14 @@ const Partnership = () => {
                         loading="lazy"
                       />
                     </div>
-                    <div className="absolute -bottom-1 -right-1 bg-cow-purple p-1.5 border-2 border-card pixel-corners">
-                      <IconArrowRight className="w-3.5 h-3.5 text-white" />
+                    <div className="absolute -bottom-1 -right-1 rounded-full bg-primary p-1.5 text-primary-foreground">
+                      <IconArrowRight className="w-3.5 h-3.5" />
                     </div>
                   </div>
-                  <h3 className="font-minecraftia text-2xl text-foreground uppercase tracking-wider mb-2">
+                  <h3 className="text-xl font-medium text-foreground mb-2">
                     {partner.name}
                   </h3>
-                  <p className="font-jetbrains-mono text-base text-foreground/70 leading-snug flex-grow">
+                  <p className="text-sm text-muted-foreground leading-relaxed flex-grow">
                     {partner.description}
                   </p>
                 </div>
@@ -112,9 +110,9 @@ const Partnership = () => {
         >
           <a
             href="/contact"
-            className="pixel-btn-secondary inline-block text-base md:text-lg"
+            className="inline-flex items-center rounded-full border border-border px-5 py-2.5 text-base font-medium text-foreground transition-colors hover:bg-accent"
           >
-            Become a Partner
+            Become a partner
           </a>
         </motion.div>
       </div>
@@ -122,4 +120,4 @@ const Partnership = () => {
   );
 };
 
-export default React.memo(Partnership); 
+export default React.memo(Partnership);

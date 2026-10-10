@@ -167,8 +167,8 @@ const PlayerRenderer = () => {
               transition={{ duration: 0.5 }}
               className="text-center mb-8"
             >
-              <h1 className="text-4xl md:text-5xl font-minecraftia mb-4">
-                Player <span className="text-cow-purple">Renderer</span>
+              <h1 className="text-4xl md:text-5xl mb-4">
+                Player <span className="text-primary">Renderer</span>
               </h1>
               <p className="text-muted-foreground max-w-2xl mx-auto">
                 Generate and download Minecraft player renders using different rendering services
@@ -179,7 +179,7 @@ const PlayerRenderer = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="pixel-card mb-8"
+              className="rounded-xl border border-border bg-card p-4 mb-8"
             >
               <form onSubmit={handleSubmit} className="flex gap-4">
                 <Input
@@ -187,13 +187,13 @@ const PlayerRenderer = () => {
                   placeholder="Enter Minecraft username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="pixel-corners"
+                  className=""
                   disabled={isFetching}
                 />
                 <Button
                   type="submit"
                   variant="default"
-                  className="pixel-corners"
+                  className=""
                   disabled={!username || isFetching}
                 >
                   {isFetching ? (
@@ -205,7 +205,7 @@ const PlayerRenderer = () => {
                 <Button
                   type="button"
                   variant="outline"
-                  className="pixel-corners"
+                  className=""
                   onClick={() => {
                     setUsername('');
                     setPlayerData(null);
@@ -236,7 +236,7 @@ const PlayerRenderer = () => {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5, type: "spring", stiffness: 100 }}
-                className="bg-pink-600 text-white px-4 py-3 rounded-md mb-8 text-center font-bold text-xl pixel-corners" // Added pixel-corners class
+                className="bg-pink-600 text-white px-4 py-3 rounded-md mb-8 text-center font-bold text-xl " // Added  class
               >
                 {technobladeMessage}
               </motion.div>
@@ -254,8 +254,8 @@ const PlayerRenderer = () => {
               >
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {/* Mineatar Renders */}
-                  <div className="pixel-card flex flex-col">
-                    <h1 className='text-center font-minecraftia'>Body</h1>
+                  <div className="rounded-xl border border-border bg-card p-4 flex flex-col">
+                    <h1 className='text-center '>Body</h1>
                     <div className="aspect-square relative">
                       <img
                         src={renderUrls.mineatar.full(playerData.id)}
@@ -283,8 +283,8 @@ const PlayerRenderer = () => {
                     </div>
                   </div>
 
-                  <div className="pixel-card flex flex-col">
-                    <h1 className='text-center font-minecraftia'>Head</h1>
+                  <div className="rounded-xl border border-border bg-card p-4 flex flex-col">
+                    <h1 className='text-center '>Head</h1>
                     <div className="aspect-square relative">
                       <img
                         src={renderUrls.nmsr.face(playerData.id)}
@@ -313,8 +313,8 @@ const PlayerRenderer = () => {
                   </div>
 
                   {/* VZGE Render */}
-                  <div className="pixel-card flex flex-col">
-                    <h1 className='text-center font-minecraftia'>Bust (isometric)</h1>
+                  <div className="rounded-xl border border-border bg-card p-4 flex flex-col">
+                    <h1 className='text-center '>Bust (isometric)</h1>
                     <div className="aspect-square relative">
                       <img
                         src={renderUrls.nmsr.bust(playerData.id)}
@@ -343,8 +343,8 @@ const PlayerRenderer = () => {
                   </div>
 
                   {/* NMSR Renders */}
-                  <div className="pixel-card flex flex-col">
-                    <h2 className='text-center font-minecraftia'>Full Render (isometric)</h2>
+                  <div className="rounded-xl border border-border bg-card p-4 flex flex-col">
+                    <h2 className='text-center '>Full Render (isometric)</h2>
                     <div className="aspect-square relative">
                       <img
                         src={renderUrls.nmsr.fullbody(playerData.id)}

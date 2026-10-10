@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { IconChevronDown, IconMenu2, IconX, IconSun, IconMoon, IconSkull, IconExternalLink } from '@tabler/icons-react';
-import { ThemeToggle } from './ThemeToggle';
+import { IconChevronDown, IconMenu2, IconExternalLink } from '@tabler/icons-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -17,10 +16,8 @@ import {
 } from "@/components/ui/collapsible";
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"; // Keep for now in case it's a dependency of drawer
-import { Toggle } from "@/components/ui/toggle";
-import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
+import { Drawer, DrawerContent, DrawerTrigger, DrawerTitle, DrawerDescription } from "@/components/ui/drawer";
 import Logo from './Logo';
-import PixelSvgIcon from './PixelSvgIcon';
 import AuthDialog from './auth/AuthDialog'; // Added for auth
 import UserMenu from './auth/UserMenu'; // Added for auth
 import { useAuth } from '@/hooks/useAuth'; // Added for auth
@@ -69,7 +66,7 @@ const mainLinks: (NavLink | NavDropdown)[] = [
 // Small badge for marking new/updated links
 function TagBadge({ label }: { label: string }) {
   return (
-    <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-cow-purple text-white text-[10px] leading-none uppercase tracking-wide">
+    <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-primary text-white text-[10px] leading-none uppercase tracking-wide">
       {label}
     </span>
   );
@@ -82,10 +79,6 @@ const Navbar = () => {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [openMobileCollapsible, setOpenMobileCollapsible] = useState<string | null>(null);
-  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-    return localStorage.getItem('theme') as 'light' | 'dark' ||
-      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-  });
   const isMobile = useIsMobile();
   const [authDialogOpen, setAuthDialogOpen] = useState(false); // Added for auth
   const { user, loading, signOut } = useAuth(); // Added for auth
@@ -115,25 +108,6 @@ const Navbar = () => {
     setOpenMobileCollapsible(null);
     setIsDrawerOpen(false);
   }, [location.pathname]);
-
-  const toggleTheme = () => {
-    const newTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(newTheme);
-    localStorage.setItem('theme', newTheme);
-    if (newTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  };
-
-  useEffect(() => {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [theme]);
 
   const displayName = profile?.username || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';
   const safeAvatarUrl = profile?.avatar_url || user?.user_metadata?.avatar_url;
@@ -206,9 +180,9 @@ const Navbar = () => {
               <Logo size={isMobile ? "sm" : "md"} />
             </div>
             {!isMobile && (
-              <span className="hidden md:inline font-minecraftia leading-none">Render<span className="text-cow-purple">Dragon</span></span>
+              <span className="hidden md:inline font-minecraftia leading-none">Render<span className="text-primary">Dragon</span></span>
             )}
-            {isMobile && <span className="font-minecraftia">R<span className="text-cow-purple">D</span></span>}
+            {isMobile && <span className="font-minecraftia">R<span className="text-primary">D</span></span>}
           </Link>
 
           <nav className="hidden md:flex items-center space-x-6">
@@ -250,7 +224,7 @@ const Navbar = () => {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                       align="end"
-                      className="w-56 bg-popover border border-border z-50 pixel-corners"
+                      className="w-56 bg-popover border border-border z-50 "
                       onMouseLeave={() => setActiveDropdown(null)}
                     >
                       <DropdownMenuGroup>
@@ -261,7 +235,7 @@ const Navbar = () => {
                                 href={subLink.path}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className={`flex items-center gap-1 px-2 py-2 cursor-pointer font-sans text-sm pixel-corners`}
+                                className={`flex items-center gap-1 px-2 py-2 cursor-pointer font-sans text-sm `}
                                 onClick={() => setActiveDropdown(null)}
                               >
                                 <span>{subLink.name}</span>
@@ -273,7 +247,7 @@ const Navbar = () => {
                             ) : (
                               <Link
                                 to={subLink.path}
-                                className={`flex items-center gap-1 px-2 py-2 cursor-pointer font-sans text-sm pixel-corners ${isLinkActive(subLink.path) ? 'text-primary bg-accent/50' : ''}`}
+                                className={`flex items-center gap-1 px-2 py-2 cursor-pointer font-sans text-sm  ${isLinkActive(subLink.path) ? 'text-primary bg-accent' : ''}`}
                                 onClick={() => setActiveDropdown(null)}
                               >
                                 {/* sub link name */}
@@ -303,14 +277,12 @@ const Navbar = () => {
               ) : (
                 <Button
                   onClick={() => setAuthDialogOpen(true)}
-                  className="pixel-btn-primary"
+                  className="inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
                 >
                   Sign In
                 </Button>
               )}
             </div>
-            {/* Desktop Theme Toggle */}
-            <ThemeToggle className="hidden md:block" />
 
             {/* Mobile Menu Trigger */}
             <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
@@ -325,6 +297,8 @@ const Navbar = () => {
                 </Button>
               </DrawerTrigger>
               <DrawerContent className="h-[90vh] rounded-t-xl bg-background border-t border-border">
+                <DrawerTitle className="sr-only">Navigation menu</DrawerTitle>
+                <DrawerDescription className="sr-only">Browse RenderDragon pages and tools</DrawerDescription>
                 <div className="px-4 py-6 max-h-[calc(100%-60px)] overflow-auto">
                   <div className="flex items-center justify-between mb-6">
                     <Link
@@ -335,7 +309,7 @@ const Navbar = () => {
                       <div className="w-8 h-8 flex items-center justify-center font-bold text-xs">
                         <Logo size="sm" />
                       </div>
-                      <span className="font-sans">Render<span className="text-cow-purple">dragon</span></span>
+                      <span className="font-sans">Render<span className="text-primary">dragon</span></span>
                     </Link>
                   </div>
 
@@ -416,7 +390,7 @@ const Navbar = () => {
                             {safeAvatarUrl && (
                               <AvatarImage src={safeAvatarUrl} alt="User avatar" referrerPolicy="no-referrer" />
                             )}
-                            <AvatarFallback className="bg-cow-purple text-white text-xs">
+                            <AvatarFallback className="bg-primary text-white text-xs">
                               {getInitials(displayName)}
                             </AvatarFallback>
                           </Avatar>
@@ -428,7 +402,7 @@ const Navbar = () => {
                         <Button
                           onClick={() => { handleShowFavorites(); setIsDrawerOpen(false); }}
                           variant="outline"
-                          className="w-full pixel-corners font-sans"
+                          className="w-full  font-sans"
                         >
                           My Favorites
                         </Button>
@@ -438,7 +412,7 @@ const Navbar = () => {
                             setIsDrawerOpen(false);
                           }}
                           variant="outline"
-                          className="w-full pixel-corners font-sans"
+                          className="w-full  font-sans"
                         >
                           Sign Out
                         </Button>
@@ -449,46 +423,17 @@ const Navbar = () => {
                           setAuthDialogOpen(true);
                           setIsDrawerOpen(false); // Close drawer when opening auth dialog
                         }}
-                        className="w-full pixel-btn-primary font-sans"
+                        className="w-full inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 font-sans"
                       >
                         Sign In
                       </Button>
                     )}
                   </div>
                 </div>
-
-                <div className="absolute bottom-0 left-0 right-0 p-4 flex justify-center border-t border-border bg-background">
-                  <Toggle
-                    pressed={theme === 'dark'}
-                    onPressedChange={toggleTheme}
-                    className="w-full flex items-center justify-center gap-2 py-2 font-sans"
-                  >
-                    {theme === 'dark' ? (
-                      <>
-                        <PixelSvgIcon name="moon" className="h-5 w-5" />
-                        <span>Dark Mode</span>
-                      </>
-                    ) : (
-                      <>
-                        <PixelSvgIcon name="sun" className="h-5 w-5" />
-                        <span>Light Mode</span>
-                      </>
-                    )}
-                  </Toggle>
-                </div>
               </DrawerContent>
             </Drawer>
           </div>
         </div>
-
-        {scrolled && (
-          <div className="absolute bottom-0 left-0 w-full h-[2px] bg-background/20 z-20">
-            <div
-              className="h-full bg-cow-purple transition-all duration-300 animate-pulse-neon"
-              style={{ width: `${scrollProgress * 100}%` }}
-            ></div>
-          </div>
-        )}
       </header>
 
       <AuthDialog

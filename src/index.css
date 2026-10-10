@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Pixel fonts are retained for brand accents and generator output only. */
 @font-face {
   font-family: Minecraftia;
   src: url('/fonts/minecraftia.woff2') format('woff2');
@@ -21,104 +22,59 @@
 }
 
 @layer base {
+  /*
+   * Single dark-only palette. The app no longer ships a light theme, so the
+   * tokens live at :root and there is intentionally no `.dark` override.
+   * Base surfaces are cool near-black, ink is near-white, and the one brand
+   * colour is the RenderDragon purple used sparingly for emphasis and actions.
+   */
   :root {
-    --background: 230 20% 98%;
-    --foreground: 228 19% 15%;
+    --background: 222 18% 5%;
+    --foreground: 220 14% 96%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 228 19% 15%;
+    --card: 222 16% 8%;
+    --card-foreground: 220 14% 96%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 228 19% 15%;
+    --popover: 222 16% 8%;
+    --popover-foreground: 220 14% 96%;
 
-    --primary: 259 70% 75%;
-    --primary-foreground: 0 0% 100%;
+    /* Brand: #9B87F5. Paired with a dark foreground for accessible contrast. */
+    --primary: 251 85% 75%;
+    --primary-foreground: 222 18% 5%;
 
-    --secondary: 228 6% 90%;
-    --secondary-foreground: 228 19% 15%;
+    /* White, for high-emphasis secondary actions. */
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 222 18% 5%;
 
-    --muted: 228 6% 90%;
-    --muted-foreground: 228 10% 50%;
+    --muted: 222 14% 13%;
+    --muted-foreground: 218 11% 62%;
 
-    --accent: 228 6% 90%;
-    --accent-foreground: 228 19% 15%;
+    --accent: 222 14% 15%;
+    --accent-foreground: 220 14% 96%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 72% 56%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 228 16% 84%;
-    --input: 228 16% 84%;
-    --ring: 259 70% 75%;
+    --border: 220 12% 16%;
+    --input: 220 12% 16%;
+    --ring: 251 85% 75%;
 
-    --radius: 0.5rem;
+    --radius: 0.625rem;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 222 18% 4%;
+    --sidebar-foreground: 220 14% 96%;
+    --sidebar-primary: 251 85% 75%;
+    --sidebar-primary-foreground: 222 18% 5%;
+    --sidebar-accent: 222 14% 15%;
+    --sidebar-accent-foreground: 220 14% 96%;
+    --sidebar-border: 220 12% 16%;
+    --sidebar-ring: 251 85% 75%;
 
-    --cow-purple: 259, 70%, 75%;
-    --cow-purple-dark: 259, 70%, 65%;
-    --cow-dark: 228, 19%, 15%;
-
-    --chart-1: 259 70% 75%;
-    --chart-2: 199 76% 49%;
-    --chart-3: 280 65% 60%;
-    --chart-4: 173 80% 40%;
-    --chart-5: 38 92% 50%;
-  }
-
-  .dark {
-    --background: 228 19% 15%;
-    --foreground: 228 6% 90%;
-
-    --card: 228 19% 15%;
-    --card-foreground: 228 6% 90%;
-
-    --popover: 228 19% 15%;
-    --popover-foreground: 228 6% 90%;
-
-    --primary: 259 70% 75%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 228 10% 22%;
-    --secondary-foreground: 228 6% 90%;
-
-    --muted: 228 10% 22%;
-    --muted-foreground: 228 6% 65%;
-
-    --accent: 228 10% 22%;
-    --accent-foreground: 228 6% 90%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 228 10% 22%;
-    --input: 228 10% 22%;
-    --ring: 259 70% 75%;
-
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-
-    --cow-purple: 259, 70%, 75%;
-    --cow-purple-dark: 259, 70%, 65%;
-    --cow-dark: 228, 19%, 15%;
-
-    --chart-1: 259 70% 75%;
-    --chart-2: 199 76% 49%;
-    --chart-3: 280 65% 60%;
-    --chart-4: 173 80% 40%;
-    --chart-5: 38 92% 50%;
+    --chart-1: 251 85% 75%;
+    --chart-2: 199 76% 55%;
+    --chart-3: 265 70% 66%;
+    --chart-4: 162 60% 46%;
+    --chart-5: 40 92% 55%;
   }
 }
 
@@ -127,8 +83,13 @@
     @apply border-border;
   }
 
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+  }
+
   body {
-    @apply bg-background text-foreground font-chakra;
+    @apply bg-background text-foreground font-sans antialiased;
   }
 
   h1,
@@ -137,66 +98,20 @@
   h4,
   h5,
   h6 {
-    @apply font-pixel;
-  }
-
-  .pixel-corners {
-    clip-path: polygon(0 4px, 4px 4px, 4px 0, calc(100% - 4px) 0, calc(100% - 4px) 4px, 100% 4px,
-        100% calc(100% - 4px), calc(100% - 4px) calc(100% - 4px), calc(100% - 4px) 100%,
-        4px 100%, 4px calc(100% - 4px), 0 calc(100% - 4px));
+    @apply font-heading font-bold tracking-tight;
   }
 
   .pixelated {
     image-rendering: pixelated;
   }
-
-
-
 }
 
 @layer components {
-  .pixel-btn {
-    @apply relative px-6 py-2 text-lg uppercase tracking-wider border-2 bg-opacity-90 pixel-corners transition-all duration-300;
-  }
-
-  .pixel-btn-primary {
-    @apply pixel-btn bg-cow-purple hover:bg-cow-purple-dark text-white font-medium px-4 py-2 rounded-md transition-colors pixel-corners;
-  }
-
-  .pixel-btn-secondary {
-    @apply pixel-btn border-cow-purple text-cow-purple hover:bg-cow-purple hover:text-white;
-  }
-
-  .pixel-card {
-    @apply bg-card border-2 border-primary/50 pixel-corners p-4 shadow-lg transition-all duration-300 hover:shadow-xl;
-  }
-
-  .pixel-input {
-    @apply bg-input border-2 border-primary/50 pixel-corners p-2 focus:outline-none focus:ring-2 focus:ring-primary;
-  }
-
-  .neon-border {
-    @apply border-2 animate-pulse-neon;
-  }
-
   .cow-grid-bg {
-    background-image: linear-gradient(rgba(155, 135, 245, 0.1) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(155, 135, 245, 0.1) 1px, transparent 1px);
-    background-size: 20px 20px;
+    background-image: linear-gradient(hsl(var(--foreground) / 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--foreground) / 0.035) 1px, transparent 1px);
+    background-size: 32px 32px;
   }
-
-  .parallax-hero {
-    @apply relative overflow-hidden;
-  }
-
-  .parallax-layer {
-    @apply absolute w-full h-full top-0 left-0;
-    transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
-  }
-}
-
-.font-pixel {
-  font-family: 'Press Start 2P', cursive;
 }
 
 .font-minecraftia {
@@ -211,76 +126,103 @@
   font-family: 'Minecraft Five Bold', monospace;
 }
 
-.tool-planks-hover {
-  background-color: #8b5a35;
-  background-image: linear-gradient(90deg, rgba(48, 25, 12, 0.22) 1px, transparent 1px), linear-gradient(rgba(255, 210, 150, 0.16) 1px, transparent 1px);
-  background-size: 144px 100%, 100% 34px;
-}
-
-.font-jetbrains-mono {
-  font-family: 'JetBrains Mono', monospace;
-}
-
-.font-chakra {
-  font-family: 'Chakra Petch', sans-serif;
-}
-
 .font-geist {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Geist Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
-.bg-cow-purple {
-  background-color: hsl(var(--cow-purple));
+/* ---------------------------------------------------------------------------
+ * Scrollbars (merged from the former global.css)
+ * ------------------------------------------------------------------------- */
+html,
+body {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--primary)) hsl(var(--muted) / 0.2);
+  overflow-x: clip;
 }
 
-.bg-cow-purple-dark {
-  background-color: hsl(var(--cow-purple-dark));
+.custom-scrollbar::-webkit-scrollbar,
+.enhanced-scrollbar::-webkit-scrollbar,
+.horizontal-scrollbar::-webkit-scrollbar,
+body::-webkit-scrollbar,
+textarea::-webkit-scrollbar,
+select::-webkit-scrollbar,
+.modal-content::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
-.bg-cow-dark {
-  background-color: hsl(var(--cow-dark));
+.custom-scrollbar::-webkit-scrollbar-track,
+.enhanced-scrollbar::-webkit-scrollbar-track,
+.horizontal-scrollbar::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track,
+textarea::-webkit-scrollbar-track,
+select::-webkit-scrollbar-track,
+.modal-content::-webkit-scrollbar-track {
+  background: hsl(var(--muted) / 0.2);
+  border-radius: 4px;
 }
 
-.text-cow-purple {
-  color: hsl(var(--primary));
+.custom-scrollbar::-webkit-scrollbar-thumb,
+.enhanced-scrollbar::-webkit-scrollbar-thumb,
+.horizontal-scrollbar::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb,
+textarea::-webkit-scrollbar-thumb,
+select::-webkit-scrollbar-thumb,
+.modal-content::-webkit-scrollbar-thumb {
+  background: hsl(var(--primary) / 0.7);
+  border-radius: 4px;
+  border: 1px solid hsl(var(--primary) / 0.2);
 }
 
-/* Define hover variants */
-.hover\:bg-cow-purple:hover {
-  background-color: hsl(var(--cow-purple));
+.custom-scrollbar::-webkit-scrollbar-thumb:hover,
+.enhanced-scrollbar::-webkit-scrollbar-thumb:hover,
+.horizontal-scrollbar::-webkit-scrollbar-thumb:hover,
+body::-webkit-scrollbar-thumb:hover,
+textarea::-webkit-scrollbar-thumb:hover,
+select::-webkit-scrollbar-thumb:hover,
+.modal-content::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--primary));
 }
 
-.hover\:bg-cow-purple-dark:hover {
-  background-color: hsl(var(--cow-purple-dark));
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--primary)) hsl(var(--muted) / 0.2);
 }
 
-.hover\:text-cow-purple:hover {
-  color: hsl(var(--primary));
+.scrollbar-hide,
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
-/* Additional CSS to ensure light/dark mode visibility */
-@media (prefers-color-scheme: light) {
-  .text-foreground {
-    color: hsl(var(--foreground));
-  }
-
-  .text-foreground\/80 {
-    color: hsl(var(--foreground) / 0.8);
-  }
-
-  .text-foreground\/70 {
-    color: hsl(var(--foreground) / 0.7);
-  }
+.scrollbar-hide::-webkit-scrollbar,
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
-/* Video.js Pixel Theme */
+.smooth-scroll {
+  scroll-behavior: smooth;
+}
+
+.enhanced-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--primary)) hsl(var(--muted) / 0.2);
+}
+
+.horizontal-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--primary)) hsl(var(--muted) / 0.2);
+}
+
+/* Video.js player theme */
 .video-js.vjs-custom-skin {
-  border: 2px solid hsl(var(--primary) / 0.5) !important;
-  border-radius: 0 !important;
+  border: 1px solid hsl(var(--border)) !important;
+  border-radius: var(--radius) !important;
 }
 
 .video-js .vjs-big-play-button {
-  background-color: hsl(var(--cow-purple)) !important;
+  background-color: hsl(var(--primary)) !important;
+  color: hsl(var(--primary-foreground)) !important;
   border: none !important;
   line-height: 1.5em !important;
   height: 1.5em !important;
@@ -289,16 +231,16 @@
   top: 50% !important;
   margin-left: -0.75em !important;
   margin-top: -0.75em !important;
-  border-radius: 0 !important;
+  border-radius: 9999px !important;
 }
 
 .video-js .vjs-control-bar {
-  background-color: hsl(var(--cow-dark) / 0.9) !important;
+  background-color: hsl(var(--background) / 0.9) !important;
 }
 
 .video-js .vjs-play-progress,
 .video-js .vjs-volume-level {
-  background-color: hsl(var(--cow-purple)) !important;
+  background-color: hsl(var(--primary)) !important;
 }
 
 .video-js .vjs-load-progress {

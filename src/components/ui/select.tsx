@@ -70,24 +70,6 @@ const SelectContent = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content>
 >(({ className, children, position = "popper", ...props }, ref) => {
-  // Add effect to prevent layout shift when opening select dropdown
-  React.useEffect(() => {
-    const html = document.documentElement;
-    const scrollbarWidth = window.innerWidth - html.clientWidth;
-    
-    if (scrollbarWidth > 0) {
-      const originalPaddingRight = getComputedStyle(html).getPropertyValue('padding-right');
-      
-      html.style.paddingRight = `${scrollbarWidth}px`;
-      html.style.overflow = 'hidden';
-      
-      return () => {
-        html.style.paddingRight = originalPaddingRight;
-        html.style.overflow = '';
-      };
-    }
-  }, []);
-
   return (
     <SelectPrimitive.Portal>
       <SelectPrimitive.Content

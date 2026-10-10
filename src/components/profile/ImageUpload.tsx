@@ -94,7 +94,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
                 variant="outline"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={uploading}
-                className="pixel-corners"
+                className=""
             >
                 {uploading ? (
                     <IconLoader className="w-4 h-4 mr-2 animate-spin" />

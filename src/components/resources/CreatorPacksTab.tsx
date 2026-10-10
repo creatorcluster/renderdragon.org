@@ -41,12 +41,12 @@ const CreatorPacksTab = () => {
                 {user && (
                     <div className="flex items-center gap-2">
                         <Link to="/creator-packs/manage">
-                            <Button variant="outline" className="pixel-corners font-geist">
+                            <Button variant="outline" className=" font-geist">
                                 Manage My Packs
                             </Button>
                         </Link>
                         <Link to="/creator-packs/new">
-                            <Button className="pixel-corners bg-cow-purple hover:bg-cow-purple/90 font-geist">
+                            <Button className=" bg-primary hover:bg-primary/90 font-geist">
                                 <IconPlus size={16} className="mr-2" />
                                 Upload Pack
                             </Button>
@@ -61,7 +61,7 @@ const CreatorPacksTab = () => {
                     onClick={() => setSelectedTag(null)}
                     className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors border ${selectedTag === null
                         ? 'bg-primary text-primary-foreground border-primary'
-                        : 'bg-muted/50 text-muted-foreground border-border hover:bg-muted font-geist'
+                        : 'bg-muted text-muted-foreground border-border hover:bg-muted font-geist'
                         }`}
                 >
                     All
@@ -72,7 +72,7 @@ const CreatorPacksTab = () => {
                         onClick={() => setSelectedTag(tag)}
                         className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors border ${selectedTag === tag
                             ? 'bg-primary text-primary-foreground border-primary'
-                            : 'bg-muted/50 text-muted-foreground border-border hover:bg-muted font-geist'
+                            : 'bg-muted text-muted-foreground border-border hover:bg-muted font-geist'
                             }`}
                     >
                         {tag}
@@ -85,7 +85,7 @@ const CreatorPacksTab = () => {
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="text-center py-20 bg-muted/5 rounded-xl border border-border/50 flex flex-col items-center justify-center p-6"
+                    className="text-center py-20 bg-muted rounded-xl border border-border/50 flex flex-col items-center justify-center p-6"
                 >
                     <IconPackage className="h-12 w-12 text-muted-foreground mb-4 opacity-50" />
                     <h3 className="text-xl font-geist mb-2 font-medium">No creator packs found</h3>
@@ -96,7 +96,7 @@ const CreatorPacksTab = () => {
                     </p>
                     {user && !selectedTag && (
                         <Link to="/creator-packs/new">
-                            <Button className="pixel-corners bg-cow-purple hover:bg-cow-purple/90">
+                            <Button className=" bg-primary hover:bg-primary/90">
                                 <IconPlus size={16} className="mr-2" />
                                 Upload Pack
                             </Button>

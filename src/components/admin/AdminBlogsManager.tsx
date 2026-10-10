@@ -59,17 +59,17 @@ export default function AdminBlogsManager() {
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <div>
-                    <h2 className="text-2xl font-jetbrains-mono mb-2">Blog Posts</h2>
+                    <h2 className="text-2xl mb-2">Blog Posts</h2>
                     <p className="text-muted-foreground text-sm">Manage your blog content.</p>
                 </div>
-                <Button asChild className="bg-cow-purple hover:bg-cow-purple/90 pixel-corners">
+                <Button asChild className="bg-primary hover:bg-primary/90 ">
                     <Link to="/admin/blogs/new">
                         <IconPlus className="mr-2 h-4 w-4" /> New Post
                     </Link>
                 </Button>
             </div>
 
-            <Card className="pixel-corners bg-card/50">
+            <Card className=" bg-card">
                 <CardContent className="p-0">
                     {loading ? (
                         <div className="p-8 flex justify-center"><IconLoader2 className="animate-spin" /></div>
@@ -87,9 +87,9 @@ export default function AdminBlogsManager() {
                             </TableHeader>
                             <TableBody>
                                 {blogs.map(blog => (
-                                    <TableRow key={blog.id} className="border-border/50 group hover:bg-muted/50">
+                                    <TableRow key={blog.id} className="border-border/50 group hover:bg-muted">
                                         <TableCell className="font-medium">
-                                            <Link to={`/admin/blogs/${blog.id}`} className="hover:underline hover:text-cow-purple">
+                                            <Link to={`/admin/blogs/${blog.id}`} className="hover:underline hover:text-primary">
                                                 {blog.title}
                                             </Link>
                                             <div className="text-xs text-muted-foreground font-mono">{blog.slug}</div>

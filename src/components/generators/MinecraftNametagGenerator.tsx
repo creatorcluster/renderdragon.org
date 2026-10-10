@@ -52,12 +52,12 @@ const MinecraftNametagGenerator = () => {
               onChange={(e) => setPlayerName(e.target.value)}
               placeholder="Enter player name"
               maxLength={16}
-              className="pixel-corners"
+              className=""
             />
           </div>
           <div>
             <Label htmlFor="nametag-font">Font</Label>
-            <select id="nametag-font" value={fontChoice} onChange={(event) => setFontChoice(event.target.value as keyof typeof fontConfig)} className="pixel-input mt-2 w-full">
+            <select id="nametag-font" value={fontChoice} onChange={(event) => setFontChoice(event.target.value as keyof typeof fontConfig)} className="rounded-lg border border-input bg-background px-3 py-2 mt-2 w-full">
               {Object.entries(fontConfig).map(([value, config]) => <option key={value} value={value}>{config.label}</option>)}
             </select>
           </div>
@@ -65,11 +65,11 @@ const MinecraftNametagGenerator = () => {
       </div>
 
       <div className="space-y-4">
-        <h2 className="text-xl font-jetbrains-mono">Rendered Nametag</h2>
+        <h2 className="text-xl ">Rendered Nametag</h2>
         <div className="flex flex-col items-center gap-4">
           <Card 
             ref={nametagContainerRef}
-            className="px-4 py-2 pixel-corners bg-black/40 flex items-center justify-center min-w-[60px] h-12 border-0"
+            className="px-4 py-2  bg-black/40 flex items-center justify-center min-w-[60px] h-12 border-0"
           >
             <div className="flex items-center justify-center h-full">
               {playerName ? (
@@ -98,7 +98,7 @@ const MinecraftNametagGenerator = () => {
           <div className="flex gap-4 w-full">
             <Button 
               onClick={exportAsPNG} 
-              className="flex-1 pixel-btn-primary"
+              className="flex-1 inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
               disabled={!playerName}
             >
               Export as PNG

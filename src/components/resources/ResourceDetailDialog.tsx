@@ -8,10 +8,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import ResourcePreview from './ResourcePreview';
-import { getCategoryIcon, getCategoryColor } from '@/utils/resourceCategories';
 import { DownloadProgress } from '@/lib/download';
 import { RESOURCES_REPO_RAW_BASE, RESOURCES_REPO_BLOB_BASE } from '@/lib/resourcesRepo';
 import { IconDownload, IconCopy, IconCheck, IconBrandGithub, IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
@@ -150,30 +148,26 @@ const ResourceDetailDialog = ({
 
   return (
     <Dialog open={!!resource} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-2xl pixel-corners border-2 border-cow-purple max-h-[90vh] overflow-y-auto custom-scrollbar">
+      <DialogContent className="sm:max-w-2xl  border border-border max-h-[90vh] overflow-y-auto custom-scrollbar">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-minecraftia">
+          <DialogTitle className="text-2xl font-bold">
             {resource.title}
           </DialogTitle>
-          <DialogDescription asChild className="flex items-center gap-2">
-            <div className="flex items-center gap-2">
-              <Badge
-                variant="outline"
-                className={getCategoryColor(resource.category || '')}
-              >
-                {getCategoryIcon(resource.category || '')}
-                <span className="ml-1 capitalize">{resource.category}</span>
-                {resource.subcategory && (
-                  <span className="ml-1">({resource.subcategory})</span>
-                )}
-              </Badge>
+          <DialogDescription asChild>
+            <div className="min-w-0 truncate text-sm text-muted-foreground">
+              <span className="capitalize">
+                {resource.category === 'minecraft-icons' ? 'Mcicons' : resource.category}
+              </span>
+              {resource.subcategory && (
+                <span className="text-muted-foreground/70"> · {resource.subcategory.replace(/\//g, ' / ')}</span>
+              )}
             </div>
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-5 py-2">
           <div className="border border-border rounded-md p-4">
-            <h4 className="font-jetbrains-mono text-lg mb-1">Attribution</h4>
+            <h4 className="text-lg mb-1">Attribution</h4>
 
             {resource.credit ? (
               <div className="space-y-2">
@@ -191,7 +185,7 @@ const ResourceDetailDialog = ({
                     variant="outline"
                     size="sm"
                     onClick={copyCredit}
-                    className="ml-2 h-8 flex items-center gap-1 pixel-corners"
+                    className="ml-2 h-8 flex items-center gap-1 "
                   >
                     {copied ? (
                       <>
@@ -236,7 +230,7 @@ const ResourceDetailDialog = ({
 
             <Button
               onClick={handleDownloadClick}
-              className="pixel-btn-primary flex items-center justify-center gap-2"
+              className="flex items-center justify-center gap-2"
               disabled={isDownloading}
             >
               <IconDownload className="h-5 w-5" />
@@ -265,7 +259,7 @@ const ResourceDetailDialog = ({
                     ? Math.min(100, (downloadProgress.loaded / downloadProgress.total) * 100)
                     : 100
                 }
-                className="h-2 pixel-corners"
+                className="h-2 "
               />
               <p className="text-xs text-muted-foreground text-center">
                 {downloadProgress.total

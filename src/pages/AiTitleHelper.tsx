@@ -90,61 +90,61 @@ const AiTitleHelper = () => {
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-8">
-            <h1 className="text-4xl md:text-5xl font-minecraftia">AI Title Helper</h1>
-            <p className="text-neutral-300 mt-2 font-jetbrains-mono">Generate multiple short, SEO-friendly YouTube titles. Only the titles are shown below.</p>
+            <h1 className="text-4xl md:text-5xl ">AI Title Helper</h1>
+            <p className="text-neutral-300 mt-2 ">Generate multiple short, SEO-friendly YouTube titles. Only the titles are shown below.</p>
           </div>
 
-          <form onSubmit={onSubmit} className="bg-background border border-border pixel-corners p-4 md:p-6 shadow-xl">
+          <form onSubmit={onSubmit} className="bg-background border border-border  p-4 md:p-6 shadow-xl">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="md:col-span-2">
-                <Label className="text-neutral-300 mb-2 inline-block font-jetbrains-mono">Description<span className="text-red-500">*</span></Label>
+                <Label className="text-neutral-300 mb-2 inline-block ">Description<span className="text-red-500">*</span></Label>
                 <Textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Describe your video idea and value proposition..."
-                  className="font-jetbrains-mono h-28 resize-y pixel-corners bg-neutral-900 border border-neutral-700 focus:border-cow-purple focus:ring-cow-purple/30"
+                  className="h-28 resize-y  bg-neutral-900 border border-neutral-700 focus:border-primary focus:ring-primary/30"
                 />
               </div>
 
               <div>
-                <Label className="text-neutral-300 mb-2 inline-block font-jetbrains-mono">Keywords (comma-separated)</Label>
+                <Label className="text-neutral-300 mb-2 inline-block ">Keywords (comma-separated)</Label>
                 <Input
                   type="text"
                   value={keywords}
                   onChange={(e) => setKeywords(e.target.value)}
                   placeholder="e.g. AI, coding, tutorials"
-                  className="font-jetbrains-mono pixel-corners bg-neutral-900 border border-neutral-700 focus:border-cow-purple focus:ring-cow-purple/30"
+                  className=" bg-neutral-900 border border-neutral-700 focus:border-primary focus:ring-primary/30"
                 />
               </div>
 
               <div>
-                <Label className="text-neutral-300 mb-2 inline-block font-jetbrains-mono">Niche</Label>
+                <Label className="text-neutral-300 mb-2 inline-block ">Niche</Label>
                 <Input
                   type="text"
                   value={niche}
                   onChange={(e) => setNiche(e.target.value)}
                   placeholder="e.g. programming, fitness"
-                  className="font-jetbrains-mono pixel-corners bg-neutral-900 border border-neutral-700 focus:border-cow-purple focus:ring-cow-purple/30"
+                  className=" bg-neutral-900 border border-neutral-700 focus:border-primary focus:ring-primary/30"
                 />
               </div>
 
               <div>
-                <Label className="text-neutral-300 mb-2 inline-block font-jetbrains-mono">Language</Label>
+                <Label className="text-neutral-300 mb-2 inline-block ">Language</Label>
                 <Input
                   type="text"
                   value={language}
                   onChange={(e) => setLanguage(e.target.value)}
                   placeholder="e.g. English"
-                  className="font-jetbrains-mono pixel-corners bg-neutral-900 border border-neutral-700 focus:border-cow-purple focus:ring-cow-purple/30"
+                  className=" bg-neutral-900 border border-neutral-700 focus:border-primary focus:ring-primary/30"
                 />
               </div>
             </div>
 
-            <div className="mt-4 flex items-center gap-3 font-jetbrains-mono">
+            <div className="mt-4 flex items-center gap-3 ">
               <Button
                 type="submit"
                 disabled={loading}
-                className="pixel-btn-primary"
+                className="inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
               >
                 {loading ? 'Generating…' : 'Generate Titles'}
               </Button>
@@ -155,21 +155,21 @@ const AiTitleHelper = () => {
           {titles.length > 0 && (
             <section className="mt-10">
               <div className="flex items-center gap-3 mb-4">
-                <h2 className="text-2xl font-jetbrains-mono">Titles</h2>
+                <h2 className="text-2xl ">Titles</h2>
                 <span className="text-xs text-neutral-400">{titles.length} suggestions</span>
               </div>
               <div className="flex flex-wrap items-start gap-2">
                 {titles.map((t, i) => (
                   <div key={i} className="flex items-center">
-                    <Card className="pixel-corners border border-neutral-800 bg-card text-card-foreground shadow">
+                    <Card className=" border border-neutral-800 bg-card text-card-foreground shadow">
                       <CardContent className="py-2 px-3">
                         <div className="flex items-center gap-2">
-                          <span className="whitespace-pre-line font-minecraftia flex-1">{t}</span>
+                          <span className="whitespace-pre-line flex-1">{t}</span>
                           <Button
                             type="button"
                             size="sm"
                             variant="outline"
-                            className="pixel-corners"
+                            className=""
                             onClick={async () => {
                               try {
                                 await navigator.clipboard.writeText(t);

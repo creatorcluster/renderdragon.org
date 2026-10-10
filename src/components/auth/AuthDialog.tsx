@@ -118,9 +118,9 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="pixel-corners max-w-md border-2 border-cow-purple">
+      <DialogContent className=" max-w-md border-2 border-primary">
         <DialogHeader>
-          <DialogTitle className="font-minecraftia text-center text-2xl">
+          <DialogTitle className="text-center text-2xl">
             {isLogin ? 'Sign In' : 'Create Account'}
           </DialogTitle>
         </DialogHeader>
@@ -143,7 +143,7 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="pixel-corners pl-10"
+                className=" pl-10"
                 placeholder="Enter your email"
                 required
               />
@@ -169,7 +169,7 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
                     type="text"
                     value={displayName}
                     onChange={(e) => setDisplayName(e.target.value)}
-                    className="pixel-corners pl-10"
+                    className=" pl-10"
                     placeholder="How others will see you"
                     required={!isLogin}
                   />
@@ -189,7 +189,7 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="pixel-corners pl-10 pr-10"
+                className=" pl-10 pr-10"
                 placeholder="Enter your password"
                 required
               />
@@ -224,7 +224,7 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
             >
               <Button
                 type="submit"
-                className="pixel-btn-primary w-full"
+                className="inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 w-full"
                 disabled={!isFormValid()}
               >
                 {loading ? (
@@ -255,7 +255,7 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
               type="button"
               variant="link"
               onClick={toggleMode}
-              className="text-sm text-cow-purple hover:text-cow-purple/80"
+              className="text-sm text-primary hover:text-primary/80"
             >
               Don't have an account? Sign up
             </Button>
@@ -264,7 +264,7 @@ const AuthDialog = ({ open, onOpenChange }: AuthDialogProps) => {
               type="button"
               variant="link"
               onClick={toggleMode}
-              className="text-sm text-cow-purple hover:text-cow-purple/80"
+              className="text-sm text-primary hover:text-primary/80"
             >
               Already have an account? Sign in
             </Button>

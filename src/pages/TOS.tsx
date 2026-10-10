@@ -22,26 +22,26 @@ const TOS = () => {
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto">
-            <h1 className="text-4xl md:text-5xl font-minecraftia mb-8 text-center">
-              Terms of <span className="text-cow-purple">Service</span>
+            <h1 className="text-4xl md:text-5xl mb-8 text-center">
+              Terms of <span className="text-primary">Service</span>
             </h1>
 
-            <div className="pixel-card space-y-6">
+            <div className="rounded-xl border border-border bg-card p-4 space-y-6">
               <div className="space-y-4 text-muted-foreground">
-                <h2 className="text-2xl font-jetbrains-mono text-foreground">1. Acceptance of Terms</h2>
+                <h2 className="text-2xl text-foreground">1. Acceptance of Terms</h2>
                 <p>
                   By accessing and using Renderdragon ("the Website"), you accept and agree to be bound by these
                   Terms of Service. If you do not agree to these terms, please do not use the Website.
                 </p>
 
-                <h2 className="text-2xl font-jetbrains-mono text-foreground">2. Use of Resources</h2>
+                <h2 className="text-2xl text-foreground">2. Use of Resources</h2>
                 <p>
                   All resources provided on Renderdragon are available for free for both personal and commercial use,
                   unless otherwise stated on the specific resource. Some assets may require attribution to the original creator,
                   which will be clearly indicated on the resource page.
                 </p>
 
-                <h2 className="text-2xl font-jetbrains-mono text-foreground">3. Limitation of Liability</h2>
+                <h2 className="text-2xl text-foreground">3. Limitation of Liability</h2>
                 <p>
                   All resources and tools on Renderdragon are provided "as is" without any warranties, expressed or implied.
                   In no event shall Renderdragon be liable for any damages including, but not limited to,
@@ -49,7 +49,7 @@ const TOS = () => {
                   the Website, its resources, or its tools.
                 </p>
 
-                <h2 className="text-2xl font-jetbrains-mono text-foreground">4. Copyright and Intellectual Property</h2>
+                <h2 className="text-2xl text-foreground">4. Copyright and Intellectual Property</h2>
                 <p>
                   The content on Renderdragon, including but not limited to text, graphics, logos, and software, is either
                   the property of Renderdragon or used with permission from the respective creators.
@@ -58,7 +58,7 @@ const TOS = () => {
                   terms specified on individual resource pages.
                 </p>
 
-                <h2 className="text-2xl font-jetbrains-mono text-foreground">5. Copyright Issues</h2>
+                <h2 className="text-2xl text-foreground">5. Copyright Issues</h2>
                 <p>
                   Renderdragon is a free library of community-submitted and openly available resources for content creators.
                   While we strive to ensure that most assets are copyright-free or licensed for commercial use,
@@ -80,7 +80,7 @@ const TOS = () => {
                   to report it. We take such concerns seriously and will respond promptly.
                 </p>
 
-                <h2 className="text-2xl font-jetbrains-mono text-foreground">6. User Conduct</h2>
+                <h2 className="text-2xl text-foreground">6. User Conduct</h2>
                 <p>Users of Renderdragon agree not to:</p>
                 <ul className="list-disc pl-6 space-y-1">
                   <li>Use the Website for any unlawful or malicious purpose</li>
@@ -89,14 +89,14 @@ const TOS = () => {
                   <li>Falsely claim ownership or authorship of any resource found on the Website</li>
                 </ul>
 
-                <h2 className="text-2xl font-jetbrains-mono text-foreground">7. Changes to Terms</h2>
+                <h2 className="text-2xl text-foreground">7. Changes to Terms</h2>
                 <p>
                   Renderdragon reserves the right to modify or update these Terms of Service at any time without prior notice.
                   Changes will be effective immediately upon posting. Continued use of the Website after any changes
                   constitutes your acceptance of the revised terms.
                 </p>
 
-                <h2 className="text-2xl font-jetbrains-mono text-foreground">8. Contact Information</h2>
+                <h2 className="text-2xl text-foreground">8. Contact Information</h2>
                 <p>
                   If you have any questions about these Terms of Service, copyright concerns, or need assistance,
                   please reach out to us via the Contact page on <a href="https://renderdragon.org" className="underline">renderdragon.org</a>.

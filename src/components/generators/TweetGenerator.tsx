@@ -48,7 +48,7 @@ const TweetGenerator = () => {
               value={profilePicUrl}
               onChange={(e) => setProfilePicUrl(e.target.value)}
               placeholder="e.g., https://via.placeholder.com/48"
-              className="pixel-corners"
+              className=""
             />
           </div>
 
@@ -60,7 +60,7 @@ const TweetGenerator = () => {
               onChange={(e) => setUserName(e.target.value)}
               maxLength={50}
               placeholder="e.g., Elon Musk"
-              className="pixel-corners"
+              className=""
             />
           </div>
 
@@ -72,7 +72,7 @@ const TweetGenerator = () => {
               onChange={(e) => setUserHandle(e.target.value)}
               maxLength={15}
               placeholder="e.g., elonmusk"
-              className="pixel-corners"
+              className=""
             />
           </div>
 
@@ -84,7 +84,7 @@ const TweetGenerator = () => {
               onChange={(e) => setTweetText(e.target.value)}
               maxLength={280}
               placeholder="What's happening?"
-              className="pixel-corners"
+              className=""
               rows={3}
             />
           </div>
@@ -96,7 +96,7 @@ const TweetGenerator = () => {
               value={timestamp}
               onChange={(e) => setTimestamp(e.target.value)}
               placeholder="e.g., 3m ago"
-              className="pixel-corners"
+              className=""
             />
           </div>
 
@@ -107,7 +107,7 @@ const TweetGenerator = () => {
               value={viewsCount}
               onChange={(e) => setViewsCount(e.target.value)}
               placeholder="e.g., 1.5M Views"
-              className="pixel-corners"
+              className=""
             />
           </div>
 
@@ -123,7 +123,7 @@ const TweetGenerator = () => {
       </div>
 
       <div className="space-y-4">
-        <h2 className="text-xl font-jetbrains-mono">Twitter Preview</h2>
+        <h2 className="text-xl ">Twitter Preview</h2>
         <div
           ref={tweetPreviewRef}
           className="w-full max-w-xl"
@@ -171,10 +171,10 @@ const TweetGenerator = () => {
           </div>
         </div>
         <div className="flex gap-4 mt-4">
-          <Button onClick={() => setIsDarkMode(!isDarkMode)} className="flex-1 pixel-btn-primary">
+          <Button onClick={() => setIsDarkMode(!isDarkMode)} className="flex-1 inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
             Toggle Theme
           </Button>
-          <Button onClick={exportAsPNG} className="flex-1 pixel-btn-primary">
+          <Button onClick={exportAsPNG} className="flex-1 inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">
             Export as PNG
           </Button>
         </div>

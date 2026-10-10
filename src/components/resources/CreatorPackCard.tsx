@@ -15,14 +15,14 @@ const CreatorPackCard = ({ pack }: CreatorPackCardProps) => {
     return (
         <Link to={`/creator-packs/${pack.slug}`}>
             <motion.div
-                className="pixel-card group cursor-pointer hover:border-primary transition-all duration-300 h-full flex flex-col overflow-hidden"
+                className="group h-full cursor-pointer overflow-hidden rounded-xl border border-border bg-card transition-all duration-300 hover:-translate-y-1 hover:border-primary/60 flex flex-col"
                 whileHover={{ y: -5 }}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.2 }}
             >
                 {/* Cover Image */}
-                <div className="relative aspect-video bg-muted/20 rounded-md overflow-hidden mb-3">
+                <div className="relative aspect-video bg-muted rounded-md overflow-hidden mb-3">
                     {pack.cover_image_url ? (
                         <img
                             src={pack.cover_image_url}

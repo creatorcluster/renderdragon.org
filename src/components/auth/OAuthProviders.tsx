@@ -23,7 +23,7 @@ export const OAuthProviders = () => {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4">
                 <Button
                     variant="outline"
-                    className="pixel-btn-secondary w-full"
+                    className="inline-flex items-center justify-center rounded-full border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent w-full"
                     onClick={async () => {
                         setLoading(true);
                         const { error } = await signInWithGoogle();
@@ -43,7 +43,7 @@ export const OAuthProviders = () => {
                 </Button>
                 <Button
                     variant="outline"
-                    className="pixel-btn-secondary w-full"
+                    className="inline-flex items-center justify-center rounded-full border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent w-full"
                     onClick={async () => {
                         setLoading(true);
                         const { error } = await signInWithGitHub();
@@ -63,7 +63,7 @@ export const OAuthProviders = () => {
                 </Button>
                 <Button
                     variant="outline"
-                    className="pixel-btn-secondary w-full"
+                    className="inline-flex items-center justify-center rounded-full border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent w-full"
                     onClick={async () => {
                         setLoading(true);
                         const { error } = await signInWithDiscord();

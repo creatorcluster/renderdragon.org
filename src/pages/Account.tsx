@@ -132,23 +132,23 @@ const Account = () => {
             className="max-w-2xl mx-auto"
           >
             <div className="flex items-center gap-3 mb-8">
-              <IconUser className="h-8 w-8 text-cow-purple" />
-              <h1 className="text-4xl md:text-5xl font-minecraftia">
-                My <span className="text-cow-purple">Account</span>
+              <IconUser className="h-8 w-8 text-primary" />
+              <h1 className="text-4xl md:text-5xl ">
+                My <span className="text-primary">Account</span>
               </h1>
             </div>
 
-            <Card className="pixel-corners border-2 border-cow-purple/20">
+            <Card className=" border-2 border-primary/20">
               <CardHeader className="pb-4">
                 <CardTitle className="flex items-center gap-3">
                   <Avatar className="h-16 w-16">
                     {safeAvatarSrc ? <AvatarImage src={safeAvatarSrc} referrerPolicy="no-referrer" /> : null}
-                    <AvatarFallback className="bg-cow-purple text-white font-bold text-lg">
+                    <AvatarFallback className="bg-primary text-white font-bold text-lg">
                       {getInitials(displayName || user.email || 'U')}
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <h2 className="text-2xl font-jetbrains-mono">{displayName || 'User'}</h2>
+                    <h2 className="text-2xl ">{displayName || 'User'}</h2>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <IconMail className="h-4 w-4" />
                       {user.email}
@@ -162,7 +162,7 @@ const Account = () => {
               <CardContent className="pt-6">
                 <form onSubmit={handleUpdateProfile} className="space-y-6">
                   <div className="space-y-4">
-                    <h3 className="text-lg font-jetbrains-mono text-cow-purple">Profile Information</h3>
+                    <h3 className="text-lg text-primary">Profile Information</h3>
 
                     <div className="space-y-2">
                       <Label htmlFor="displayName">Display Name</Label>
@@ -171,7 +171,7 @@ const Account = () => {
                         value={displayName}
                         onChange={(e) => setDisplayName(e.target.value)}
                         placeholder="How others will see you"
-                        className="pixel-corners"
+                        className=""
                       />
                     </div>
 
@@ -183,7 +183,7 @@ const Account = () => {
                           value={firstName}
                           onChange={(e) => setFirstName(e.target.value)}
                           placeholder="Your first name"
-                          className="pixel-corners"
+                          className=""
                         />
                       </div>
 
@@ -194,7 +194,7 @@ const Account = () => {
                           value={lastName}
                           onChange={(e) => setLastName(e.target.value)}
                           placeholder="Your last name"
-                          className="pixel-corners"
+                          className=""
                         />
                       </div>
                     </div>
@@ -203,7 +203,7 @@ const Account = () => {
                   <Separator />
 
                   <div className="space-y-4">
-                    <h3 className="text-lg font-jetbrains-mono text-cow-purple">Account Details</h3>
+                    <h3 className="text-lg text-primary">Account Details</h3>
 
                     <div className="space-y-3 text-sm">
                       <div className="flex items-center gap-2">
@@ -225,7 +225,7 @@ const Account = () => {
                   <Separator />
 
                   <div className="space-y-4">
-                    <h3 className="text-lg font-jetbrains-mono text-cow-purple">Preferences</h3>
+                    <h3 className="text-lg text-primary">Preferences</h3>
 
 
                   </div>
@@ -234,7 +234,7 @@ const Account = () => {
                     <Button
                       type="submit"
                       disabled={isUpdating}
-                      className="pixel-btn-primary"
+                      className="inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
                     >
                       {isUpdating ? 'Updating...' : 'Update Profile'}
                     </Button>
@@ -243,7 +243,7 @@ const Account = () => {
                       type="button"
                       variant="outline"
                       onClick={handleSignOut}
-                      className="pixel-corners border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+                      className=" border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
                     >
                       <IconLogout className="h-4 w-4 mr-2" />
                       Sign Out

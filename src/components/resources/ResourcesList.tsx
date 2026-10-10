@@ -121,13 +121,13 @@ const ResourcesList = ({
           <Button
             onClick={onClearFilters}
             variant="outline"
-            className="pixel-corners"
+            className=""
           >
             <IconX className="mr-2 h-4 w-4" />
             Clear Filters
           </Button>
           <Button
-            className="pixel-corners bg-cow-purple hover:bg-cow-purple/80"
+            className=" bg-primary hover:bg-primary/90"
             onClick={() =>
               window.open("https://discord.renderdragon.org", "_blank", "noopener,noreferrer")
             }
@@ -140,7 +140,7 @@ const ResourcesList = ({
             Contribute Resources
           </Button>
           <Button
-            className="pixel-corners bg-cow-purple hover:bg-cow-purple/80"
+            className=" bg-primary hover:bg-primary/90"
             onClick={() =>
               window.open(
                 "https://creatoronwheels.netlify.app/resources",

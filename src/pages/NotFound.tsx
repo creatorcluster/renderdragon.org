@@ -48,7 +48,7 @@ const NotFound = () => {
 
         <main className="font-geist flex-grow pt-32 pb-20 cow-grid-bg flex items-center justify-center relative overflow-hidden">
         <motion.div
-          className="absolute w-8 h-8 bg-cow-purple/20 rounded-sm"
+          className="absolute w-8 h-8 bg-primary/20 rounded-sm"
           animate={{
             x: ["-10vw", "110vw"],
             y: ["-10vh", "110vh"],
@@ -97,7 +97,7 @@ const NotFound = () => {
           animate="visible"
         >
           <motion.div
-            className="text-cow-purple mb-4 relative"
+            className="text-primary mb-4 relative"
             variants={itemVariants}
           >
              <motion.div
@@ -157,7 +157,7 @@ const NotFound = () => {
             <motion.div whileHover={blockHover} whileTap={{ scale: 0.95 }}>
               <Link
                 to="/"
-                className="pixel-btn-primary inline-flex items-center gap-2 px-6 py-3 text-sm transition-all"
+                className="inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 inline-flex items-center gap-2 px-6 py-3 text-sm transition-all"
               >
                 <IconHome className="h-5 w-5" />
                 <span>Return to Home</span>
@@ -167,7 +167,7 @@ const NotFound = () => {
             <motion.div whileHover={blockHover} whileTap={{ scale: 0.95 }}>
               <Link
                 to="/resources"
-                className="pixel-btn-secondary inline-flex items-center gap-2 px-6 py-3 text-sm transition-all"
+                className="inline-flex items-center justify-center rounded-full border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent inline-flex items-center gap-2 px-6 py-3 text-sm transition-all"
               >
                 <IconCompass className="h-5 w-5" />
                 <span>Explore Resources</span>
@@ -176,7 +176,7 @@ const NotFound = () => {
           </motion.div>
 
           <motion.div
-            className="mt-6 pixel-card border-dashed border-cow-purple/30 bg-background/50 px-6 py-4 relative"
+            className="mt-6 rounded-xl border border-border bg-card p-4 border-dashed border-primary/30 bg-background px-6 py-4 relative"
             variants={itemVariants}
             whileHover={{
               boxShadow: "0 0 15px rgba(147, 51, 234, 0.3)",
@@ -184,7 +184,7 @@ const NotFound = () => {
             }}
           >
             <motion.div
-              className="absolute -top-3 -left-3 w-6 h-6 bg-cow-purple/20 rounded-sm"
+              className="absolute -top-3 -left-3 w-6 h-6 bg-primary/20 rounded-sm"
               animate={{ rotate: [0, 360] }}
               transition={{
                 duration: 8,
@@ -193,7 +193,7 @@ const NotFound = () => {
               }}
             />
             <motion.div
-              className="absolute -bottom-3 -right-3 w-6 h-6 bg-cow-purple/20 rounded-sm"
+              className="absolute -bottom-3 -right-3 w-6 h-6 bg-primary/20 rounded-sm"
               animate={{ rotate: [360, 0] }}
               transition={{
                 duration: 8,

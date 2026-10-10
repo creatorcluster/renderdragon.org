@@ -23,13 +23,13 @@ const Privacy = () => {
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto">
-            <h1 className="text-4xl md:text-5xl font-minecraftia mb-8 text-center">
-              Privacy <span className="text-cow-purple">Policy</span>
+            <h1 className="text-4xl md:text-5xl mb-8 text-center">
+              Privacy <span className="text-primary">Policy</span>
             </h1>
 
-            <div className="pixel-card space-y-6">
+            <div className="rounded-xl border border-border bg-card p-4 space-y-6">
               <div className="space-y-4 text-muted-foreground">
-                <h2 className="text-2xl font-jetbrains-mono text-foreground">1. Information We Collect</h2>
+                <h2 className="text-2xl text-foreground">1. Information We Collect</h2>
                 <p>
                   Renderdragon is committed to protecting your privacy. We do not collect personal information
                   such as names, emails, or phone numbers. The only data we collect is limited to standard web server logs, which may include:
@@ -42,14 +42,14 @@ const Privacy = () => {
                   <li>Time and date of access</li>
                 </ul>
 
-                <h2 className="text-2xl font-jetbrains-mono text-foreground">2. How We Use Information</h2>
+                <h2 className="text-2xl text-foreground">2. How We Use Information</h2>
                 <p>
                   The information we collect is used exclusively to monitor site performance, detect technical issues,
                   and understand general usage trends to improve the website experience.
                   We do not share, sell, rent, or trade your data with third parties, unless legally required.
                 </p>
 
-                <h2 className="text-2xl font-jetbrains-mono text-foreground">3. Cookies</h2>
+                <h2 className="text-2xl text-foreground">3. Cookies</h2>
                 <p>
                   Renderdragon uses cookies for essential site functionality and user experience (e.g., remembering light/dark mode).
                   We also set one first-party cookie that stores a random, anonymous visitor ID. It is used only to tell new visitors
@@ -58,48 +58,48 @@ const Privacy = () => {
                   You can disable cookies in your browser settings, but some features may not work correctly.
                 </p>
 
-                <h2 className="text-2xl font-jetbrains-mono text-foreground">4. Analytics</h2>
+                <h2 className="text-2xl text-foreground">4. Analytics</h2>
                 <p>
                   Website traffic statistics are collected by our own analytics service running on a self-hosted Cloudflare Worker.
                   It records page paths, referrers, and the country a request came from, along with the anonymous visitor ID
                   described above. We do not store your IP address, and no data is shared with third-party analytics providers.
                 </p>
 
-                <h2 className="text-2xl font-jetbrains-mono text-foreground">5. External Links</h2>
+                <h2 className="text-2xl text-foreground">5. External Links</h2>
                 <p>
                   Our website may link to third-party sites or tools (e.g., YouTube, Spotify, Discord).
                   We are not responsible for the content or privacy practices of those external websites.
                   Please read their privacy policies before engaging with their services.
                 </p>
 
-                <h2 className="text-2xl font-jetbrains-mono text-foreground">6. Data Security</h2>
+                <h2 className="text-2xl text-foreground">6. Data Security</h2>
                 <p>
                   We take reasonable steps to secure all data collected through encrypted connections (HTTPS)
                   and limited-access server environments. However, no online system is completely immune to risks,
                   so we recommend not sharing sensitive personal information on any part of our platform.
                 </p>
 
-                <h2 className="text-2xl font-jetbrains-mono text-foreground">7. Children's Privacy</h2>
+                <h2 className="text-2xl text-foreground">7. Children's Privacy</h2>
                 <p>
                   Renderdragon is not intended for children under the age of 13.
                   We do not knowingly collect or store data from children. If you believe that a child under 13 has provided us with personal data,
                   please contact us immediately and we will take appropriate action.
                 </p>
 
-                <h2 className="text-2xl font-jetbrains-mono text-foreground">8. Your Data Rights</h2>
+                <h2 className="text-2xl text-foreground">8. Your Data Rights</h2>
                 <p>
                   You have the right to request access to any data we may hold about you (if any),
                   or to request deletion of that data. Since we don't collect user accounts or personal identifiers,
                   such requests are rarely needed, but we're happy to help. Just contact us via the Contact page or Discord.
                 </p>
 
-                <h2 className="text-2xl font-jetbrains-mono text-foreground">9. Changes to This Policy</h2>
+                <h2 className="text-2xl text-foreground">9. Changes to This Policy</h2>
                 <p>
                   We may update this Privacy Policy to reflect changes to our practices or for legal reasons.
                   Any updates will be posted here, and the "Last updated" date will be changed accordingly.
                 </p>
 
-                <h2 className="text-2xl font-jetbrains-mono text-foreground">10. Contact Information</h2>
+                <h2 className="text-2xl text-foreground">10. Contact Information</h2>
                 <p>
                   If you have any questions, feedback, or concerns about your privacy on Renderdragon,
                   please reach out to us through the Contact page or join our Discord server.

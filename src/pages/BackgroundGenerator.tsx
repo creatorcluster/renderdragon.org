@@ -638,8 +638,8 @@ const BackgroundGenerator = () => {
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="container mx-auto px-4">
           <div className="max-w-7xl mx-auto">
-            <h1 className="text-4xl md:text-5xl font-minecraftia mb-8 text-center">
-              <span className="text-cow-purple">Background</span> Generator
+            <h1 className="text-4xl md:text-5xl mb-8 text-center">
+              <span className="text-primary">Background</span> Generator
             </h1>
 
              <p className="text-center text-muted-foreground mb-8 max-w-xl mx-auto">
@@ -658,12 +658,12 @@ const BackgroundGenerator = () => {
                 }}
                className="mb-8"
              >
-               <TabsList className="mx-auto grid h-14 w-full max-w-md grid-cols-2 pixel-corners bg-black/20 p-1">
-                 <TabsTrigger value="image" className="gap-2 pixel-corners text-sm">
+               <TabsList className="mx-auto grid h-14 w-full max-w-md grid-cols-2  bg-black/20 p-1">
+                 <TabsTrigger value="image" className="gap-2  text-sm">
                    <IconPhoto className="h-4 w-4" />
                    Image
                  </TabsTrigger>
-                  <TabsTrigger value="video" className="gap-2 pixel-corners text-sm">
+                  <TabsTrigger value="video" className="gap-2  text-sm">
                     <IconPlayerPlay className="h-4 w-4" />
                     Video (WebM)
                  </TabsTrigger>
@@ -672,14 +672,14 @@ const BackgroundGenerator = () => {
 
               <div className="grid grid-cols-1 items-start gap-8 md:grid-cols-3">
                 <div
-                  className="pixel-card relative flex flex-col space-y-6 border-l-4 border-l-cow-purple/70 shadow-2xl shadow-cow-purple/10 md:sticky md:top-24 md:col-span-1 md:h-[var(--preview-card-height)] md:max-h-[calc(100vh-7rem)] md:overflow-y-auto md:overscroll-contain md:custom-scrollbar"
+                  className="rounded-xl border border-border bg-card p-4 relative flex flex-col space-y-6 border-l-2 border-l-primary/60 shadow-2xl shadow-primary/10 md:sticky md:top-24 md:col-span-1 md:h-[var(--preview-card-height)] md:max-h-[calc(100vh-7rem)] md:overflow-y-auto md:overscroll-contain md:custom-scrollbar"
                   style={previewCardHeight ? ({ "--preview-card-height": `${previewCardHeight}px` } as React.CSSProperties) : undefined}
                 >
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Select images</label>
                     <Tabs defaultValue="library" className="w-full">
-                      <TabsList className="grid w-full grid-cols-2 pixel-corners h-9 mb-2">
+                      <TabsList className="grid w-full grid-cols-2  h-9 mb-2">
                         <TabsTrigger value="library" className="text-xs">Library</TabsTrigger>
                         <TabsTrigger value="upload" className="text-xs">Upload</TabsTrigger>
                       </TabsList>
@@ -693,7 +693,7 @@ const BackgroundGenerator = () => {
                             onChange={(event) => setTextureSearch(event.target.value)}
                             placeholder="Search textures..."
                             aria-label="Search textures"
-                            className="h-8 pl-8 pr-8 text-xs pixel-corners"
+                            className="h-8 pl-8 pr-8 text-xs "
                           />
                           {textureSearch && (
                             <button
@@ -710,7 +710,7 @@ const BackgroundGenerator = () => {
                           <ScrollArea className="h-48 p-2">
                             {isLoadingTextures ? (
                               <div className="flex flex-col items-center justify-center h-full space-y-2 py-8">
-                                <IconRefresh className="h-5 w-5 animate-spin text-cow-purple" />
+                                <IconRefresh className="h-5 w-5 animate-spin text-primary" />
                                 <span className="text-xs text-muted-foreground">Loading icons...</span>
                               </div>
                             ) : (
@@ -727,8 +727,8 @@ const BackgroundGenerator = () => {
                                        source: "library",
                                      })}
                                      className={`relative aspect-square border-2 rounded-sm overflow-hidden p-1 transition-all ${selectedImages.some((image) => image.id === `library-${texture.id}`)
-                                       ? "border-cow-purple bg-cow-purple/20"
-                                       : "border-transparent hover:border-cow-purple/50 bg-white/5"
+                                       ? "border-primary bg-primary/20"
+                                       : "border-transparent hover:border-primary/50 bg-white/5"
                                        }`}
                                      title={texture.title}
                                    >
@@ -739,7 +739,7 @@ const BackgroundGenerator = () => {
                                        className="w-full h-full object-contain pixelated"
                                      />
                                      {selectedImages.some((image) => image.id === `library-${texture.id}`) && (
-                                       <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-cow-purple text-[10px] font-bold text-white">✓</span>
+                                       <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white">✓</span>
                                      )}
                                    </button>
                                  ))}
@@ -756,7 +756,7 @@ const BackgroundGenerator = () => {
                                   variant="outline"
                                   size="sm"
                                   onClick={() => setVisibleTexturesCount(prev => prev + 40)}
-                                  className="text-xs pixel-corners h-8"
+                                  className="text-xs  h-8"
                                 >
                                   Load More ({filteredTextures.length - visibleTexturesCount} remaining)
                                 </Button>
@@ -781,7 +781,7 @@ const BackgroundGenerator = () => {
                               onClick={() => {
                                 fileInputRef.current?.click();
                               }}
-                              className="pixel-btn-primary flex-grow flex items-center justify-center space-x-2"
+                              className="inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 flex-grow flex items-center justify-center space-x-2"
                             >
                               <IconUpload className="h-5 w-5" />
                               <span>Add Images</span>
@@ -791,7 +791,7 @@ const BackgroundGenerator = () => {
                                 variant="outline"
                                 size="icon"
                                 onClick={clearAllUploads}
-                                className="pixel-corners"
+                                className=""
                                 title="Remove uploaded images"
                               >
                                 <IconTrash className="h-5 w-5" />
@@ -801,7 +801,7 @@ const BackgroundGenerator = () => {
                           {uploadedImages.length > 0 && (
                             <div className="grid grid-cols-4 gap-2">
                               {uploadedImages.map((image) => (
-                                <div key={image.id} className={`group relative aspect-square overflow-hidden rounded-sm border-2 bg-black/10 ${selectedImages.some((selected) => selected.id === image.id) ? "border-cow-purple" : "border-transparent"}`}>
+                                <div key={image.id} className={`group relative aspect-square overflow-hidden rounded-sm border-2 bg-black/10 ${selectedImages.some((selected) => selected.id === image.id) ? "border-primary" : "border-transparent"}`}>
                                   <button type="button" aria-pressed={selectedImages.some((selected) => selected.id === image.id)} onClick={() => toggleImageSelection(image)} className="h-full w-full p-1" title={`${selectedImages.some((selected) => selected.id === image.id) ? "Deselect" : "Select"} ${image.title}`}>
                                     <img src={image.url} alt={image.title} className="h-full w-full object-contain" />
                                   </button>
@@ -849,14 +849,14 @@ const BackgroundGenerator = () => {
                             invalidateGeneration();
                             setRandomSeed((seed) => seed + 1);
                           }}
-                          className="h-7 gap-1.5 px-2 text-xs pixel-corners"
+                          className="h-7 gap-1.5 px-2 text-xs "
                         >
                           <IconRefresh className="h-3.5 w-3.5" />
                           Randomize
                         </Button>
                       </div>
                       <Select value={patternType} onValueChange={(value: PatternType) => setPatternType(value)}>
-                        <SelectTrigger className="pixel-corners">
+                        <SelectTrigger className="">
                           <SelectValue placeholder="Choose a pattern" />
                         </SelectTrigger>
                         <SelectContent>
@@ -872,7 +872,7 @@ const BackgroundGenerator = () => {
                      <div className="space-y-2 rounded-sm border border-primary/20 bg-black/10 p-3">
                        <div className="flex items-center justify-between gap-3">
                          <div className="flex items-center gap-2">
-                           <IconRotateClockwise className="h-4 w-4 text-cow-purple" />
+                           <IconRotateClockwise className="h-4 w-4 text-primary" />
                            <label className="text-sm font-medium">Texture rotation</label>
                          </div>
                          <span className="text-xs text-muted-foreground">{rotation[0]}°</span>
@@ -884,7 +884,7 @@ const BackgroundGenerator = () => {
                          max={360}
                          step={1}
                          aria-label="Texture rotation"
-                         className="pixel-corners"
+                         className=""
                        />
                        <div className="flex justify-between text-[10px] text-muted-foreground">
                          <span>0°</span>
@@ -896,7 +896,7 @@ const BackgroundGenerator = () => {
                      </div>
 
                       {outputMode === "video" && (
-                       <div className="space-y-4 rounded-sm border border-cow-purple/30 bg-cow-purple/10 p-3">
+                       <div className="space-y-4 rounded-sm border border-primary/30 bg-primary/10 p-3">
                          <div>
                            <p className="text-sm font-semibold">Animation controls</p>
                            <p className="mt-1 text-xs text-muted-foreground">Create a repeating right-to-left WebM loop for the selected duration.</p>
@@ -907,7 +907,7 @@ const BackgroundGenerator = () => {
                              <label className="text-sm font-medium">Duration</label>
                              <span className="text-xs text-muted-foreground">{animationDuration[0]}s</span>
                            </div>
-                            <Slider value={animationDuration} onValueChange={setAnimationDuration} min={2} max={12} step={1} aria-label="Animation duration" className="pixel-corners" />
+                            <Slider value={animationDuration} onValueChange={setAnimationDuration} min={2} max={12} step={1} aria-label="Animation duration" className="" />
                          </div>
 
                          <div className="space-y-2">
@@ -915,7 +915,7 @@ const BackgroundGenerator = () => {
                              <label className="text-sm font-medium">Frame rate</label>
                              <span className="text-xs text-muted-foreground">{animationFps[0]} FPS</span>
                            </div>
-                            <Slider value={animationFps} onValueChange={setAnimationFps} min={6} max={30} step={1} aria-label="Animation frame rate" className="pixel-corners" />
+                            <Slider value={animationFps} onValueChange={setAnimationFps} min={6} max={30} step={1} aria-label="Animation frame rate" className="" />
                          </div>
 
                          <div className="space-y-2">
@@ -923,7 +923,7 @@ const BackgroundGenerator = () => {
                              <label className="text-sm font-medium">Movement distance</label>
                              <span className="text-xs text-muted-foreground">{animationDistance[0]}px</span>
                            </div>
-                            <Slider value={animationDistance} onValueChange={setAnimationDistance} min={40} max={400} step={10} aria-label="Animation movement distance" className="pixel-corners" />
+                            <Slider value={animationDistance} onValueChange={setAnimationDistance} min={40} max={400} step={10} aria-label="Animation movement distance" className="" />
                            <p className="text-xs text-muted-foreground">Textures move smoothly from right to left, then repeat.</p>
                          </div>
                        </div>
@@ -956,7 +956,7 @@ const BackgroundGenerator = () => {
                           type="text"
                           value={color}
                           onChange={(e) => setColor(e.target.value)}
-                          className="pixel-corners flex-grow"
+                          className=" flex-grow"
                           disabled={isTransparent}
                         />
                       </div>
@@ -976,7 +976,7 @@ const BackgroundGenerator = () => {
                       min={0}
                       max={50}
                       step={1}
-                      className="pixel-corners"
+                      className=""
                     />
                   </div>
 
@@ -993,7 +993,7 @@ const BackgroundGenerator = () => {
                       min={10}
                       max={100}
                       step={1}
-                      className="pixel-corners"
+                      className=""
                     />
                   </div>
 
@@ -1010,14 +1010,14 @@ const BackgroundGenerator = () => {
                       min={10}
                       max={300}
                       step={5}
-                      className="pixel-corners"
+                      className=""
                     />
                   </div>
 
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Size</label>
                     <Select value={size} onValueChange={setSize}>
-                      <SelectTrigger className="pixel-corners">
+                      <SelectTrigger className="">
                         <SelectValue placeholder="Select size" />
                       </SelectTrigger>
                       <SelectContent>
@@ -1055,9 +1055,9 @@ const BackgroundGenerator = () => {
                 </div>
               </div>
 
-                <div ref={previewCardRef} className="pixel-card flex h-fit flex-col self-start md:col-span-2">
+                <div ref={previewCardRef} className="rounded-xl border border-border bg-card p-4 flex h-fit flex-col self-start md:col-span-2">
                 <div className="mb-4 text-center">
-                  <h3 className="text-lg font-jetbrains-mono">Preview</h3>
+                  <h3 className="text-lg ">Preview</h3>
                 </div>
 
                  <div
@@ -1115,7 +1115,7 @@ const BackgroundGenerator = () => {
                            <span>{Math.round(recordingProgress)}%</span>
                          </div>
                          <div className="h-2 overflow-hidden rounded-full bg-black/20">
-                           <div className="h-full bg-cow-purple transition-[width]" style={{ width: `${recordingProgress}%` }} />
+                           <div className="h-full bg-primary transition-[width]" style={{ width: `${recordingProgress}%` }} />
                          </div>
                        </div>
                      )}
@@ -1123,13 +1123,13 @@ const BackgroundGenerator = () => {
                        <Button
                          onClick={handleCreateVideo}
                          disabled={!selectedImages.length || isRecording}
-                         className="pixel-btn-primary flex flex-1 items-center justify-center gap-2"
+                         className="inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 flex flex-1 items-center justify-center gap-2"
                        >
                          <IconPlayerPlay className="h-5 w-5" />
                          {isRecording ? "Rendering..." : "Create Animated Video"}
                        </Button>
                        {videoUrl && (
-                         <Button onClick={handleVideoDownload} variant="outline" className="flex items-center justify-center gap-2 pixel-corners">
+                         <Button onClick={handleVideoDownload} variant="outline" className="flex items-center justify-center gap-2 ">
                            <IconDownload className="h-5 w-5" />
                            Download WebM
                          </Button>
@@ -1139,7 +1139,7 @@ const BackgroundGenerator = () => {
                  ) : generatedImage && (
                    <Button
                      onClick={handleDownload}
-                     className="mt-4 pixel-btn-primary flex items-center justify-center space-x-2"
+                     className="mt-4 inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 flex items-center justify-center space-x-2"
                   >
                     <IconDownload className="h-5 w-5" />
                     <span>Download Background</span>
@@ -1149,35 +1149,35 @@ const BackgroundGenerator = () => {
             </div>
 
             <div className="mt-12 max-w-2xl mx-auto">
-              <h2 className="text-2xl font-minecraftia mb-4 text-center">
+              <h2 className="text-2xl mb-4 text-center">
                 How to Use
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-                <div className="pixel-card p-6">
-                  <div className="h-12 w-12 bg-cow-purple/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <span className="font-jetbrains-mono text-xl">1</span>
+                <div className="rounded-xl border border-border bg-card p-4 p-6">
+                  <div className="h-12 w-12 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <span className="text-xl">1</span>
                   </div>
-                  <h3 className="font-jetbrains-mono mb-2">Upload</h3>
+                  <h3 className="mb-2">Upload</h3>
                   <p className="text-sm text-muted-foreground">
                     Upload images and adjust settings
                   </p>
                 </div>
 
-                <div className="pixel-card p-6">
-                  <div className="h-12 w-12 bg-cow-purple/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <span className="font-jetbrains-mono text-xl">2</span>
+                <div className="rounded-xl border border-border bg-card p-4 p-6">
+                  <div className="h-12 w-12 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <span className="text-xl">2</span>
                   </div>
-                  <h3 className="font-jetbrains-mono mb-2">Adjust</h3>
+                  <h3 className="mb-2">Adjust</h3>
                   <p className="text-sm text-muted-foreground">
                     Customize spacing, opacity, and color in real-time
                   </p>
                 </div>
 
-                <div className="pixel-card p-6">
-                  <div className="h-12 w-12 bg-cow-purple/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <span className="font-jetbrains-mono text-xl">3</span>
+                <div className="rounded-xl border border-border bg-card p-4 p-6">
+                  <div className="h-12 w-12 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <span className="text-xl">3</span>
                   </div>
-                  <h3 className="font-jetbrains-mono mb-2">Download</h3>
+                  <h3 className="mb-2">Download</h3>
                   <p className="text-sm text-muted-foreground">
                     Download your background and use it in your content
                   </p>

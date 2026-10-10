@@ -16,7 +16,7 @@ const AdminResourcesManagerSkeleton = () => {
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {Array.from({ length: 6 }).map((_, index) => (
-          <Card key={index} className="pixel-corners">
+          <Card key={index} className="">
             <CardContent className="p-4 flex flex-col items-center justify-center">
               <Skeleton className="h-7 w-12 mb-2" />
               <Skeleton className="h-4 w-20" />
@@ -34,7 +34,7 @@ const AdminResourcesManagerSkeleton = () => {
       {/* Resources Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {Array.from({ length: 6 }).map((_, index) => (
-          <Card key={index} className="pixel-corners overflow-hidden">
+          <Card key={index} className=" overflow-hidden">
             <CardContent className="p-4">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1">

@@ -72,7 +72,7 @@ const StatCard = ({
         <Icon className={cn("size-5", accent)} />
       </CardHeader>
       <CardContent>
-        <div className="font-jetbrains-mono text-3xl font-semibold">
+        <div className="text-3xl font-semibold">
           <CountUp value={value} />
         </div>
       </CardContent>
@@ -149,9 +149,9 @@ const Analytics = () => {
           >
             <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <IconChartAreaLine className="size-8 text-cow-purple" />
-                <h1 className="font-minecraftia text-4xl md:text-5xl">
-                  Traffic <span className="text-cow-purple">Analytics</span>
+                <IconChartAreaLine className="size-8 text-primary" />
+                <h1 className="text-4xl md:text-5xl">
+                  Traffic <span className="text-primary">Analytics</span>
                 </h1>
               </div>
 
@@ -305,7 +305,7 @@ const Analytics = () => {
                         <TableBody>
                           {[...chartData].reverse().map((point) => (
                             <TableRow key={point.day}>
-                              <TableCell className="font-jetbrains-mono">{point.day}</TableCell>
+                              <TableCell className="">{point.day}</TableCell>
                               <TableCell className="text-right">{point.newUsers}</TableCell>
                               <TableCell className="text-right">{point.returningUsers}</TableCell>
                               <TableCell className="text-right">{point.visits}</TableCell>

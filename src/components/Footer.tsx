@@ -60,7 +60,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-cow-dark text-white overflow-x-hidden">
+    <footer className="border-t border-border bg-background text-foreground overflow-x-hidden">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="col-span-1 md:col-span-2">
@@ -74,7 +74,7 @@ const Footer = () => {
               <span className="font-minecraftia leading-none">RenderDragon</span>
             </Link>
 
-            <p className="text-white/70 mb-6 max-w-md">
+            <p className="text-muted-foreground mb-6 max-w-md">
               The ultimate hub for creators. Find free resources for your next project, including music, sound effects, images, and more.
             </p>
 
@@ -83,7 +83,7 @@ const Footer = () => {
                 href="https://discord.renderdragon.org"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 bg-white/10 hover:bg-white/20 pixel-corners transition-colors"
+                className="p-2 rounded-lg bg-accent hover:bg-accent transition-colors"
                 aria-label="Discord"
               >
                 <img className="w-6 h-6" src="/assets/discord_icon.png" alt="Discord" loading="lazy" />
@@ -93,7 +93,7 @@ const Footer = () => {
                 href="https://x.com/_renderdragon"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 bg-white/10 hover:bg-white/20 pixel-corners transition-colors"
+                className="p-2 rounded-lg bg-accent hover:bg-accent transition-colors"
                 aria-label="Twitter"
               >
                 <img className="w-6 h-6" src="/assets/twitter_icon.png" alt="Twitter" loading="lazy" />
@@ -103,7 +103,7 @@ const Footer = () => {
                 href="https://www.youtube.com/channel/UCOheNYpPEHcS2ljttRmllxg"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 bg-white/10 hover:bg-white/20 pixel-corners transition-colors"
+                className="p-2 rounded-lg bg-accent hover:bg-accent transition-colors"
                 aria-label="YouTube"
               >
                 <img className="w-6 h-6" src="/assets/youtube_icon.png" alt="YouTube" loading="lazy" />
@@ -113,45 +113,45 @@ const Footer = () => {
           </div>
 
           <div>
-            <h3 className="text-lg font-jetbrains-mono mb-4">Legal</h3>
+            <h3 className="text-sm font-semibold text-foreground mb-4">Legal</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/tos" className="text-white/70 hover:text-white transition-colors">
+                <Link to="/tos" className="text-muted-foreground hover:text-foreground transition-colors">
                   Terms of Service
                 </Link>
               </li>
               <li>
-                <Link to="/privacy" className="text-white/70 hover:text-white transition-colors">
+                <Link to="/privacy" className="text-muted-foreground hover:text-foreground transition-colors">
                   Privacy Policy
                 </Link>
               </li>
             </ul>
 
-            <h3 className="text-lg font-jetbrains-mono mb-4 mt-6">Navigate</h3>
+            <h3 className="text-sm font-semibold text-foreground mb-4 mt-6">Navigate</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/" className="text-white/70 hover:text-white transition-colors">
+                <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
                   Home
                 </Link>
               </li>
               <li>
-                <Link to="/blogs" className="text-white/70 hover:text-white transition-colors">
+                <Link to="/blogs" className="text-muted-foreground hover:text-foreground transition-colors">
                   Blogs
                 </Link>
               </li>
               <li>
-                <Link to="/resources" className="text-white/70 hover:text-white transition-colors">
+                <Link to="/resources" className="text-muted-foreground hover:text-foreground transition-colors">
                   Resources Hub
                 </Link>
               </li>
 
               <li>
-                <Link to="/utilities" className="text-white/70 hover:text-white transition-colors">
+                <Link to="/utilities" className="text-muted-foreground hover:text-foreground transition-colors">
                   Utilities
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="text-white/70 hover:text-white transition-colors">
+                <Link to="/contact" className="text-muted-foreground hover:text-foreground transition-colors">
                   Contact
                 </Link>
               </li>
@@ -159,35 +159,35 @@ const Footer = () => {
           </div>
 
           <div>
-            <h3 className="text-lg font-jetbrains-mono mb-4">Tools</h3>
+            <h3 className="text-sm font-semibold text-foreground mb-4">Tools</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/background-generator" className="text-white/70 hover:text-white transition-colors">
+                <Link to="/background-generator" className="text-muted-foreground hover:text-foreground transition-colors">
                   Background Generator
                 </Link>
               </li>
               <li>
-                <Link to="/player-renderer" className="text-white/70 hover:text-white transition-colors">
+                <Link to="/player-renderer" className="text-muted-foreground hover:text-foreground transition-colors">
                   Player Renderer
                 </Link>
               </li>
               <li>
-                <Link to="/renderbot" className="text-white/70 hover:text-white transition-colors">
+                <Link to="/renderbot" className="text-muted-foreground hover:text-foreground transition-colors">
                   Renderbot
                 </Link>
               </li>
               <li>
-                <Link to="/text-generator" className="text-white/70 hover:text-white transition-colors">
+                <Link to="/text-generator" className="text-muted-foreground hover:text-foreground transition-colors">
                   Text Generator
                 </Link>
               </li>
               <li>
-                <Link to="/generators" className="text-white/70 hover:text-white transition-colors">
+                <Link to="/generators" className="text-muted-foreground hover:text-foreground transition-colors">
                   Content Generators
                 </Link>
               </li>
               <li>
-                <Link to="/youtube-downloader" className="text-white/70 hover:text-white transition-colors">
+                <Link to="/youtube-downloader" className="text-muted-foreground hover:text-foreground transition-colors">
                   Youtube Tools
                 </Link>
               </li>
@@ -195,41 +195,41 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="pt-8 mt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center">
+        <div className="pt-8 mt-8 border-t border-border flex flex-col md:flex-row justify-between items-center">
           <div className="flex items-center space-x-4 mb-4 md:mb-0">
-            <Link to="/faq" className="text-white/70 hover:text-white transition-colors text-sm relative">
+            <Link to="/faq" className="text-muted-foreground hover:text-foreground transition-colors text-sm relative">
               FAQ
             </Link>
 
-            <Link to="/tos" className="text-white/70 hover:text-white transition-colors text-sm">
+            <Link to="/tos" className="text-muted-foreground hover:text-foreground transition-colors text-sm">
               Terms
             </Link>
 
-            <Link to="/privacy" className="text-white/70 hover:text-white transition-colors text-sm">
+            <Link to="/privacy" className="text-muted-foreground hover:text-foreground transition-colors text-sm">
               Privacy
             </Link>
 
-            <Link to="/renderbot" className="text-white/70 hover:text-white transition-colors text-sm">
+            <Link to="/renderbot" className="text-muted-foreground hover:text-foreground transition-colors text-sm">
               Renderbot
             </Link>
 
             <HyperpingBadge status="online" />
 
-            <div className="text-white/70 text-sm">
+            <div className="text-muted-foreground text-sm">
               <span className="mr-4">Not associated with Mojang, AB.</span>
-              <a href="https://www.flaticon.com/free-icons/pixel" title="pixel icons" className="hover:text-white transition-colors">Pixel icons created by Freepik - Flaticon</a>
+              <a href="https://www.flaticon.com/free-icons/pixel" title="pixel icons" className="hover:text-foreground transition-colors">Pixel icons created by Freepik - Flaticon</a>
             </div>
           </div>
 
           <div className="flex items-center space-x-4">
-            <p className="text-white/70 text-sm">
+            <p className="text-muted-foreground text-sm">
               &copy; {currentYear} RenderDragon. All rights reserved.
             </p>
 
             <button
               ref={cartButtonRef}
               onClick={handleCartClick}
-              className="ml-4 p-2 bg-white/10 hover:bg-white/20 rounded-md transition-all duration-1000"
+              className="ml-4 p-2 rounded-lg bg-accent hover:bg-accent transition-all duration-1000"
               disabled={cartClicked}
             >
               <IconShoppingCart className="h-5 w-5" />
