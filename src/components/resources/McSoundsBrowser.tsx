@@ -107,7 +107,7 @@ const CategoryItem = ({
           flex items-center gap-1 py-1.5 px-2 rounded-md cursor-pointer
           transition-colors duration-150 group
           ${isSelected 
-            ? 'bg-cow-purple/20 text-cow-purple' 
+            ? 'bg-primary/20 text-primary' 
             : 'hover:bg-accent/50'
           }
         `}
@@ -292,10 +292,10 @@ const McSoundsBrowser = ({
   }, [subcategories, resourceCount]);
   
   return (
-    <div className="h-full flex flex-col bg-card/50 border border-border rounded-lg pixel-corners overflow-hidden">
+    <div className="h-full flex flex-col bg-card/50 border border-border rounded-lg  overflow-hidden">
       <div className="p-3 border-b border-border">
-        <h3 className="text-sm font-jetbrains-mono text-muted-foreground mb-2 flex items-center gap-2">
-          <IconVolume className="h-4 w-4 text-cow-purple" />
+        <h3 className="text-sm text-muted-foreground mb-2 flex items-center gap-2">
+          <IconVolume className="h-4 w-4 text-primary" />
           MC Sounds Browser
         </h3>
         
@@ -305,7 +305,7 @@ const McSoundsBrowser = ({
             placeholder="Search categories..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-8 h-8 text-sm pixel-input"
+            className="pl-8 h-8 text-sm "
           />
           {searchQuery && (
             <Button
@@ -340,7 +340,7 @@ const McSoundsBrowser = ({
       </div>
       
       {selectedSubcategory && (
-        <div className="px-3 py-2 bg-cow-purple/10 border-b border-border flex items-center justify-between">
+        <div className="px-3 py-2 bg-primary/10 border-b border-border flex items-center justify-between">
           <span className="text-xs text-muted-foreground truncate flex-1">
             Selected: {formatCategoryName(selectedSubcategory.split('/').pop() || '')}
           </span>
@@ -362,7 +362,7 @@ const McSoundsBrowser = ({
               flex items-center gap-1 py-1.5 px-2 rounded-md cursor-pointer mb-1
               transition-colors duration-150
               ${!selectedSubcategory 
-                ? 'bg-cow-purple/20 text-cow-purple' 
+                ? 'bg-primary/20 text-primary' 
                 : 'hover:bg-accent/50'
               }
             `}
@@ -370,7 +370,7 @@ const McSoundsBrowser = ({
             whileHover={{ x: 2 }}
           >
             <div className="w-3.5" />
-            <IconFolderOpen className="h-4 w-4 text-cow-purple" />
+            <IconFolderOpen className="h-4 w-4 text-primary" />
             <span className="text-sm font-medium">All Sounds</span>
             <span className="text-xs text-muted-foreground bg-secondary/50 px-1.5 py-0.5 rounded ml-auto">
               {subcategories.length} categories

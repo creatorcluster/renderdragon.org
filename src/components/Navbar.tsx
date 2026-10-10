@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { IconChevronDown, IconMenu2, IconX, IconSun, IconMoon, IconSkull, IconExternalLink } from '@tabler/icons-react';
-import { ThemeToggle } from './ThemeToggle';
+import { IconChevronDown, IconMenu2, IconExternalLink } from '@tabler/icons-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -17,10 +16,8 @@ import {
 } from "@/components/ui/collapsible";
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"; // Keep for now in case it's a dependency of drawer
-import { Toggle } from "@/components/ui/toggle";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import Logo from './Logo';
-import PixelSvgIcon from './PixelSvgIcon';
 import AuthDialog from './auth/AuthDialog'; // Added for auth
 import UserMenu from './auth/UserMenu'; // Added for auth
 import { useAuth } from '@/hooks/useAuth'; // Added for auth
@@ -82,10 +79,6 @@ const Navbar = () => {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [openMobileCollapsible, setOpenMobileCollapsible] = useState<string | null>(null);
-  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-    return localStorage.getItem('theme') as 'light' | 'dark' ||
-      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-  });
   const isMobile = useIsMobile();
   const [authDialogOpen, setAuthDialogOpen] = useState(false); // Added for auth
   const { user, loading, signOut } = useAuth(); // Added for auth
@@ -115,25 +108,6 @@ const Navbar = () => {
     setOpenMobileCollapsible(null);
     setIsDrawerOpen(false);
   }, [location.pathname]);
-
-  const toggleTheme = () => {
-    const newTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(newTheme);
-    localStorage.setItem('theme', newTheme);
-    if (newTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  };
-
-  useEffect(() => {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [theme]);
 
   const displayName = profile?.username || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';
   const safeAvatarUrl = profile?.avatar_url || user?.user_metadata?.avatar_url;
@@ -309,8 +283,6 @@ const Navbar = () => {
                 </Button>
               )}
             </div>
-            {/* Desktop Theme Toggle */}
-            <ThemeToggle className="hidden md:block" />
 
             {/* Mobile Menu Trigger */}
             <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
@@ -456,39 +428,10 @@ const Navbar = () => {
                     )}
                   </div>
                 </div>
-
-                <div className="absolute bottom-0 left-0 right-0 p-4 flex justify-center border-t border-border bg-background">
-                  <Toggle
-                    pressed={theme === 'dark'}
-                    onPressedChange={toggleTheme}
-                    className="w-full flex items-center justify-center gap-2 py-2 font-sans"
-                  >
-                    {theme === 'dark' ? (
-                      <>
-                        <PixelSvgIcon name="moon" className="h-5 w-5" />
-                        <span>Dark Mode</span>
-                      </>
-                    ) : (
-                      <>
-                        <PixelSvgIcon name="sun" className="h-5 w-5" />
-                        <span>Light Mode</span>
-                      </>
-                    )}
-                  </Toggle>
-                </div>
               </DrawerContent>
             </Drawer>
           </div>
         </div>
-
-        {scrolled && (
-          <div className="absolute bottom-0 left-0 w-full h-[2px] bg-background/20 z-20">
-            <div
-              className="h-full bg-cow-purple transition-all duration-300 animate-pulse-neon"
-              style={{ width: `${scrollProgress * 100}%` }}
-            ></div>
-          </div>
-        )}
       </header>
 
       <AuthDialog

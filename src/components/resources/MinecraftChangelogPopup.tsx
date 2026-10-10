@@ -26,9 +26,9 @@ const MinecraftChangelogPopup = () => {
 
   return (
     <Dialog open={open} onOpenChange={(o) => { if (!o) dismiss(); }}>
-      <DialogContent className="sm:max-w-lg pixel-corners bg-gradient-to-b from-card/95 to-card/70 border-cow-purple/20 max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-lg  bg-gradient-to-b from-card/95 to-card/70 border-primary/20 max-h-[90vh] overflow-y-auto">
         <div className="space-y-5">
-          <h1 className="text-2xl font-minecraftia font-bold text-center leading-tight">
+          <h1 className="text-2xl font-bold text-center leading-tight">
             Minecraft Creator Playlist Integration
           </h1>
 
@@ -45,20 +45,20 @@ const MinecraftChangelogPopup = () => {
 
             <div>
               <h4 className="text-xs font-semibold text-foreground/90 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                <IconVinyl className="h-3.5 w-3.5 text-cow-purple" />
+                <IconVinyl className="h-3.5 w-3.5 text-primary" />
                 What's new
               </h4>
               <ul className="space-y-1.5">
                 <li className="flex items-start gap-2">
-                  <IconMusic className="h-4 w-4 text-cow-purple mt-0.5 flex-shrink-0" />
+                  <IconMusic className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
                   <span><strong className="text-foreground/80">725 tracks</strong> from the Creator-Safe Playlist, playable in-browser</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <IconAlbum className="h-4 w-4 text-cow-purple mt-0.5 flex-shrink-0" />
+                  <IconAlbum className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
                   <span><strong className="text-foreground/80">70 album covers</strong> with album-based filtering and search</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <IconApi className="h-4 w-4 text-cow-purple mt-0.5 flex-shrink-0" />
+                  <IconApi className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
                   <span>Powered by the <strong className="text-foreground/80">Minecraft Creator-Safe Playlist API</strong></span>
                 </li>
               </ul>
@@ -90,7 +90,7 @@ const MinecraftChangelogPopup = () => {
 
           <Button
             onClick={dismiss}
-            className="w-full pixel-corners bg-cow-purple hover:bg-cow-purple/80"
+            className="w-full  bg-primary hover:bg-primary/90/80"
           >
             Got it!
           </Button>

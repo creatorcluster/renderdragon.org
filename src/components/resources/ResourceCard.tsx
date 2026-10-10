@@ -151,7 +151,7 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
         return (
           <div
             onClick={handlePreviewClick}
-            className="relative aspect-video bg-muted/20 rounded-md overflow-hidden mb-3 cursor-default"
+            className="relative aspect-video bg-muted/20 rounded-lg overflow-hidden mb-3 cursor-default"
           >
             <img
               src={previewUrl}
@@ -174,7 +174,7 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
         return (
           <div
             onClick={handlePreviewClick}
-            className="relative aspect-[4/1] bg-muted/20 rounded-md overflow-hidden mb-3 cursor-default"
+            className="relative aspect-[4/1] bg-muted/20 rounded-lg overflow-hidden mb-3 cursor-default"
           >
             {isFontLoaded ? (
               <div
@@ -185,7 +185,7 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
               </div>
             ) : (
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-5 h-5 border-2 border-cow-purple border-t-transparent rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
               </div>
             )}
           </div>
@@ -196,7 +196,7 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
         return (
           <div
             onClick={handlePreviewClick}
-            className="relative aspect-video bg-muted/5 rounded-md overflow-hidden mb-3 cursor-default flex items-center justify-center"
+            className="relative aspect-video bg-muted/5 rounded-lg overflow-hidden mb-3 cursor-default flex items-center justify-center"
           >
             <AudioPlayer
               src={previewUrl}
@@ -212,7 +212,7 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
                 onFocus={() => setIsLinkHovered(true)}
                 onBlur={() => setIsLinkHovered(false)}
                 aria-label={`Copy a RenderBot copyright-check link for ${resource.title}`}
-                className="absolute right-2 top-2 z-10 inline-flex h-9 items-center overflow-hidden rounded-md border border-cow-purple/60 bg-cow-purple/95 text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cow-purple"
+                className="absolute right-2 top-2 z-10 inline-flex h-9 items-center overflow-hidden rounded-md border border-primary/60 bg-primary text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 initial={false}
                 animate={{ width: isLinkHovered ? 152 : 36 }}
                 transition={{ type: "spring", stiffness: 400, damping: 30 }}
@@ -241,7 +241,7 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
         return (
           <div
             onClick={handlePreviewClick}
-            className="relative aspect-video bg-muted/5 rounded-md overflow-hidden mb-3 cursor-default flex items-center justify-center"
+            className="relative aspect-video bg-muted/5 rounded-lg overflow-hidden mb-3 cursor-default flex items-center justify-center"
           >
             <AudioPlayer
               src={previewUrl}
@@ -254,7 +254,7 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
         return (
           <div
             onClick={handlePreviewClick}
-            className="relative aspect-video bg-muted/20 rounded-md overflow-hidden mb-3 cursor-default"
+            className="relative aspect-video bg-muted/20 rounded-lg overflow-hidden mb-3 cursor-default"
           >
             <div className="absolute inset-0 flex items-center justify-center bg-muted/10">
               <IconVideo className="h-8 w-8 text-muted-foreground/30" />
@@ -281,10 +281,9 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
       ref={cardRef}
       onClick={() => onClick(resource)}
       className={cn(
-        "pixel-card group cursor-pointer hover:border-primary transition-all duration-300 h-full",
+        "group h-full cursor-pointer rounded-xl border border-border bg-card p-4 transition-all duration-300 hover:-translate-y-1 hover:border-primary/60",
         isFavorite && "border-red-500/50",
       )}
-      whileHover={{ y: -5 }}
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2 }}
@@ -313,7 +312,7 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
             "p-1 rounded-full transition-colors",
             isFavorite
               ? "text-red-500 hover:text-red-600"
-              : "text-gray-400 hover:text-red-500",
+              : "text-muted-foreground hover:text-red-500",
           )}
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
@@ -333,13 +332,9 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
         </motion.button>
       </div>
 
-      <motion.h3
-        className="text-lg font-geist-mono mb-2 group-hover:text-primary transition-colors"
-        whileHover={{ x: 5 }}
-        transition={{ duration: 0.2 }}
-      >
+      <h3 className="text-base font-medium mb-2 group-hover:text-primary transition-colors">
         {resource.title}
-      </motion.h3>
+      </h3>
 
       <div className="flex items-center justify-between">
         {resource.credit ? (

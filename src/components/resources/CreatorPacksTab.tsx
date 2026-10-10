@@ -41,12 +41,12 @@ const CreatorPacksTab = () => {
                 {user && (
                     <div className="flex items-center gap-2">
                         <Link to="/creator-packs/manage">
-                            <Button variant="outline" className="pixel-corners font-geist">
+                            <Button variant="outline" className=" font-geist">
                                 Manage My Packs
                             </Button>
                         </Link>
                         <Link to="/creator-packs/new">
-                            <Button className="pixel-corners bg-cow-purple hover:bg-cow-purple/90 font-geist">
+                            <Button className=" bg-primary hover:bg-primary/90/90 font-geist">
                                 <IconPlus size={16} className="mr-2" />
                                 Upload Pack
                             </Button>
@@ -96,7 +96,7 @@ const CreatorPacksTab = () => {
                     </p>
                     {user && !selectedTag && (
                         <Link to="/creator-packs/new">
-                            <Button className="pixel-corners bg-cow-purple hover:bg-cow-purple/90">
+                            <Button className=" bg-primary hover:bg-primary/90/90">
                                 <IconPlus size={16} className="mr-2" />
                                 Upload Pack
                             </Button>

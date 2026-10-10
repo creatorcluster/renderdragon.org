@@ -21,13 +21,13 @@ const AlbumThumb = ({ album, selected }: { album: string; selected: boolean }) =
   const [errored, setErrored] = useState(false);
   if (errored) {
     return (
-      <div className={`w-10 h-10 rounded-md flex-shrink-0 overflow-hidden flex items-center justify-center ${selected ? 'ring-2 ring-cow-purple/40' : ''} bg-muted/30`}>
+      <div className={`w-10 h-10 rounded-md flex-shrink-0 overflow-hidden flex items-center justify-center ${selected ? 'ring-2 ring-primary/40' : ''} bg-muted/30`}>
         <IconMusic className="h-5 w-5 text-muted-foreground/60" />
       </div>
     );
   }
   return (
-    <div className={`w-10 h-10 rounded-md flex-shrink-0 overflow-hidden ${selected ? 'ring-2 ring-cow-purple/40' : ''}`}>
+    <div className={`w-10 h-10 rounded-md flex-shrink-0 overflow-hidden ${selected ? 'ring-2 ring-primary/40' : ''}`}>
       <img
         src={src}
         alt=""
@@ -63,10 +63,10 @@ const MinecraftMusicFilter = ({ albums, albumCounts, selectedAlbum, onAlbumChang
   if (albums.length === 0) return null;
 
   return (
-    <div className="h-full flex flex-col bg-gradient-to-b from-card/80 to-card/30 border border-border rounded-lg pixel-corners overflow-hidden shadow-lg shadow-cow-purple/5">
-      <div className="p-3 border-b border-border/60 bg-gradient-to-r from-cow-purple/5 to-transparent">
-        <h3 className="text-sm font-jetbrains-mono text-muted-foreground mb-2 flex items-center gap-2">
-          <IconVinyl className="h-4 w-4 text-cow-purple" />
+    <div className="h-full flex flex-col bg-gradient-to-b from-card/80 to-card/30 border border-border rounded-lg  overflow-hidden shadow-lg shadow-primary/5">
+      <div className="p-3 border-b border-border/60 bg-gradient-to-r from-primary/5 to-transparent">
+        <h3 className="text-sm text-muted-foreground mb-2 flex items-center gap-2">
+          <IconVinyl className="h-4 w-4 text-primary" />
           <span className="text-foreground/80 font-semibold">Albums</span>
           <span className="text-[10px] text-muted-foreground/60 font-normal ml-auto">{albums.length} albums</span>
         </h3>
@@ -77,7 +77,7 @@ const MinecraftMusicFilter = ({ albums, albumCounts, selectedAlbum, onAlbumChang
             placeholder="Search albums..."
             value={albumSearch}
             onChange={(e) => setAlbumSearch(e.target.value)}
-            className="pl-8 h-8 text-sm pixel-input bg-background/50 border-border/40 focus:border-cow-purple/40"
+            className="pl-8 h-8 text-sm  bg-background/50 border-border/40 focus:border-primary/40"
           />
           {albumSearch && (
             <Button
@@ -95,21 +95,21 @@ const MinecraftMusicFilter = ({ albums, albumCounts, selectedAlbum, onAlbumChang
           <motion.div
             initial={{ opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-center gap-2 bg-cow-purple/10 px-2.5 py-1.5 rounded-md border border-cow-purple/20"
+            className="flex items-center gap-2 bg-primary/10 px-2.5 py-1.5 rounded-md border border-primary/20"
           >
             <AlbumThumb album={selectedAlbum} selected />
             <div className="flex-1 min-w-0">
-              <p className="text-xs text-cow-purple truncate font-medium" title={selectedAlbum}>
+              <p className="text-xs text-primary truncate font-medium" title={selectedAlbum}>
                 {selectedAlbum}
               </p>
-              <p className="text-[10px] text-cow-purple/60">
+              <p className="text-[10px] text-primary/60">
                 {albumCounts[selectedAlbum]} {albumCounts[selectedAlbum] === 1 ? 'track' : 'tracks'}
               </p>
             </div>
             <Button
               variant="ghost"
               size="sm"
-              className="h-6 text-[10px] text-cow-purple hover:text-cow-purple/80 hover:bg-cow-purple/10 flex-shrink-0 px-2"
+              className="h-6 text-[10px] text-primary hover:text-primary/80 hover:bg-primary/90/10 flex-shrink-0 px-2"
               onClick={() => onAlbumChange(null)}
             >
               Clear
@@ -125,7 +125,7 @@ const MinecraftMusicFilter = ({ albums, albumCounts, selectedAlbum, onAlbumChang
               flex items-center gap-3 py-2.5 px-3 rounded-md cursor-pointer mb-1
               transition-all duration-150 group
               ${!selectedAlbum
-                ? 'bg-cow-purple/15 text-cow-purple border border-cow-purple/20'
+                ? 'bg-primary/15 text-primary border border-primary/20'
                 : 'hover:bg-accent/50 border border-transparent'
               }
             `}
@@ -134,13 +134,13 @@ const MinecraftMusicFilter = ({ albums, albumCounts, selectedAlbum, onAlbumChang
           >
             <div className={`
               flex items-center justify-center w-10 h-10 rounded-md flex-shrink-0
-              ${!selectedAlbum ? 'bg-cow-purple/20' : 'bg-muted/30 group-hover:bg-muted/50'}
+              ${!selectedAlbum ? 'bg-primary/20' : 'bg-muted/30 group-hover:bg-muted/50'}
               transition-colors duration-150
             `}>
               <IconDisc className="h-5 w-5" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className={`text-sm font-medium truncate ${!selectedAlbum ? 'text-cow-purple' : 'text-foreground/80'}`}>
+              <p className={`text-sm font-medium truncate ${!selectedAlbum ? 'text-primary' : 'text-foreground/80'}`}>
                 All Albums
               </p>
             </div>
@@ -162,7 +162,7 @@ const MinecraftMusicFilter = ({ albums, albumCounts, selectedAlbum, onAlbumChang
                   flex items-center gap-3 py-2.5 px-3 rounded-md cursor-pointer mb-1
                   transition-all duration-150 group
                   ${selectedAlbum === album
-                    ? 'bg-cow-purple/15 text-cow-purple border border-cow-purple/20'
+                    ? 'bg-primary/15 text-primary border border-primary/20'
                     : 'hover:bg-accent/40 border border-transparent'
                   }
                 `}
@@ -170,17 +170,17 @@ const MinecraftMusicFilter = ({ albums, albumCounts, selectedAlbum, onAlbumChang
               >
                 <AlbumThumb album={album} selected={selectedAlbum === album} />
                 <div className="flex-1 min-w-0">
-                  <p className={`text-sm truncate ${selectedAlbum === album ? 'font-medium text-cow-purple' : 'text-foreground/80'}`} title={album}>
+                  <p className={`text-sm truncate ${selectedAlbum === album ? 'font-medium text-primary' : 'text-foreground/80'}`} title={album}>
                     {album}
                   </p>
-                  <p className={`text-[10px] truncate ${selectedAlbum === album ? 'text-cow-purple/60' : 'text-muted-foreground/50'}`}>
+                  <p className={`text-[10px] truncate ${selectedAlbum === album ? 'text-primary/60' : 'text-muted-foreground/50'}`}>
                     {albumCounts[album]} {albumCounts[album] === 1 ? 'track' : 'tracks'}
                   </p>
                 </div>
                 <span className={`
                   text-[11px] font-mono flex-shrink-0
                   ${selectedAlbum === album
-                    ? 'bg-cow-purple/20 text-cow-purple'
+                    ? 'bg-primary/20 text-primary'
                     : 'bg-background/40 text-muted-foreground/50'
                   }
                   px-2 py-0.5 rounded

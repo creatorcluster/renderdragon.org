@@ -190,10 +190,10 @@ const FavoritesSidebar = ({
     }, [folders, rootFolders, searchQuery]);
 
     return (
-        <div className="flex flex-col h-full bg-card/50 border border-border/50 rounded-xl overflow-hidden pixel-corners backdrop-blur-sm">
+        <div className="flex flex-col h-full bg-card/50 border border-border/50 rounded-xl overflow-hidden  backdrop-blur-sm">
             <div className="p-4 border-b border-border/50 bg-muted/20">
                 <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-jetbrains-mono text-xl font-medium">My Folders</h3>
+                    <h3 className="text-xl font-medium">My Folders</h3>
                     <Button size="icon" variant="ghost" onClick={onCreateFolder} className="h-8 w-8 hover:bg-primary/20 hover:text-primary transition-colors">
                         <IconPlus size={18} />
                     </Button>
@@ -205,7 +205,7 @@ const FavoritesSidebar = ({
                         placeholder="Search folders..."
                         value={searchQuery}
                         onChange={(e) => onSearchChange(e.target.value)}
-                        className="pl-9 h-9 bg-background/50 border-border/50 focus-visible:ring-primary/50 pixel-corners"
+                        className="pl-9 h-9 bg-background/50 border-border/50 focus-visible:ring-primary/50 "
                     />
                 </div>
             </div>

@@ -336,7 +336,7 @@ const FavoritesTab = ({ onSelectResource }: FavoritesTabProps) => {
                 <div className="flex-1">
                   <Progress
                     value={(zipProgress.completed / zipProgress.total) * 100}
-                    className="h-2 pixel-corners"
+                    className="h-2 "
                   />
                   <p className="text-xs mt-1 text-muted-foreground">
                     Downloading {zipProgress.completed}/{zipProgress.total} files...
@@ -346,7 +346,7 @@ const FavoritesTab = ({ onSelectResource }: FavoritesTabProps) => {
                   size="sm"
                   variant="outline"
                   onClick={handleCancelZip}
-                  className="pixel-corners shrink-0"
+                  className=" shrink-0"
                 >
                   Cancel
                 </Button>
@@ -359,7 +359,7 @@ const FavoritesTab = ({ onSelectResource }: FavoritesTabProps) => {
                 className="text-center py-20 bg-muted/5 rounded-xl border border-border/50"
               >
                 <IconHeart className="mx-auto h-12 w-12 text-muted-foreground mb-4 opacity-50" />
-                <h3 className="text-xl font-jetbrains-mono mb-2 font-medium">No resources found</h3>
+                <h3 className="text-xl mb-2 font-medium">No resources found</h3>
                 <p className="text-muted-foreground">
                   {selectedFolderId
                     ? "This folder is currently empty. Drop some resources here!"

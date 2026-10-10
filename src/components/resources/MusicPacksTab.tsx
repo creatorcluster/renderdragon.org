@@ -284,10 +284,10 @@ const MusicPacksTab = () => {
     <div className="flex gap-6 max-w-7xl mx-auto">
       <div className="w-full md:w-80 flex-shrink-0">
         <div className="sticky top-28 h-[calc(100vh-8rem)]">
-          <div className="h-full flex flex-col bg-card/50 border border-border rounded-lg pixel-corners overflow-hidden">
+          <div className="h-full flex flex-col bg-card/50 border border-border rounded-lg  overflow-hidden">
             <div className="p-3 border-b border-border">
-              <h3 className="text-sm font-jetbrains-mono text-muted-foreground mb-2 flex items-center gap-2">
-                <IconMusic className="h-4 w-4 text-cow-purple" />
+              <h3 className="text-sm text-muted-foreground mb-2 flex items-center gap-2">
+                <IconMusic className="h-4 w-4 text-primary" />
                 Music Packs Browser
               </h3>
               <div className="relative">
@@ -296,7 +296,7 @@ const MusicPacksTab = () => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search cato or sub cat..."
-                  className="h-8 pl-8 pr-8 text-sm pixel-input"
+                  className="h-8 pl-8 pr-8 text-sm "
                 />
                 {searchQuery && (
                   <Button
@@ -319,9 +319,9 @@ const MusicPacksTab = () => {
                     setSelectedChannel(null);
                   }}
                   whileHover={{ x: 2 }}
-                  className={`w-full text-left flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors ${!selectedCategory && !selectedChannel ? 'bg-cow-purple/20 text-cow-purple' : 'hover:bg-accent/50'}`}
+                  className={`w-full text-left flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors ${!selectedCategory && !selectedChannel ? 'bg-primary/20 text-primary' : 'hover:bg-accent/50'}`}
                 >
-                  <IconFolderOpen className="h-4 w-4 text-cow-purple" />
+                  <IconFolderOpen className="h-4 w-4 text-primary" />
                   <span className="text-sm font-medium">All Music Links</span>
                   <span className="text-xs text-muted-foreground bg-secondary/50 px-1.5 py-0.5 rounded ml-auto">
                     {allLinks.length}
@@ -356,7 +356,7 @@ const MusicPacksTab = () => {
                           >
                             <button
                               onClick={() => handleSelectCategory(category.name)}
-                              className={`w-full text-left ml-6 mr-2 mt-1 flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors ${isCategorySelected ? 'bg-cow-purple/20 text-cow-purple' : 'hover:bg-accent/50'}`}
+                              className={`w-full text-left ml-6 mr-2 mt-1 flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors ${isCategorySelected ? 'bg-primary/20 text-primary' : 'hover:bg-accent/50'}`}
                             >
                               <IconFolder className="h-4 w-4 text-yellow-500/80" />
                               <span className="text-sm truncate">All in {normalizeLabel(category.name)}</span>
@@ -370,7 +370,7 @@ const MusicPacksTab = () => {
                                 <button
                                   key={`${category.name}-${channel.name}`}
                                   onClick={() => handleSelectChannel(category.name, channel.name)}
-                                  className={`w-full text-left ml-6 mr-2 mt-1 flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors ${isChannelSelected ? 'bg-cow-purple/20 text-cow-purple' : 'hover:bg-accent/50'}`}
+                                  className={`w-full text-left ml-6 mr-2 mt-1 flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors ${isChannelSelected ? 'bg-primary/20 text-primary' : 'hover:bg-accent/50'}`}
                                 >
                                   <IconFolder className="h-4 w-4 text-yellow-500/80" />
                                   <span className="text-sm truncate">{normalizeLabel(channel.name)}</span>
@@ -426,7 +426,7 @@ const MusicPacksTab = () => {
                   key={item.id}
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="group block rounded-lg border border-border bg-card/50 p-3 hover:border-cow-purple/50 transition-colors pixel-corners"
+                  className="group block rounded-lg border border-border bg-card/50 p-3 hover:border-primary/50 transition-colors "
                 >
                   <div className="aspect-video rounded-md overflow-hidden border border-border/70 bg-muted/30 mb-3">
                     {embedInfo.isYoutube && embedInfo.embedUrl && isEmbedActive ? (
@@ -451,7 +451,7 @@ const MusicPacksTab = () => {
                           loading="lazy"
                         />
                         <div className="absolute inset-0 bg-black/20 group-hover/thumb:bg-black/35 transition-colors flex items-center justify-center">
-                          <span className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-cow-purple/90 text-white">
+                          <span className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-primary/90 text-primary-foreground">
                             <IconPlayerPlayFilled className="h-6 w-6 ml-0.5" />
                           </span>
                         </div>
@@ -468,12 +468,12 @@ const MusicPacksTab = () => {
                       href={item.link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm text-muted-foreground break-all line-clamp-2 hover:text-cow-purple transition-colors"
+                      className="text-sm text-muted-foreground break-all line-clamp-2 hover:text-primary transition-colors"
                     >
                       {item.link}
                     </a>
                     <a href={item.link} target="_blank" rel="noopener noreferrer" className="mt-0.5 flex-shrink-0">
-                      <IconExternalLink className="h-4 w-4 text-cow-purple" />
+                      <IconExternalLink className="h-4 w-4 text-primary" />
                     </a>
                   </div>
 

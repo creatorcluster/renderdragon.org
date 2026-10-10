@@ -130,7 +130,7 @@ const AudioPlayer = ({ src, className, isInView = true, allowPlayBeforeReady = f
 
   return (
     <div className={cn(
-      "w-full rounded-xl bg-card border-2 border-primary/10 p-5 shadow-lg group/player transition-all duration-300 hover:border-primary/30",
+      "w-full rounded-xl bg-card border border-border p-5 shadow-lg group/player transition-all duration-300 hover:border-primary/30",
       className
     )}>
       <div className="flex flex-col space-y-4">
@@ -138,14 +138,14 @@ const AudioPlayer = ({ src, className, isInView = true, allowPlayBeforeReady = f
         <div className="relative h-[60px] w-full bg-muted/20 rounded-lg overflow-hidden flex items-center justify-center">
           {isLoading && !allowPlayBeforeReady && (
             <div className="absolute inset-0 z-10 flex items-center justify-center bg-card/60 backdrop-blur-[1px]">
-              <IconLoader2 className="h-6 w-6 animate-spin text-cow-purple" />
-              <span className="ml-2 text-xs font-jetbrains-mono tracking-wider text-muted-foreground">LOADING WAVEFORM...</span>
+              <IconLoader2 className="h-6 w-6 animate-spin text-primary" />
+              <span className="ml-2 text-xs tracking-wider text-muted-foreground">LOADING WAVEFORM...</span>
             </div>
           )}
           {isLoading && allowPlayBeforeReady && (
             <div className="absolute top-1 left-1/2 -translate-x-1/2 z-10 flex items-center gap-1.5">
-              <IconLoader2 className="h-3 w-3 animate-spin text-cow-purple" />
-              <span className="text-[10px] font-jetbrains-mono tracking-wider text-muted-foreground">Loading waveform...</span>
+              <IconLoader2 className="h-3 w-3 animate-spin text-primary" />
+              <span className="text-[10px] tracking-wider text-muted-foreground">Loading waveform...</span>
             </div>
           )}
           <div ref={containerRef} className="w-full" />
@@ -172,7 +172,7 @@ const AudioPlayer = ({ src, className, isInView = true, allowPlayBeforeReady = f
 
             <Button
               size="icon"
-              className="h-12 w-12 rounded-full bg-cow-purple hover:bg-cow-purple-dark text-white shadow-md hover:scale-105 transition-all duration-200"
+              className="h-12 w-12 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-md hover:scale-105 transition-all duration-200"
               onClick={togglePlay}
               disabled={!isReady && !allowPlayBeforeReady}
             >

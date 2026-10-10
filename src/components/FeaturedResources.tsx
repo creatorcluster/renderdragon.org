@@ -79,7 +79,7 @@ const FeaturedResources = () => {
   };
 
   return (
-    <section className="py-20 md:py-28 bg-background border-y-4 border-cow-purple cow-grid-bg">
+    <section className="py-20 md:py-28 bg-background border-y border-border">
       <div className="container mx-auto px-4">
         <motion.div
           className="text-center mb-14 md:mb-16 max-w-3xl mx-auto"
@@ -88,12 +88,10 @@ const FeaturedResources = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
         >
-          <h2
-            className="font-minecraftia text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-6 text-foreground leading-tight"
-          >
-            Featured <span className="text-cow-purple">Resources</span>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-4 text-foreground">
+            Featured <span className="text-primary">Resources</span>
           </h2>
-          <p className="font-jetbrains-mono text-xl md:text-2xl text-foreground/70 leading-tight">
+          <p className="text-lg md:text-xl text-muted-foreground">
             A taste of what's inside. Browse the full library anytime.
           </p>
         </motion.div>
@@ -134,9 +132,9 @@ const FeaturedResources = () => {
         >
           <Link
             to="/resources"
-            className="pixel-btn-secondary inline-flex items-center space-x-2 group text-base md:text-lg"
+            className="group inline-flex items-center gap-2 rounded-full border border-border px-5 py-2.5 text-base font-medium text-foreground transition-colors hover:bg-accent"
           >
-            <span>View All Resources</span>
+            <span>View all resources</span>
             <IconArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </Link>
         </motion.div>

@@ -44,10 +44,10 @@ const MusicMoodFilter = ({ selectedMoods, onMoodChange, moodsData }: MusicMoodFi
   if (allMoods.length === 0) return null;
 
   return (
-    <div className="h-full flex flex-col bg-card/50 border border-border rounded-lg pixel-corners overflow-hidden">
+    <div className="h-full flex flex-col bg-card/50 border border-border rounded-lg  overflow-hidden">
       <div className="p-3 border-b border-border">
-        <h3 className="text-sm font-jetbrains-mono text-muted-foreground mb-2 flex items-center gap-2">
-          <IconMoodHappy className="h-4 w-4 text-cow-purple" />
+        <h3 className="text-sm text-muted-foreground mb-2 flex items-center gap-2">
+          <IconMoodHappy className="h-4 w-4 text-primary" />
           Mood Filter
         </h3>
         
@@ -57,7 +57,7 @@ const MusicMoodFilter = ({ selectedMoods, onMoodChange, moodsData }: MusicMoodFi
             placeholder="Search moods..."
             value={moodSearch}
             onChange={(e) => setMoodSearch(e.target.value)}
-            className="pl-8 h-8 text-sm pixel-input"
+            className="pl-8 h-8 text-sm "
           />
           {moodSearch && (
             <Button
@@ -72,14 +72,14 @@ const MusicMoodFilter = ({ selectedMoods, onMoodChange, moodsData }: MusicMoodFi
         </div>
         
         {selectedMoods.length > 0 && (
-          <div className="flex items-center justify-between bg-cow-purple/10 px-2 py-1.5 rounded border border-cow-purple/20">
-            <span className="text-xs text-cow-purple">
+          <div className="flex items-center justify-between bg-primary/10 px-2 py-1.5 rounded border border-primary/20">
+            <span className="text-xs text-primary">
               {selectedMoods.length} selected
             </span>
             <Button
               variant="ghost"
               size="sm"
-              className="h-5 text-xs text-cow-purple hover:text-cow-purple"
+              className="h-5 text-xs text-primary hover:text-primary"
               onClick={clearMoods}
             >
               Clear
@@ -97,7 +97,7 @@ const MusicMoodFilter = ({ selectedMoods, onMoodChange, moodsData }: MusicMoodFi
                 flex items-center gap-2 py-1.5 px-2 rounded-md cursor-pointer mb-1
                 transition-colors duration-150
                 ${selectedMoods.includes(mood) 
-                  ? 'bg-cow-purple/20 text-cow-purple' 
+                  ? 'bg-primary/20 text-primary' 
                   : 'hover:bg-accent/50'
                 }
               `}

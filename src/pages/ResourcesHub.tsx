@@ -32,7 +32,7 @@ const ResourceDetailDialog = lazy(() => import('@/components/resources/ResourceD
 
 const LoadingSpinner = () => (
   <div className="flex justify-center items-center p-8">
-    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-cow-purple"></div>
+    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
   </div>
 );
 
@@ -282,7 +282,7 @@ const ResourcesHub = () => {
             variant={musicView === 'community' ? 'default' : 'outline'}
             size="sm"
             onClick={() => setMusicView('community')}
-            className="pixel-corners"
+            className=""
           >
             <IconMusic className="h-4 w-4 mr-2" />
             Community Music
@@ -291,7 +291,7 @@ const ResourcesHub = () => {
             variant={musicView === 'minecraft' ? 'default' : 'outline'}
             size="sm"
             onClick={() => setMusicView('minecraft')}
-            className="pixel-corners"
+            className=""
           >
             <IconPlayerPlay className="h-4 w-4 mr-2" />
             Minecraft Music
@@ -309,20 +309,20 @@ const ResourcesHub = () => {
         <div className="mb-4">
           <Sheet open={mobileMoodFilterOpen} onOpenChange={setMobileMoodFilterOpen}>
             <SheetTrigger asChild>
-              <Button variant="outline" size="sm" className="w-full pixel-corners">
+              <Button variant="outline" size="sm" className="w-full ">
                 <IconAlbum className="h-4 w-4 mr-2" />
                 Filter by Album
                 {minecraftMusic.selectedAlbum && (
-                  <span className="ml-2 bg-cow-purple text-white text-xs px-1.5 py-0.5 rounded truncate max-w-[100px]">
+                  <span className="ml-2 bg-primary text-primary-foreground text-xs px-1.5 py-0.5 rounded truncate max-w-[100px]">
                     {minecraftMusic.selectedAlbum}
                   </span>
                 )}
               </Button>
             </SheetTrigger>
-            <SheetContent side="bottom" className="h-[70vh] pixel-corners">
+            <SheetContent side="bottom" className="h-[70vh] ">
               <div className="h-full py-2">
-                <h3 className="text-lg font-jetbrains-mono mb-4 flex items-center gap-2">
-                  <IconAlbum className="h-5 w-5 text-cow-purple" />
+                <h3 className="text-lg mb-4 flex items-center gap-2">
+                  <IconAlbum className="h-5 w-5 text-primary" />
                   Filter by Album
                 </h3>
                 <MinecraftMusicFilter
@@ -346,20 +346,20 @@ const ResourcesHub = () => {
         <div className="mb-4">
           <Sheet open={mobileMoodFilterOpen} onOpenChange={setMobileMoodFilterOpen}>
             <SheetTrigger asChild>
-              <Button variant="outline" size="sm" className="w-full pixel-corners">
+              <Button variant="outline" size="sm" className="w-full ">
                 <IconFilter className="h-4 w-4 mr-2" />
                 Filter by Mood
                 {selectedMoods.length > 0 && (
-                  <span className="ml-2 bg-cow-purple text-white text-xs px-1.5 py-0.5 rounded">
+                  <span className="ml-2 bg-primary text-primary-foreground text-xs px-1.5 py-0.5 rounded">
                     {selectedMoods.length}
                   </span>
                 )}
               </Button>
             </SheetTrigger>
-            <SheetContent side="bottom" className="h-[70vh] pixel-corners">
+            <SheetContent side="bottom" className="h-[70vh] ">
               <div className="h-full py-2">
-                <h3 className="text-lg font-jetbrains-mono mb-4 flex items-center gap-2">
-                  <IconMoodHappy className="h-5 w-5 text-cow-purple" />
+                <h3 className="text-lg mb-4 flex items-center gap-2">
+                  <IconMoodHappy className="h-5 w-5 text-primary" />
                   Filter by Mood
                 </h3>
                 <MusicMoodFilter
@@ -429,8 +429,8 @@ const ResourcesHub = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <h1 className="text-4xl md:text-5xl font-minecraftia font-bold mb-2 text-center">Resources Hub</h1>
-            <p className="text-lg text-muted-foreground text-center max-w-2xl mx-auto font-jetbrains-mono">Discover and download a wide range of resources to enhance your RenderDragon experience.</p>
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-3 text-center">Resources Hub</h1>
+            <p className="text-lg text-muted-foreground text-center max-w-2xl mx-auto ">Discover and download a wide range of resources to enhance your RenderDragon experience.</p>
           </motion.div>
 
           <motion.div
@@ -444,7 +444,7 @@ const ResourcesHub = () => {
                 variant={activeTab === 'resources' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setActiveTab('resources')}
-                className="pixel-corners"
+                className=""
               >
                 <IconSearch className="h-4 w-4 mr-2" />
                 Resources
@@ -454,12 +454,12 @@ const ResourcesHub = () => {
                   variant={activeTab === 'favorites' ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => setActiveTab('favorites')}
-                  className="pixel-corners"
+                  className=""
                 >
                   <IconHeart className="h-4 w-4 mr-2" />
                   Favorites
                 </Button>
-                <span className="absolute -top-2 -right-3 bg-cow-purple text-white text-[10px] px-1.5 py-0.5 rounded leading-none uppercase tracking-wide border border-background shadow-sm z-10 pointer-events-none">
+                <span className="absolute -top-2 -right-3 bg-primary text-primary-foreground text-[10px] px-1.5 py-0.5 rounded leading-none uppercase tracking-wide border border-background shadow-sm z-10 pointer-events-none">
                   NEW
                 </span>
               </div>
@@ -468,12 +468,12 @@ const ResourcesHub = () => {
                   variant={activeTab === 'creator-packs' ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => setActiveTab('creator-packs')}
-                  className="pixel-corners"
+                  className=""
                 >
                   <IconPackage className="h-4 w-4 mr-2" />
                   Creator Packs
                 </Button>
-                <span className="absolute -top-2 -right-3 bg-cow-purple text-white text-[10px] px-1.5 py-0.5 rounded leading-none uppercase tracking-wide border border-background shadow-sm z-10 pointer-events-none">
+                <span className="absolute -top-2 -right-3 bg-primary text-primary-foreground text-[10px] px-1.5 py-0.5 rounded leading-none uppercase tracking-wide border border-background shadow-sm z-10 pointer-events-none">
                   NEW
                 </span>
               </div>
@@ -482,12 +482,12 @@ const ResourcesHub = () => {
                   variant={activeTab === 'music-packs' ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => setActiveTab('music-packs')}
-                  className="pixel-corners"
+                  className=""
                 >
                   <IconMusic className="h-4 w-4 mr-2" />
                   Music Packs
                 </Button>
-                <span className="absolute -top-2 -right-3 bg-cow-purple text-white text-[10px] px-1.5 py-0.5 rounded leading-none uppercase tracking-wide border border-background shadow-sm z-10 pointer-events-none">
+                <span className="absolute -top-2 -right-3 bg-primary text-primary-foreground text-[10px] px-1.5 py-0.5 rounded leading-none uppercase tracking-wide border border-background shadow-sm z-10 pointer-events-none">
                   NEW
                 </span>
               </div>
@@ -634,7 +634,7 @@ const ResourcesHub = () => {
           >
             <Button
               onClick={scrollToTop}
-              className="fixed bottom-8 right-8 z-[9999] h-12 w-12 rounded-full shadow-lg bg-cow-purple hover:bg-cow-purple-dark transition-all duration-300 opacity-90 hover:opacity-100 text-white border-2 border-white/10"
+              className="fixed bottom-8 right-8 z-[9999] h-12 w-12 rounded-full shadow-lg bg-primary hover:bg-primary/90 transition-all duration-300 opacity-90 hover:opacity-100 text-primary-foreground"
               size="icon"
               aria-label="Scroll to top"
             >

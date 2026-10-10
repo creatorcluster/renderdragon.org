@@ -53,7 +53,7 @@ const ResourceFilters = ({
             onClick={(e) => {
               e.stopPropagation();
             }}
-            className="pixel-input w-full pr-10"
+            className="w-full pr-10"
           />
 
           {searchQuery && (
@@ -110,28 +110,28 @@ const MobileFilters = ({
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button size="icon" className="pixel-corners">
+        <Button size="icon" className="">
           <IconFilter className="h-4 w-4" />
           <span className="sr-only">Filter</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="bottom" className="h-[80vh] pixel-corners">
+      <SheetContent side="bottom" className="h-[80vh] ">
         <div className="h-full py-4 space-y-4">
-          <h3 className="text-lg font-jetbrains-mono mb-2">
+          <h3 className="text-lg mb-2">
             Filter by Category
           </h3>
           <div className="flex flex-col gap-2">
             <Button
               variant={selectedCategory === null ? 'default' : 'outline'}
               onClick={() => onCategoryChange(null)}
-              className="justify-start pixel-corners"
+              className="justify-start "
             >
               All
             </Button>
             <Button
               variant={selectedCategory === 'music' ? 'default' : 'outline'}
               onClick={() => onCategoryChange('music')}
-              className="justify-start pixel-corners"
+              className="justify-start "
             >
               <IconMusic className="h-4 w-4 mr-2" />
               Music
@@ -139,7 +139,7 @@ const MobileFilters = ({
             <Button
               variant={selectedCategory === 'sfx' ? 'default' : 'outline'}
               onClick={() => onCategoryChange('sfx')}
-              className="justify-start pixel-corners"
+              className="justify-start "
             >
               <IconFileMusic className="h-4 w-4 mr-2" />
               SFX
@@ -147,7 +147,7 @@ const MobileFilters = ({
             <Button
               variant={selectedCategory === 'images' ? 'default' : 'outline'}
               onClick={() => onCategoryChange('images')}
-              className="justify-start pixel-corners"
+              className="justify-start "
             >
               <IconPhoto className="h-4 w-4 mr-2" />
               Images
@@ -155,7 +155,7 @@ const MobileFilters = ({
             <Button
               variant={selectedCategory === 'animations' ? 'default' : 'outline'}
               onClick={() => onCategoryChange('animations')}
-              className="justify-start pixel-corners"
+              className="justify-start "
             >
               <IconVideo className="h-4 w-4 mr-2" />
               Animations
@@ -163,7 +163,7 @@ const MobileFilters = ({
             <Button
               variant={selectedCategory === 'fonts' ? 'default' : 'outline'}
               onClick={() => onCategoryChange('fonts')}
-              className="justify-start pixel-corners"
+              className="justify-start "
             >
               <IconFileText className="h-4 w-4 mr-2" />
               Fonts
@@ -171,7 +171,7 @@ const MobileFilters = ({
             <Button
               variant={selectedCategory === 'presets' ? 'default' : 'outline'}
               onClick={() => onCategoryChange('presets')}
-              className="justify-start pixel-corners"
+              className="justify-start "
             >
               <IconFileText className="h-4 w-4 mr-2" />
               Presets
@@ -179,7 +179,7 @@ const MobileFilters = ({
             <Button
               variant={selectedCategory === 'mcsounds' ? 'default' : 'outline'}
               onClick={() => onCategoryChange('mcsounds')}
-              className="justify-start pixel-corners"
+              className="justify-start "
             >
               <IconVolume className="h-4 w-4 mr-2" />
               Minecraft Sounds
@@ -187,7 +187,7 @@ const MobileFilters = ({
             <Button
               variant={selectedCategory === 'minecraft-icons' ? 'default' : 'outline'}
               onClick={() => onCategoryChange('minecraft-icons')}
-              className="justify-start pixel-corners"
+              className="justify-start "
             >
               <IconLayoutGrid className="h-4 w-4 mr-2" />
               Minecraft Icons
@@ -236,7 +236,7 @@ const MobileFilters = ({
           value={selectedSubcategory || "all"}
           onValueChange={(value) => onSubcategoryChange(value === "all" ? null : value)}
         >
-          <SelectTrigger className="h-10 w-[200px] pixel-corners">
+          <SelectTrigger className="h-10 w-[200px] ">
             <SelectValue placeholder="Select sound type" />
           </SelectTrigger>
           <SelectContent className="max-h-[300px]">
@@ -292,7 +292,7 @@ const DesktopFilters = ({
         variant={selectedCategory === null ? 'default' : 'outline'}
         size="sm"
         onClick={() => onCategoryChange(null)}
-        className="h-10 pixel-corners"
+        className="h-10 "
       >
         All
       </Button>
@@ -300,7 +300,7 @@ const DesktopFilters = ({
         variant={selectedCategory === 'music' ? 'default' : 'outline'}
         size="sm"
         onClick={() => onCategoryChange('music')}
-        className="h-10 pixel-corners"
+        className="h-10 "
       >
         Music
       </Button>
@@ -308,7 +308,7 @@ const DesktopFilters = ({
         variant={selectedCategory === 'sfx' ? 'default' : 'outline'}
         size="sm"
         onClick={() => onCategoryChange('sfx')}
-        className="h-10 pixel-corners"
+        className="h-10 "
       >
         SFX
       </Button>
@@ -316,7 +316,7 @@ const DesktopFilters = ({
         variant={selectedCategory === 'images' ? 'default' : 'outline'}
         size="sm"
         onClick={() => onCategoryChange('images')}
-        className="h-10 pixel-corners"
+        className="h-10 "
       >
         Images
       </Button>
@@ -324,7 +324,7 @@ const DesktopFilters = ({
         variant={selectedCategory === 'animations' ? 'default' : 'outline'}
         size="sm"
         onClick={() => onCategoryChange('animations')}
-        className="h-10 pixel-corners"
+        className="h-10 "
       >
         Animations
       </Button>
@@ -332,7 +332,7 @@ const DesktopFilters = ({
         variant={selectedCategory === 'fonts' ? 'default' : 'outline'}
         size="sm"
         onClick={() => onCategoryChange('fonts')}
-        className="h-10 pixel-corners"
+        className="h-10 "
       >
         Fonts
       </Button>
@@ -340,7 +340,7 @@ const DesktopFilters = ({
         variant={selectedCategory === 'presets' ? 'default' : 'outline'}
         size="sm"
         onClick={() => onCategoryChange('presets')}
-        className="h-10 pixel-corners"
+        className="h-10 "
       >
         Presets
       </Button>
@@ -348,7 +348,7 @@ const DesktopFilters = ({
         variant={selectedCategory === 'mcsounds' ? 'default' : 'outline'}
         size="sm"
         onClick={() => onCategoryChange('mcsounds')}
-        className="h-10 pixel-corners"
+        className="h-10 "
       >
         Minecraft Sounds
       </Button>
@@ -356,7 +356,7 @@ const DesktopFilters = ({
         variant={selectedCategory === 'minecraft-icons' ? 'default' : 'outline'}
         size="sm"
         onClick={() => onCategoryChange('minecraft-icons')}
-        className="h-10 pixel-corners"
+        className="h-10 "
       >
         Minecraft Icons
       </Button>
@@ -368,7 +368,7 @@ const DesktopFilters = ({
           value={selectedSubcategory || "all"}
           onValueChange={(value) => onSubcategoryChange(value === "all" ? null : value)}
         >
-          <SelectTrigger className="h-10 w-[180px] pixel-corners">
+          <SelectTrigger className="h-10 w-[180px] ">
             <SelectValue placeholder="Select preset type" />
           </SelectTrigger>
           <SelectContent>
@@ -384,7 +384,7 @@ const DesktopFilters = ({
           value={selectedSubcategory || "all"}
           onValueChange={(value) => onSubcategoryChange(value === "all" ? null : value)}
         >
-          <SelectTrigger className="h-10 w-[200px] pixel-corners">
+          <SelectTrigger className="h-10 w-[200px] ">
             <SelectValue placeholder="Select icon type" />
           </SelectTrigger>
           <SelectContent className="max-h-[300px]">

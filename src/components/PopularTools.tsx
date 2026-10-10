@@ -54,7 +54,7 @@ const itemVariants = {
 const PopularTools = () => {
   return (
     <section className="relative py-20 md:py-28 bg-background">
-      <div className="absolute inset-0 pointer-events-none cow-grid-bg opacity-20" />
+      <div className="absolute inset-0 pointer-events-none cow-grid-bg opacity-60" />
 
       <div className="relative container mx-auto px-4">
         <motion.div
@@ -64,12 +64,10 @@ const PopularTools = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
         >
-          <h2
-            className="font-minecraftia text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-6 text-foreground leading-tight"
-          >
-            Creator <span className="text-cow-purple">Tools</span>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-4 text-foreground">
+            Creator <span className="text-primary">Tools</span>
           </h2>
-          <p className="font-jetbrains-mono text-xl md:text-2xl text-foreground/70 leading-tight">
+          <p className="text-lg md:text-xl text-muted-foreground">
             Built for the boring parts so you can focus on the fun.
           </p>
         </motion.div>
@@ -83,27 +81,27 @@ const PopularTools = () => {
         >
           {tools.map((tool) => (
             <motion.div key={tool.id} variants={itemVariants}>
-                <Link
-                  to={tool.path}
-                   className={`group relative block h-full pixel-card bg-card hover:bg-cow-purple/5 border-2 border-border hover:border-cow-purple p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-cow-purple/20 ${tool.backgroundImage ? 'overflow-hidden' : ''}`}
-                 >
-                   {tool.backgroundImage && <>
-                     <img src={tool.backgroundImage} alt="" aria-hidden="true" width={800} height={450} loading="lazy" decoding="async" className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
-                     <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_35%,rgba(0,0,0,0.55)_100%)] opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
-                   </>}
-                  <div className="flex items-start justify-between mb-5">
-                   <div className="relative z-10 w-12 h-12 bg-cow-purple/15 border-2 border-cow-purple pixel-corners flex items-center justify-center group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300">
-                     <tool.icon className={`h-6 w-6 text-cow-purple transition-opacity duration-150 ${tool.hoverIcon || tool.hoverImage ? 'group-hover:opacity-0' : ''}`} stroke={2.5} />
-                    {'hoverIcon' in tool && tool.hoverIcon && <tool.hoverIcon className="absolute h-6 w-6 text-red-500 opacity-0 transition-opacity duration-150 group-hover:opacity-100" stroke={2.5} />}
-                    {'hoverImage' in tool && tool.hoverImage && <img src={tool.hoverImage} alt="" loading="lazy" decoding="async" className="absolute h-7 w-7 rounded-sm object-cover opacity-0 transition-opacity duration-150 group-hover:opacity-100" />}
+              <Link
+                to={tool.path}
+                className={`group relative block h-full rounded-xl border border-border bg-card p-6 transition-all duration-300 hover:-translate-y-1 hover:border-primary/60 ${tool.backgroundImage ? 'overflow-hidden' : ''}`}
+              >
+                {tool.backgroundImage && <>
+                  <img src={tool.backgroundImage} alt="" aria-hidden="true" width={800} height={450} loading="lazy" decoding="async" className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+                  <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_35%,rgba(0,0,0,0.55)_100%)] opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+                </>}
+                <div className="flex items-start justify-between mb-5">
+                  <div className="relative z-10 w-12 h-12 rounded-xl bg-primary/10 border border-border flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
+                    <tool.icon className={`h-6 w-6 text-primary transition-opacity duration-150 ${tool.hoverIcon || tool.hoverImage ? 'group-hover:opacity-0' : ''}`} stroke={2} />
+                    {'hoverIcon' in tool && tool.hoverIcon && <tool.hoverIcon className="absolute h-6 w-6 text-red-500 opacity-0 transition-opacity duration-150 group-hover:opacity-100" stroke={2} />}
+                    {'hoverImage' in tool && tool.hoverImage && <img src={tool.hoverImage} alt="" loading="lazy" decoding="async" className="absolute h-7 w-7 rounded-md object-cover opacity-0 transition-opacity duration-150 group-hover:opacity-100" />}
                   </div>
-                   <IconArrowRight className="relative z-10 w-5 h-5 text-cow-purple opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                  <IconArrowRight className="relative z-10 w-5 h-5 text-primary opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                 </div>
 
-                 <h3 className="relative z-10 font-jetbrains-mono text-xl md:text-2xl text-foreground mb-2 tracking-wide uppercase">
+                <h3 className="relative z-10 text-lg md:text-xl font-medium text-foreground mb-2">
                   {tool.title}
                 </h3>
-                 <p className="relative z-10 font-jetbrains-mono text-base text-foreground/70 leading-snug">
+                <p className="relative z-10 text-sm md:text-base text-muted-foreground leading-relaxed">
                   {tool.description}
                 </p>
               </Link>
