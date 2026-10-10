@@ -7,7 +7,7 @@ import {
   IconHeart,
   IconSunglasses,
 } from "@tabler/icons-react";
-import { Resource } from "@/types/resources";
+import { Resource, getResourceUrl } from "@/types/resources";
 import { cn } from "@/lib/utils";
 import { useUserFavorites } from "@/hooks/useUserFavorites";
 import AudioPlayer from "@/components/AudioPlayer";
@@ -40,7 +40,11 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
   }, [resource.id]);
 
   const { toggleFavorite, isFavorited } = useUserFavorites();
-  const isFavorite = isFavorited(String(resource.id));
+  // Favourites are keyed by the resource URL everywhere else (the Favorites tab
+  // matches on it and the DB column is `resource_url`), so the card must use the
+  // same key. Keying by `resource.id` never matched and left the tab empty.
+  const resourceUrl = getResourceUrl(resource);
+  const isFavorite = isFavorited(resourceUrl);
 
   const [isInView, setIsInView] = useState(false);
   const [isPreviewReady, setIsPreviewReady] = useState(false);
@@ -133,7 +137,7 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    toggleFavorite(String(resource.id));
+    toggleFavorite(resourceUrl);
   };
 
   const handleCopyrightClick = (e: React.MouseEvent) => {
