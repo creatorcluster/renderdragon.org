@@ -10,6 +10,7 @@ import { IconLoader2, IconDeviceFloppy, IconEye, IconArrowLeft } from "@tabler/i
 import ReactMarkdown from "react-markdown";
 import { Link, useNavigate, useParams, Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { isAdminEmail } from "@/lib/admin";
 
 const slugify = (text: string) => {
     return text
@@ -59,8 +60,7 @@ export default function BlogEditor() {
     useEffect(() => { if (!id && title) setSlug(slugify(title)); }, [title, id]);
 
     // Admin Authorization Check
-    const authorizedEmails = ['yamura@duck.com', 'theckie@protonmail.com', 'vovoplaygame3@gmail.com'];
-    const isAuthorized = user && authorizedEmails.includes(user?.email || '');
+    const isAuthorized = isAdminEmail(user?.email);
 
     if (authLoading) return <div className="p-10 flex justify-center"><IconLoader2 className="animate-spin" /></div>;
 

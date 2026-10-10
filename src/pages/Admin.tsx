@@ -1,10 +1,11 @@
 import { useEffect, useState, lazy, Suspense } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { Navigate } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
+import { isAdminEmail } from '@/lib/admin';
 import Footer from '@/components/Footer';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
-import { IconShield } from '@tabler/icons-react';
+import { IconChartAreaLine, IconShield } from '@tabler/icons-react';
 import AdminPageSkeleton from '@/components/skeletons/AdminPageSkeleton';
 
 const AdminResourcesManager = lazy(() => import('@/components/admin/AdminResourcesManager'));
@@ -29,8 +30,7 @@ const Admin = () => {
     );
   }
 
-  const authorizedEmails = ['yamura@duck.com', 'theckie@protonmail.com', 'vovoplaygame3@gmail.com'];
-  const isAuthorized = user && authorizedEmails.includes(user.email);
+  const isAuthorized = isAdminEmail(user?.email);
 
   if (!user || !isAuthorized) {
     return <Navigate to="/" replace />;
@@ -52,11 +52,20 @@ const Admin = () => {
             transition={{ duration: 0.5 }}
             className="max-w-7xl mx-auto"
           >
-            <div className="flex items-center gap-3 mb-8">
-              <IconShield className="h-8 w-8 text-cow-purple" />
-              <h1 className="text-4xl md:text-5xl font-minecraftia">
-                Admin <span className="text-cow-purple">Panel</span>
-              </h1>
+            <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+              <div className="flex items-center gap-3">
+                <IconShield className="h-8 w-8 text-cow-purple" />
+                <h1 className="text-4xl md:text-5xl font-minecraftia">
+                  Admin <span className="text-cow-purple">Panel</span>
+                </h1>
+              </div>
+              <Link
+                to="/admin/analytics"
+                className="inline-flex items-center gap-2 rounded-md border border-border bg-card px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
+              >
+                <IconChartAreaLine className="h-4 w-4" />
+                Traffic Analytics
+              </Link>
             </div>
 
             <Suspense fallback={<AdminPageSkeleton />}>

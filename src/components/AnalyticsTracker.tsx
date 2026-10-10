@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { trackPageView } from "@/lib/analytics";
 
-const CloudflareAnalytics = () => {
+const AnalyticsTracker = () => {
   const location = useLocation();
 
   useEffect(() => {
@@ -12,4 +12,4 @@ const CloudflareAnalytics = () => {
   return null;
 };
 
-export default CloudflareAnalytics;
+export default AnalyticsTracker;

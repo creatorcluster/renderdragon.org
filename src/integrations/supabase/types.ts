@@ -129,6 +129,31 @@ type LooneyRateLimit = {
   last_check_at: string;
 };
 
+type AnalyticsVisitor = {
+  visitor_key: string;
+  user_id: string | null;
+  browser_id: string | null;
+  first_seen: string;
+  last_seen: string;
+  visits: number;
+  [key: string]: Json | undefined;
+};
+
+type AnalyticsEvent = {
+  id: number;
+  visitor_key: string;
+  user_id: string | null;
+  browser_id: string | null;
+  session_id: string | null;
+  path: string | null;
+  referrer: string | null;
+  country: string | null;
+  user_agent: string | null;
+  is_new: boolean;
+  created_at: string;
+  [key: string]: Json | undefined;
+};
+
 export type Database = {
   public: {
     Tables: {
@@ -143,6 +168,8 @@ export type Database = {
       user_favorite_folders: Table<FavoriteFolder>;
       user_favorites: Table<UserFavorite>;
       looney_check_rate_limits: Table<LooneyRateLimit>;
+      analytics_events: Table<AnalyticsEvent>;
+      analytics_visitors: Table<AnalyticsVisitor>;
     };
     Views: Record<string, never>;
     Functions: {
@@ -162,6 +189,29 @@ export type Database = {
       };
       get_my_profile: {
         Args: Record<string, never>;
+        Returns: Json;
+      };
+      analytics_track: {
+        Args: {
+          p_visitor_key: string;
+          p_browser_id: string | null;
+          p_user_id: string | null;
+          p_session_id: string | null;
+          p_path: string | null;
+          p_referrer: string | null;
+          p_country: string | null;
+          p_user_agent: string | null;
+          p_session_window_seconds?: number;
+        };
+        Returns: Json;
+      };
+      analytics_overview: {
+        Args: {
+          p_from: string;
+          p_to: string;
+          p_granularity?: string;
+          p_top_limit?: number;
+        };
         Returns: Json;
       };
     };

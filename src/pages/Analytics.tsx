@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useQuery } from "@tanstack/react-query";
 import { animate, motion, useMotionValue, useTransform } from "framer-motion";
@@ -6,26 +6,27 @@ import { Area, AreaChart, Bar, BarChart, CartesianGrid, XAxis, YAxis } from "rec
 import { format, parseISO } from "date-fns";
 import {
   IconChartAreaLine,
+  IconExternalLink,
   IconEye,
-  IconKey,
+  IconFileText,
   IconRefresh,
   IconUserCheck,
   IconUserPlus,
   IconUsers,
 } from "@tabler/icons-react";
+import { Navigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { isAdminEmail } from "@/lib/admin";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { fetchAnalyticsStats } from "@/lib/analytics";
+import { fetchAnalyticsStats, type Granularity } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
-
-const TOKEN_KEY = "rd_stats_token";
 
 const usersConfig = {
   newUsers: { label: "New", color: "hsl(var(--chart-1))" },
@@ -35,6 +36,30 @@ const usersConfig = {
 const visitsConfig = {
   visits: { label: "Visits", color: "hsl(var(--chart-4))" },
 } satisfies ChartConfig;
+
+const RANGES = [
+  { label: "7d", value: 7 },
+  { label: "30d", value: 30 },
+  { label: "90d", value: 90 },
+  { label: "12mo", value: 365 },
+] as const;
+
+const formatBucket = (granularity: Granularity, bucket: string): string => {
+  const date = parseISO(bucket);
+  if (Number.isNaN(date.getTime())) return bucket;
+  if (granularity === "month") return format(date, "MMM yyyy");
+  if (granularity === "week") return `w/c ${format(date, "MMM d")}`;
+  return format(date, "MMM d");
+};
+
+const prettyReferrer = (referrer: string): string => {
+  try {
+    const url = new URL(referrer);
+    return url.hostname.replace(/^www\./, "");
+  } catch {
+    return referrer;
+  }
+};
 
 const CountUp = ({ value }: { value: number }) => {
   const motionValue = useMotionValue(0);
@@ -93,43 +118,47 @@ const DashboardSkeleton = () => (
 );
 
 const Analytics = () => {
-  const [token, setToken] = useState(() => window.localStorage.getItem(TOKEN_KEY) ?? "");
-  const [draft, setDraft] = useState("");
-  const [days, setDays] = useState<7 | 30 | 90>(30);
+  const { user, session, loading } = useAuth();
+  const [days, setDays] = useState<number>(30);
+  const [granularity, setGranularity] = useState<Granularity>("day");
+
+  const accessToken = session?.access_token ?? "";
 
   const { data, isPending, isError, error, refetch, isFetching } = useQuery({
-    queryKey: ["analytics-stats", token, days],
-    queryFn: () => fetchAnalyticsStats(token, days),
-    enabled: token.length > 0,
+    queryKey: ["analytics-stats", accessToken, days, granularity],
+    queryFn: () => fetchAnalyticsStats(accessToken, { days, granularity }),
+    enabled: accessToken.length > 0,
     retry: false,
     staleTime: 60_000,
   });
 
-  const unauthorized = isError && error instanceof Error && error.message === "unauthorized";
-
-  const chartData = useMemo(
+  const buckets = useMemo(
     () =>
-      [...(data?.daily ?? [])]
-        .reverse()
-        .map((point) => ({ ...point, label: format(parseISO(point.day), "MMM d") })),
-    [data],
+      (data?.buckets ?? []).map((point) => ({
+        ...point,
+        label: formatBucket(granularity, point.bucket),
+      })),
+    [data, granularity],
   );
 
-  const saveToken = (event: FormEvent) => {
-    event.preventDefault();
-    const next = draft.trim();
-    if (!next) return;
-    window.localStorage.setItem(TOKEN_KEY, next);
-    setToken(next);
-    setDraft("");
-  };
+  if (loading) {
+    return (
+      <div className="flex min-h-screen flex-col">
+        <main className="cow-grid-bg flex-grow pb-16 pt-24">
+          <div className="container mx-auto px-4">
+            <div className="mx-auto max-w-6xl">
+              <DashboardSkeleton />
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
-  const clearToken = () => {
-    window.localStorage.removeItem(TOKEN_KEY);
-    setToken("");
-  };
-
-  const showGate = token.length === 0 || unauthorized;
+  if (!user || !isAdminEmail(user.email)) {
+    return <Navigate to="/" replace />;
+  }
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -137,7 +166,6 @@ const Analytics = () => {
         <title>Analytics - Renderdragon</title>
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
-
 
       <main className="cow-grid-bg flex-grow pb-16 pt-24">
         <div className="container mx-auto px-4">
@@ -155,53 +183,34 @@ const Analytics = () => {
                 </h1>
               </div>
 
-              {!showGate && (
-                <div className="flex items-center gap-2">
-                  <ToggleGroup
-                    value={String(days)}
-                    onValueChange={(value) => value && setDays(Number(value) as 7 | 30 | 90)}
-                    variant="outline"
-                  >
-                    <ToggleGroupItem value="7">7d</ToggleGroupItem>
-                    <ToggleGroupItem value="30">30d</ToggleGroupItem>
-                    <ToggleGroupItem value="90">90d</ToggleGroupItem>
-                  </ToggleGroup>
-                  <Button variant="outline" size="icon" onClick={() => refetch()} aria-label="Refresh">
-                    <IconRefresh className={cn("size-4", isFetching && "animate-spin")} />
-                  </Button>
-                  <Button variant="ghost" size="icon" onClick={clearToken} aria-label="Forget token">
-                    <IconKey className="size-4" />
-                  </Button>
-                </div>
-              )}
+              <div className="flex flex-wrap items-center gap-2">
+                <ToggleGroup
+                  value={granularity}
+                  onValueChange={(value) => value && setGranularity(value as Granularity)}
+                  variant="outline"
+                >
+                  <ToggleGroupItem value="day">Daily</ToggleGroupItem>
+                  <ToggleGroupItem value="week">Weekly</ToggleGroupItem>
+                  <ToggleGroupItem value="month">Monthly</ToggleGroupItem>
+                </ToggleGroup>
+                <ToggleGroup
+                  value={String(days)}
+                  onValueChange={(value) => value && setDays(Number(value))}
+                  variant="outline"
+                >
+                  {RANGES.map((range) => (
+                    <ToggleGroupItem key={range.value} value={String(range.value)}>
+                      {range.label}
+                    </ToggleGroupItem>
+                  ))}
+                </ToggleGroup>
+                <Button variant="outline" size="icon" onClick={() => refetch()} aria-label="Refresh">
+                  <IconRefresh className={cn("size-4", isFetching && "animate-spin")} />
+                </Button>
+              </div>
             </div>
 
-            {showGate ? (
-              <Card className="mx-auto max-w-md">
-                <CardHeader>
-                  <CardTitle>Stats token</CardTitle>
-                  <CardDescription>
-                    Enter the STATS_TOKEN you set for the analytics worker. It stays in this browser only.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <form onSubmit={saveToken} className="flex flex-col gap-3">
-                    <Input
-                      type="password"
-                      value={draft}
-                      onChange={(event) => setDraft(event.target.value)}
-                      placeholder="STATS_TOKEN"
-                      aria-invalid={unauthorized}
-                      autoFocus
-                    />
-                    {unauthorized && (
-                      <p className="text-sm text-destructive">That token was rejected. Try again.</p>
-                    )}
-                    <Button type="submit">View analytics</Button>
-                  </form>
-                </CardContent>
-              </Card>
-            ) : isPending ? (
+            {isPending ? (
               <DashboardSkeleton />
             ) : isError ? (
               <Alert variant="destructive">
@@ -214,20 +223,20 @@ const Analytics = () => {
               data && (
                 <div className="flex flex-col gap-6">
                   <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                    <StatCard label="New users" value={data.newUsers} icon={IconUserPlus} accent="text-chart-1" index={0} />
-                    <StatCard label="Returning users" value={data.returningUsers} icon={IconUserCheck} accent="text-chart-2" index={1} />
-                    <StatCard label="Unique users" value={data.totalUsers} icon={IconUsers} accent="text-chart-3" index={2} />
-                    <StatCard label="Visits" value={data.visits} icon={IconEye} accent="text-chart-4" index={3} />
+                    <StatCard label="New users" value={data.totals.newUsers} icon={IconUserPlus} accent="text-chart-1" index={0} />
+                    <StatCard label="Returning users" value={data.totals.returningUsers} icon={IconUserCheck} accent="text-chart-2" index={1} />
+                    <StatCard label="Unique visitors" value={data.totals.totalUsers} icon={IconUsers} accent="text-chart-3" index={2} />
+                    <StatCard label="Visits" value={data.totals.visits} icon={IconEye} accent="text-chart-4" index={3} />
                   </div>
 
                   <Card>
                     <CardHeader>
                       <CardTitle>New vs returning</CardTitle>
-                      <CardDescription>Distinct visitors per day (UTC)</CardDescription>
+                      <CardDescription>Distinct visitors per {granularity} (UTC)</CardDescription>
                     </CardHeader>
                     <CardContent>
                       <ChartContainer config={usersConfig} className="aspect-auto h-[300px] w-full">
-                        <AreaChart data={chartData} margin={{ left: 0, right: 12, top: 8, bottom: 0 }}>
+                        <AreaChart data={buckets} margin={{ left: 0, right: 12, top: 8, bottom: 0 }}>
                           <defs>
                             <linearGradient id="fill-new" x1="0" y1="0" x2="0" y2="1">
                               <stop offset="5%" stopColor="var(--color-newUsers)" stopOpacity={0.5} />
@@ -266,12 +275,12 @@ const Analytics = () => {
 
                   <Card>
                     <CardHeader>
-                      <CardTitle>Visits per day</CardTitle>
-                      <CardDescription>Sessions started each day (UTC)</CardDescription>
+                      <CardTitle>Visits per {granularity}</CardTitle>
+                      <CardDescription>Sessions started each {granularity} (UTC)</CardDescription>
                     </CardHeader>
                     <CardContent>
                       <ChartContainer config={visitsConfig} className="aspect-auto h-[260px] w-full">
-                        <BarChart data={chartData} margin={{ left: 0, right: 12, top: 8, bottom: 0 }}>
+                        <BarChart data={buckets} margin={{ left: 0, right: 12, top: 8, bottom: 0 }}>
                           <CartesianGrid vertical={false} />
                           <XAxis dataKey="label" tickLine={false} axisLine={false} tickMargin={8} minTickGap={24} />
                           <YAxis allowDecimals={false} tickLine={false} axisLine={false} width={28} />
@@ -287,30 +296,112 @@ const Analytics = () => {
                     </CardContent>
                   </Card>
 
+                  <div className="grid gap-6 lg:grid-cols-2">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                          <IconFileText className="size-5 text-cow-purple" />
+                          Most viewed pages
+                        </CardTitle>
+                        <CardDescription>Top pages by views in range</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        {data.topPages.length === 0 ? (
+                          <p className="py-6 text-center text-sm text-muted-foreground">No page views yet.</p>
+                        ) : (
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead>Page</TableHead>
+                                <TableHead className="text-right">Views</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {data.topPages.map((page) => (
+                                <TableRow key={page.path}>
+                                  <TableCell className="max-w-[320px] truncate font-jetbrains-mono text-xs" title={page.path}>
+                                    {page.path}
+                                  </TableCell>
+                                  <TableCell className="text-right">{page.views.toLocaleString()}</TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        )}
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                          <IconExternalLink className="size-5 text-cow-purple" />
+                          Top referrers
+                        </CardTitle>
+                        <CardDescription>Where traffic comes from</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        {data.topReferrers.length === 0 ? (
+                          <p className="py-6 text-center text-sm text-muted-foreground">No referrers recorded yet.</p>
+                        ) : (
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead>Source</TableHead>
+                                <TableHead className="text-right">Visits</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {data.topReferrers.map((source) => (
+                                <TableRow key={source.referrer}>
+                                  <TableCell className="max-w-[320px] truncate" title={source.referrer}>
+                                    {prettyReferrer(source.referrer)}
+                                  </TableCell>
+                                  <TableCell className="text-right">{source.views.toLocaleString()}</TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </div>
+
                   <Card>
                     <CardHeader>
-                      <CardTitle>Daily breakdown</CardTitle>
-                      <CardDescription>Latest {chartData.length} days</CardDescription>
+                      <CardTitle>Breakdown</CardTitle>
+                      <CardDescription>
+                        Per {granularity} over the last {days} days
+                      </CardDescription>
                     </CardHeader>
                     <CardContent className="max-h-[420px] overflow-auto">
                       <Table>
                         <TableHeader>
                           <TableRow>
-                            <TableHead>Day</TableHead>
+                            <TableHead>Period</TableHead>
                             <TableHead className="text-right">New</TableHead>
                             <TableHead className="text-right">Returning</TableHead>
+                            <TableHead className="text-right">Unique</TableHead>
                             <TableHead className="text-right">Visits</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {[...chartData].reverse().map((point) => (
-                            <TableRow key={point.day}>
-                              <TableCell className="font-jetbrains-mono">{point.day}</TableCell>
-                              <TableCell className="text-right">{point.newUsers}</TableCell>
-                              <TableCell className="text-right">{point.returningUsers}</TableCell>
-                              <TableCell className="text-right">{point.visits}</TableCell>
+                          {buckets.length === 0 ? (
+                            <TableRow>
+                              <TableCell colSpan={5} className="py-6 text-center text-muted-foreground">
+                                No data for this range yet.
+                              </TableCell>
                             </TableRow>
-                          ))}
+                          ) : (
+                            [...buckets].reverse().map((point) => (
+                              <TableRow key={point.bucket}>
+                                <TableCell className="font-jetbrains-mono">{point.label}</TableCell>
+                                <TableCell className="text-right">{point.newUsers}</TableCell>
+                                <TableCell className="text-right">{point.returningUsers}</TableCell>
+                                <TableCell className="text-right">{point.uniques}</TableCell>
+                                <TableCell className="text-right">{point.visits}</TableCell>
+                              </TableRow>
+                            ))
+                          )}
                         </TableBody>
                       </Table>
                     </CardContent>

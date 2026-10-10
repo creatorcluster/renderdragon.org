@@ -4,7 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
-import CloudflareAnalytics from "@/components/CloudflareAnalytics";
+import AnalyticsTracker from "@/components/AnalyticsTracker";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import { AuthProvider } from "@/providers/AuthProvider";
 import { useAuth } from "@/hooks/useAuth";
@@ -223,7 +223,8 @@ const App = () => {
                       </div>
                     } />
                     <Route path="/admin" element={<Admin />} />
-                    <Route path="/analytics" element={<Analytics />} />
+                    <Route path="/admin/analytics" element={<Analytics />} />
+                    <Route path="/analytics" element={<Navigate to="/admin/analytics" replace />} />
                     <Route path="/admin/blogs/new" element={
                       <div className="min-h-screen pt-24 pb-16 px-4 container mx-auto">
                         <BlogEditor />
@@ -258,7 +259,7 @@ const App = () => {
                   </Routes>
                 </Suspense>
                 <GlobalComponents />
-                <CloudflareAnalytics />
+                <AnalyticsTracker />
               </BrowserRouter>
               <Toaster />
               <Sonner />

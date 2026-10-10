@@ -38,6 +38,7 @@ Browse free resources curated for Minecraft creators, including music, sound eff
 - **Vite** + **React** + **TypeScript**
 - **Tailwind CSS** + **shadcn/ui**
 - **Supabase** for auth, database, and storage
+- **Supabase-backed analytics** for first-party traffic stats (see `supabase/migrations` and `api/track.js` / `api/stats.js`)
 - **UploadThing** for uploads
 - **Express** (`server.js`) for local API development, deployed as **Vercel** serverless functions (`api/`)
 - **Cloudflare Workers** for the assets API
@@ -56,6 +57,8 @@ pnpm install
 ```
 
 Create a `.env` file in the project root with the required keys (Supabase URL/key, and any service keys used by the API routes you plan to run). These values are not committed to the repository.
+
+The analytics API routes require a Supabase service-role key, read from `SUPABASE_SECRET_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, or `SUPABASE_SERVICE_ROLE_SECRET`. The admin dashboard is limited to the emails in `src/lib/admin.ts`; override them server-side with a comma-separated `ANALYTICS_ADMIN_EMAILS` env var. Apply the schema in `supabase/migrations/20261009000000_site_analytics.sql` before tracking will work.
 
 ### Development
 
