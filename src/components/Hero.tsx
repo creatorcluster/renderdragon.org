@@ -27,7 +27,7 @@ const Hero = () => {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background px-6 py-20 md:py-28">
-      <div className="absolute inset-0 pointer-events-none cow-grid-bg opacity-50" />
+      <div className="absolute inset-0 pointer-events-none cow-grid-bg opacity-60" />
 
       <motion.div
         className="relative z-10 max-w-2xl mx-auto text-center flex flex-col items-center"
@@ -38,13 +38,13 @@ const Hero = () => {
         <motion.div variants={fadeUp} className="flex items-center gap-4 mb-6">
           <Logo size="xl" />
           <h1 className="font-minecraftia text-2xl sm:text-4xl md:text-5xl lg:text-6xl text-foreground leading-tight">
-            Render<span className="text-cow-purple">Dragon</span>
+            Render<span className="text-primary">Dragon</span>
           </h1>
         </motion.div>
 
         <motion.p
           variants={fadeUp}
-          className="font-jetbrains-mono text-lg md:text-xl text-foreground/80 max-w-xl mb-8 leading-relaxed"
+          className="text-lg md:text-xl text-muted-foreground max-w-xl mb-8 leading-relaxed"
         >
           Free music, SFX, fonts, presets, and editing tools — all in one place.
           Built for Minecraft YouTubers who'd rather film than file-cabinet.
@@ -52,18 +52,18 @@ const Hero = () => {
 
         <motion.div
           variants={fadeUp}
-          className="flex flex-col sm:flex-row gap-4"
+          className="flex flex-col sm:flex-row gap-3"
         >
           <Link
             to="/resources"
-            className="pixel-btn-primary group flex items-center gap-2 text-base md:text-lg"
+            className="group inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-5 py-3 text-base font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
             <span>Browse Resources</span>
             <IconArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </Link>
           <Link
             to={randomTool}
-            className="pixel-btn-secondary group flex items-center gap-2 text-base md:text-lg"
+            className="group inline-flex items-center justify-center gap-2 rounded-lg border border-border px-5 py-3 text-base font-medium text-foreground transition-colors hover:bg-accent"
           >
             <IconBolt className="w-5 h-5" />
             <span>Try a Tool</span>
