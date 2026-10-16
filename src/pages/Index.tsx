@@ -58,7 +58,7 @@ const Index = () => {
           <Testimonials />
         </motion.div>
 
-        <div className="border-y-4 border-cow-purple" />
+        <div className="border-t border-border" />
 
         <motion.div {...fadeInUp}>
           <Partnership />

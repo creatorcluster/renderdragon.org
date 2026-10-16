@@ -74,9 +74,9 @@ const Testimonials = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="font-minecraftia text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-6 text-foreground leading-tight"
+            className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-4 text-foreground"
           >
-            What <span className="text-cow-purple">Creators</span> Say
+            What <span className="text-primary">Creators</span> Say
           </motion.h2>
 
           <motion.p
@@ -84,7 +84,7 @@ const Testimonials = () => {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="font-jetbrains-mono text-xl md:text-2xl text-foreground/70 leading-tight"
+            className="text-lg md:text-xl text-muted-foreground"
           >
             Don't take our word for it — hear it from the people making the content.
           </motion.p>
@@ -101,12 +101,12 @@ const Testimonials = () => {
             <motion.div
               key={testimonial.id}
               variants={item}
-              className="pixel-card bg-card border-2 border-border p-6 relative"
+              className="rounded-xl border border-border bg-card p-6 relative"
             >
-              <IconQuote className="absolute top-4 right-4 text-cow-purple/15 w-12 h-12" />
+              <IconQuote className="absolute top-4 right-4 text-primary/15 w-12 h-12" />
 
-              <div className="flex items-center gap-4 mb-5 pb-5 border-b-2 border-dashed border-border relative">
-                <div className="w-14 h-14 overflow-hidden border-2 border-cow-purple pixel-corners">
+              <div className="flex items-center gap-4 mb-5 pb-5 border-b border-dashed border-border relative">
+                <div className="w-14 h-14 rounded-xl overflow-hidden border border-border">
                   <img
                     src={testimonial.avatar}
                     alt={testimonial.name}
@@ -118,17 +118,17 @@ const Testimonials = () => {
                   />
                 </div>
                 <div>
-                  <h3 className="font-jetbrains-mono text-xl text-foreground uppercase tracking-wider">
+                  <h3 className="text-lg font-medium text-foreground">
                     {testimonial.name}
                   </h3>
-                  <p className="font-jetbrains-mono text-sm text-cow-purple">
+                  <p className="text-sm text-primary">
                     {testimonial.role}
                   </p>
                 </div>
               </div>
 
               <blockquote>
-                <p className="font-jetbrains-mono text-lg md:text-xl text-foreground/85 leading-snug">
+                <p className="text-base md:text-lg text-foreground/90 leading-relaxed">
                   "{testimonial.content}"
                 </p>
               </blockquote>

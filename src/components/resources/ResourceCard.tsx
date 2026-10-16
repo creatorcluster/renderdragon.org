@@ -6,19 +6,20 @@ import {
   IconCheck,
   IconHeart,
   IconSunglasses,
+  IconWand,
 } from "@tabler/icons-react";
-import { Resource } from "@/types/resources";
+import { Resource, getResourceUrl } from "@/types/resources";
 import { cn } from "@/lib/utils";
 import { useUserFavorites } from "@/hooks/useUserFavorites";
 import AudioPlayer from "@/components/AudioPlayer";
 import HoverVideo from "@/components/HoverVideo";
-import { getCategoryIcon, getCategoryColor } from "@/utils/resourceCategories";
 import { RESOURCES_REPO_RAW_BASE } from "@/lib/resourcesRepo";
 
 interface ResourceCardProps {
   resource: Resource;
   onClick: (resource: Resource) => void;
   onMusicLink?: (resource: Resource) => void;
+  onAnimate?: (resource: Resource) => void;
 }
 
 const getPreviewUrl = (resource: Resource) => {
@@ -31,7 +32,13 @@ const getPreviewUrl = (resource: Resource) => {
   return `${basePath}/${resource.category}/${titleLowered}${creditPart}.${resource.filetype}`;
 };
 
-const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => {
+// Track which font families we've actually loaded. `document.fonts.check()`
+// can't be used for this: it returns true for any family (even a bogus one),
+// which previously made the preview skip loading and fall back to a default.
+const loadedFontNames = new Set<string>();
+const pendingFontLoads = new Map<string, Promise<void>>();
+
+const ResourceCard = ({ resource, onClick, onMusicLink, onAnimate }: ResourceCardProps) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
 
   // Reset image loaded state when resource changes
@@ -40,7 +47,9 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
   }, [resource.id]);
 
   const { toggleFavorite, isFavorited } = useUserFavorites();
-  const isFavorite = isFavorited(String(resource.id));
+  // Key by resource URL to match the Favorites tab, sidebar and DB column.
+  const resourceUrl = getResourceUrl(resource);
+  const isFavorite = isFavorited(resourceUrl);
 
   const [isInView, setIsInView] = useState(false);
   const [isPreviewReady, setIsPreviewReady] = useState(false);
@@ -96,25 +105,27 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
     const fontName = resource.title;
 
     const maybeLoadFont = () => {
-      if (document.fonts.check(`12px "${fontName}"`)) {
+      if (loadedFontNames.has(fontName)) {
         if (active) setIsFontLoaded(true);
         return;
       }
-      let fontFace: FontFace;
-      try {
-        const safeFontName = fontName.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
-        const safeFontUrl = encodeURI(fontUrl).replace(/"/g, '%22');
-        fontFace = new FontFace(safeFontName, `url("${safeFontUrl}")`);
-      } catch (error) {
-        if (active) console.error(`Invalid font descriptor for "${fontName}":`, error);
-        return;
+
+      let pending = pendingFontLoads.get(fontName);
+      if (!pending) {
+        pending = (async () => {
+          const safeFontName = fontName.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+          const safeFontUrl = fontUrl.replace(/ /g, '%20').replace(/"/g, '%22');
+          const fontFace = new FontFace(safeFontName, `url("${safeFontUrl}")`);
+          const loadedFont = await fontFace.load();
+          document.fonts.add(loadedFont);
+          loadedFontNames.add(fontName);
+        })().finally(() => pendingFontLoads.delete(fontName));
+        pendingFontLoads.set(fontName, pending);
       }
-      fontFace.load().then((loadedFont) => {
-        document.fonts.add(loadedFont);
-        if (active) setIsFontLoaded(true);
-      }).catch((error) => {
-        if (active) console.error(`Failed to load font "${fontName}":`, error);
-      });
+
+      pending
+        .then(() => { if (active) setIsFontLoaded(true); })
+        .catch((error) => { if (active) console.error(`Failed to load font "${fontName}":`, error); });
     };
 
     if (isInView) {
@@ -133,7 +144,7 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    toggleFavorite(String(resource.id));
+    toggleFavorite(resourceUrl);
   };
 
   const handleCopyrightClick = (e: React.MouseEvent) => {
@@ -142,16 +153,21 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
     onMusicLink?.(resource);
   };
 
+  const handleAnimateClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    onAnimate?.(resource);
+  };
+
   const renderPreview = () => {
     const previewUrl = getPreviewUrl(resource);
 
     switch (resource.category) {
       case "images":
-      case "minecraft-icons":
         return (
           <div
             onClick={handlePreviewClick}
-            className="relative aspect-video bg-muted/20 rounded-md overflow-hidden mb-3 cursor-default"
+            className="relative aspect-video bg-muted rounded-lg overflow-hidden mb-3 cursor-default"
           >
             <img
               src={previewUrl}
@@ -170,11 +186,47 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
             )}
           </div>
         );
+      case "minecraft-icons":
+        return (
+          <div
+            onClick={handlePreviewClick}
+            className="relative aspect-video bg-muted rounded-lg overflow-hidden mb-3 cursor-default"
+          >
+            <img
+              src={previewUrl}
+              alt={resource.title}
+              className={cn(
+                "w-full h-full object-cover transition-opacity duration-300",
+                isImageLoaded ? "opacity-100" : "opacity-0",
+              )}
+              onLoad={() => setIsImageLoaded(true)}
+              loading="lazy"
+            />
+            {!isImageLoaded && (
+              <div className="absolute inset-0 flex items-center justify-center bg-muted">
+                <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+              </div>
+            )}
+            {onAnimate && (
+              <motion.button
+                type="button"
+                onClick={handleAnimateClick}
+                aria-label={`Animate ${resource.title}`}
+                className="absolute bottom-2 right-2 z-10 inline-flex h-8 items-center gap-1.5 chamfer border border-primary/60 bg-primary px-2.5 text-xs font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <IconWand className="h-4 w-4" aria-hidden="true" />
+                Animate
+              </motion.button>
+            )}
+          </div>
+        );
       case "fonts":
         return (
           <div
             onClick={handlePreviewClick}
-            className="relative aspect-[4/1] bg-muted/20 rounded-md overflow-hidden mb-3 cursor-default"
+            className="relative aspect-[4/1] bg-muted rounded-lg overflow-hidden mb-3 cursor-default"
           >
             {isFontLoaded ? (
               <div
@@ -185,7 +237,7 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
               </div>
             ) : (
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-5 h-5 border-2 border-cow-purple border-t-transparent rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
               </div>
             )}
           </div>
@@ -196,7 +248,7 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
         return (
           <div
             onClick={handlePreviewClick}
-            className="relative aspect-video bg-muted/5 rounded-md overflow-hidden mb-3 cursor-default flex items-center justify-center"
+            className="relative aspect-video bg-muted rounded-lg overflow-hidden mb-3 cursor-default flex items-center justify-center"
           >
             <AudioPlayer
               src={previewUrl}
@@ -212,7 +264,7 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
                 onFocus={() => setIsLinkHovered(true)}
                 onBlur={() => setIsLinkHovered(false)}
                 aria-label={`Copy a RenderBot copyright-check link for ${resource.title}`}
-                className="absolute right-2 top-2 z-10 inline-flex h-9 items-center overflow-hidden rounded-md border border-cow-purple/60 bg-cow-purple/95 text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cow-purple"
+                className="absolute right-2 top-2 z-10 inline-flex h-9 items-center overflow-hidden rounded-md border border-primary/60 bg-primary text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 initial={false}
                 animate={{ width: isLinkHovered ? 152 : 36 }}
                 transition={{ type: "spring", stiffness: 400, damping: 30 }}
@@ -241,7 +293,7 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
         return (
           <div
             onClick={handlePreviewClick}
-            className="relative aspect-video bg-muted/5 rounded-md overflow-hidden mb-3 cursor-default flex items-center justify-center"
+            className="relative aspect-video bg-muted rounded-lg overflow-hidden mb-3 cursor-default flex items-center justify-center"
           >
             <AudioPlayer
               src={previewUrl}
@@ -254,9 +306,9 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
         return (
           <div
             onClick={handlePreviewClick}
-            className="relative aspect-video bg-muted/20 rounded-md overflow-hidden mb-3 cursor-default"
+            className="relative aspect-video bg-muted rounded-lg overflow-hidden mb-3 cursor-default"
           >
-            <div className="absolute inset-0 flex items-center justify-center bg-muted/10">
+            <div className="absolute inset-0 flex items-center justify-center bg-muted">
               <IconVideo className="h-8 w-8 text-muted-foreground/30" />
             </div>
             {isInView && isPreviewReady && (
@@ -281,31 +333,26 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
       ref={cardRef}
       onClick={() => onClick(resource)}
       className={cn(
-        "pixel-card group cursor-pointer hover:border-primary transition-all duration-300 h-full",
+        "group h-full cursor-pointer rounded-xl border border-border bg-card p-4 transition-all duration-300 hover:-translate-y-1 hover:border-primary/60",
         isFavorite && "border-red-500/50",
       )}
-      whileHover={{ y: -5 }}
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2 }}
     >
       {renderPreview()}
 
-      <div className="flex justify-between items-start mb-3">
-        <motion.div
-          className={`inline-flex items-center px-2 py-1 rounded-md text-xs ${getCategoryColor(resource.category)}`}
-          whileHover={{ scale: 1.05 }}
-        >
-          {getCategoryIcon(resource.category)}
-          <span className="ml-1 capitalize">
+      <div className="flex justify-between items-start mb-3 gap-2">
+        <div className="min-w-0 flex-1 truncate text-xs text-muted-foreground">
+          <span>
             {resource.category === "minecraft-icons"
-              ? "Mcicons"
+              ? "mcicons"
               : resource.category}
           </span>
           {resource.subcategory && (
-            <span className="ml-1">({resource.subcategory})</span>
+            <span className="text-muted-foreground/70"> · {resource.subcategory.replace(/\//g, " / ")}</span>
           )}
-        </motion.div>
+        </div>
 
         <motion.button
           onClick={handleFavoriteClick}
@@ -313,7 +360,7 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
             "p-1 rounded-full transition-colors",
             isFavorite
               ? "text-red-500 hover:text-red-600"
-              : "text-gray-400 hover:text-red-500",
+              : "text-muted-foreground hover:text-red-500",
           )}
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
@@ -333,13 +380,9 @@ const ResourceCard = ({ resource, onClick, onMusicLink }: ResourceCardProps) => 
         </motion.button>
       </div>
 
-      <motion.h3
-        className="text-lg font-geist-mono mb-2 group-hover:text-primary transition-colors"
-        whileHover={{ x: 5 }}
-        transition={{ duration: 0.2 }}
-      >
+      <h3 className="text-base font-medium mb-2 group-hover:text-primary transition-colors">
         {resource.title}
-      </motion.h3>
+      </h3>
 
       <div className="flex items-center justify-between">
         {resource.credit ? (

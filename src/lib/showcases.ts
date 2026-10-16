@@ -1,5 +1,10 @@
 import { supabase } from "@/integrations/supabase/client";
+import { fetchFromAssetsApi } from "@/lib/assetsApi";
+import { ensureAssetsVersionSynced, resetAssetsVersionSync } from "@/lib/assetsVersion";
+import { clearCache, readCache, writeCache } from "@/lib/cache";
 import type { SupabaseClient } from "@supabase/supabase-js";
+
+const SHOWCASES_CACHE_KEY = "api:showcases";
 
 // Use a broadly-typed client so we can work with tables created by migrations
 const sb = supabase as SupabaseClient;
@@ -24,8 +29,6 @@ export type ShowcaseAsset = {
   filename?: string;
 };
 
-const ASSETS_API_BASE_URL = 'https://assets-api-worker.powernplant101-c6b.workers.dev';
-
 export interface NewApiAsset {
   _id: string;
   _creationTime: number;
@@ -38,15 +41,27 @@ export interface NewApiAsset {
 }
 
 export async function listShowcases(search?: string) {
-  // Fetch only from New Assets API
+  // Fetch only from New Assets API (cached; refreshed only when the catalog version changes)
   const newApiShowcases: Showcase[] = [];
   const newApiAssetsByShowcase = new Map<string, ShowcaseAsset[]>();
 
-  try {
-    const response = await fetch(`${ASSETS_API_BASE_URL}/api/assets`);
-    if (response.ok) {
-      const assets: NewApiAsset[] = await response.json();
+  await ensureAssetsVersionSynced();
 
+  try {
+    let assets = readCache<NewApiAsset[]>(SHOWCASES_CACHE_KEY);
+    if (!assets) {
+      const response = await fetchFromAssetsApi('/api/assets');
+      assets = (await response.json()) as NewApiAsset[];
+      if (Array.isArray(assets)) {
+        try {
+          writeCache(SHOWCASES_CACHE_KEY, assets);
+        } catch {
+          // ignore quota errors
+        }
+      }
+    }
+
+    if (Array.isArray(assets)) {
       assets.forEach((asset) => {
         const description = asset.message;
 
@@ -158,17 +173,16 @@ export async function createShowcase(params: {
   // Pass message directly
   formData.append('message', params.description);
 
-  const response = await fetch(`${ASSETS_API_BASE_URL}/api/assets`, {
+  const response = await fetchFromAssetsApi('/api/assets', {
     method: 'POST',
     body: formData,
   });
 
-  if (!response.ok) {
-    const errData = await response.json();
-    throw new Error(errData.error || "Failed to upload asset to new API");
-  }
-
   const result = await response.json();
+
+  // New upload changed the catalog; drop the cached list so the next read refreshes.
+  clearCache(SHOWCASES_CACHE_KEY);
+  resetAssetsVersionSync();
 
   // Return synthetic showcase object based on the upload
   return {

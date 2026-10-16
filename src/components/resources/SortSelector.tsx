@@ -15,7 +15,7 @@ interface SortSelectorProps {
 const SortSelector: React.FC<SortSelectorProps> = ({ sortOrder, onSortOrderChange }) => {
   return (
     <Select value={sortOrder} onValueChange={onSortOrderChange}>
-      <SelectTrigger className="h-10 w-full md:w-[180px] pixel-corners">
+      <SelectTrigger className="h-10 w-full md:w-[180px]">
         <SelectValue placeholder="Sort By" />
       </SelectTrigger>
       <SelectContent>

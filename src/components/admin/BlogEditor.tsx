@@ -118,13 +118,13 @@ export default function BlogEditor() {
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                     <Link to="/admin" className="text-muted-foreground hover:text-foreground"><IconArrowLeft /></Link>
-                    <h2 className="text-2xl font-jetbrains-mono">{id ? "Edit Blog" : "New Blog"}</h2>
+                    <h2 className="text-2xl ">{id ? "Edit Blog" : "New Blog"}</h2>
                 </div>
                 <div className="flex gap-2">
                     <Button variant="outline" onClick={() => setPreview(!preview)}>
                         <IconEye className="mr-2 h-4 w-4" /> {preview ? "Edit" : "Preview"}
                     </Button>
-                    <Button onClick={handleSave} disabled={saving} className="bg-cow-purple hover:bg-cow-purple/90">
+                    <Button onClick={handleSave} disabled={saving} className="bg-primary hover:bg-primary/90">
                         {saving ? <IconLoader2 className="mr-2 h-4 w-4 animate-spin" /> : <IconDeviceFloppy className="mr-2 h-4 w-4" />}
                         Save
                     </Button>

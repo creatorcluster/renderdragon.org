@@ -45,6 +45,39 @@ export const clearCache = (key: string): void => {
   }
 };
 
+// Reset the TTL clock on caches whose lifetime is governed by the assets catalog
+// version: while the server version is unchanged, the cached data stays valid.
+export const touchCaches = (prefixes: string[]): void => {
+  try {
+    const now = Date.now();
+    for (const key of Object.keys(localStorage)) {
+      if (!key.startsWith(CACHE_PREFIX)) continue;
+      const bare = key.slice(CACHE_PREFIX.length);
+      if (!prefixes.some((prefix) => bare.startsWith(prefix))) continue;
+      const raw = localStorage.getItem(key);
+      if (!raw) continue;
+      const parsed = JSON.parse(raw) as CachedPayload<unknown>;
+      if (!parsed || parsed.data === undefined) continue;
+      parsed.savedAt = now;
+      localStorage.setItem(key, JSON.stringify(parsed));
+    }
+  } catch {
+    // ignore
+  }
+};
+
+export const clearCachePrefixes = (prefixes: string[]): void => {
+  try {
+    for (const key of Object.keys(localStorage)) {
+      if (!key.startsWith(CACHE_PREFIX)) continue;
+      const bare = key.slice(CACHE_PREFIX.length);
+      if (prefixes.some((prefix) => bare.startsWith(prefix))) localStorage.removeItem(key);
+    }
+  } catch {
+    // ignore
+  }
+};
+
 export const getCacheAge = (key: string): number | null => {
   try {
     const raw = localStorage.getItem(`${CACHE_PREFIX}${key}`);

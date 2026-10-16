@@ -1,0 +1,52 @@
+name = "codersoft-api-router"
+main = "src/index.ts"
+compatibility_date = "2026-09-23"
+
+# api.codersoft.xyz is bound to this Worker as a custom domain.
+# DNS for the apex zone (codersoft.xyz) must already live in this Cloudflare account.
+routes = [
+  { pattern = "api.codersoft.xyz", custom_domain = true }
+]
+
+# Durable Object holding the client/secret registry and the anti-replay nonce cache.
+# SQLite-backed, so it works on the Workers Free plan.
+[[durable_objects.bindings]]
+name = "AUTH_STORE"
+class_name = "AuthStore"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["AuthStore"]
+
+[vars]
+# Origin pools. Each is a comma-separated, ordered list: first entry is the primary, the
+# rest are backups tried in order. When unset they fall back to the E3_* + *_FALLBACK_ORIGIN
+# vars below, so setting these is optional.
+#   resources = e3 (over the Cloudflare Tunnel, serving files from disk) then the worker.
+#   assets    = the uploads worker (e3 does not host the uploads API).
+RESOURCES_ORIGINS = "https://hamburger.codersoft.xyz,https://hamburger-api.powernplant101-c6b.workers.dev"
+ASSETS_ORIGINS = "https://assets-api-worker.powernplant101-c6b.workers.dev"
+# Defaults used when ASSETS_ORIGINS / RESOURCES_ORIGINS are not set.
+E3_ORIGIN = "https://assets-api-worker.powernplant101-c6b.workers.dev"
+E3_RESOURCES_ORIGIN = "https://hamburger.codersoft.xyz"
+ASSETS_FALLBACK_ORIGIN = "https://assets-api-worker.powernplant101-c6b.workers.dev"
+RESOURCES_FALLBACK_ORIGIN = "https://hamburger-api.powernplant101-c6b.workers.dev"
+# How long to wait on an origin before trying the next one.
+PRIMARY_TIMEOUT_MS = "2500"
+# Once an origin is seen as down, skip it for this long (per origin) so failover is fast.
+FAILOVER_COOLDOWN_MS = "30000"
+# Anti-replay for signed requests: "writes" (default), "all", or "off". See src/auth.ts.
+REPLAY_PROTECTION = "writes"
+# Upstream paths hashed into the public /__version value, and how long that value is cached.
+VERSION_SOURCES = "/all,/api/assets"
+VERSION_CACHE_TTL_SECONDS = "300"
+# Comma-separated browser origins allowed through CORS. Localhost origins are always allowed.
+# ALLOWED_ORIGINS = "https://renderdragon.org,https://www.renderdragon.org"
+
+# Secrets (NOT set here). Provision with `wrangler secret put <NAME>`:
+#   E3_SHARED_SECRET  - shared with the e3 assets API; signs router -> e3 requests.
+#   ADMIN_KEY         - master key for the /__admin/* client-management API.
+# See README.md.
+
+[observability]
+enabled = true

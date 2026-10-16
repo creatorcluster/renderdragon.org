@@ -69,7 +69,7 @@ const FolderItem = ({
                 ref={setNodeRef}
                 className={cn(
                     "flex items-center justify-between group py-1.5 px-2 rounded-md cursor-pointer transition-colors mb-0.5",
-                    isSelected ? "bg-primary/20 text-primary" : "hover:bg-muted/50",
+                    isSelected ? "bg-primary/20 text-primary" : "hover:bg-muted",
                     isOver && "bg-primary/30 ring-2 ring-primary ring-inset",
                     level > 0 && "ml-4 border-l border-border pl-2"
                 )}
@@ -81,7 +81,7 @@ const FolderItem = ({
                             e.stopPropagation();
                             setIsOpen(!isOpen);
                         }}
-                        className={cn("p-0.5 rounded-sm hover:bg-muted/80 opacity-0 transition-opacity", hasChildren && "opacity-100")}
+                        className={cn("p-0.5 rounded-sm hover:bg-muted opacity-0 transition-opacity", hasChildren && "opacity-100")}
                         disabled={!hasChildren}
                     >
                         {isOpen ? <IconFolderOpen size={16} /> : <IconFolder size={16} />}
@@ -190,10 +190,10 @@ const FavoritesSidebar = ({
     }, [folders, rootFolders, searchQuery]);
 
     return (
-        <div className="flex flex-col h-full bg-card/50 border border-border/50 rounded-xl overflow-hidden pixel-corners backdrop-blur-sm">
-            <div className="p-4 border-b border-border/50 bg-muted/20">
+        <div className="flex flex-col h-full bg-card border border-border/50 rounded-xl overflow-hidden  backdrop-blur-sm">
+            <div className="p-4 border-b border-border/50 bg-muted">
                 <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-jetbrains-mono text-xl font-medium">My Folders</h3>
+                    <h3 className="text-xl font-medium">My Folders</h3>
                     <Button size="icon" variant="ghost" onClick={onCreateFolder} className="h-8 w-8 hover:bg-primary/20 hover:text-primary transition-colors">
                         <IconPlus size={18} />
                     </Button>
@@ -205,7 +205,7 @@ const FavoritesSidebar = ({
                         placeholder="Search folders..."
                         value={searchQuery}
                         onChange={(e) => onSearchChange(e.target.value)}
-                        className="pl-9 h-9 bg-background/50 border-border/50 focus-visible:ring-primary/50 pixel-corners"
+                        className="pl-9 h-9 bg-background border-border/50 focus-visible:ring-primary/50 "
                     />
                 </div>
             </div>
@@ -227,7 +227,7 @@ const FavoritesSidebar = ({
                             ref={setRootNodeRef}
                             className={cn(
                                 "flex items-center gap-2 px-2 py-2 rounded-md cursor-pointer mb-2 transition-colors",
-                                selectedFolderId === null ? "bg-primary/20 text-primary font-medium" : "hover:bg-muted/50 text-muted-foreground",
+                                selectedFolderId === null ? "bg-primary/20 text-primary font-medium" : "hover:bg-muted text-muted-foreground",
                                 isOverRoot && "bg-primary/30 ring-2 ring-primary ring-inset"
                             )}
                             onClick={() => onSelectFolder(null)}

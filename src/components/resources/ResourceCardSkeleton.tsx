@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 const ResourceCardSkeleton = () => {
   return (
-    <div className="pixel-card p-4 space-y-4">
+    <div className="rounded-xl border border-border bg-card p-4 space-y-4">
       <Skeleton className="aspect-video w-full rounded-md" />
       <div className="space-y-2">
         <Skeleton className="h-5 w-3/4" />

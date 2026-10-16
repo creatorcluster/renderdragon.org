@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import crypto from "node:crypto";
 import fs from "fs";
 import path from "path";
 import dotenv from "dotenv";
@@ -17,40 +18,57 @@ if (!supabaseUrl || !supabaseKey) {
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-const MCICONS_BASE_URLS = [
-  "https://assets.codersoft.xyz",
-  "https://hamburger-api.powernplant101-c6b.workers.dev",
-];
+const ASSETS_API_BASE = (process.env.ASSETS_API_BASE_URL ?? "https://api.codersoft.xyz").replace(/\/+$/, "");
+const API_CLIENT_ID = process.env.ASSET_API_CLIENT_ID;
+const API_CLIENT_SECRET = process.env.ASSET_API_CLIENT_SECRET;
+
+// Signed request to the assets API. See workers/api-router/README.md for the scheme.
+const signedGet = (requestPath: string): Promise<Response> => {
+  if (!API_CLIENT_ID || !API_CLIENT_SECRET) {
+    throw new Error("ASSET_API_CLIENT_ID and ASSET_API_CLIENT_SECRET are required");
+  }
+  const bodyHash = crypto.createHash("sha256").update("").digest("hex");
+  const timestamp = Math.floor(Date.now() / 1000).toString();
+  const nonce = crypto.randomBytes(16).toString("hex");
+  const canonical = ["v1", "GET", requestPath, API_CLIENT_ID, timestamp, nonce, bodyHash].join("\n");
+  const signature = crypto.createHmac("sha256", API_CLIENT_SECRET).update(canonical).digest("hex");
+  return fetch(`${ASSETS_API_BASE}${requestPath}`, {
+    headers: {
+      "x-auth-client": API_CLIENT_ID,
+      "x-auth-timestamp": timestamp,
+      "x-auth-nonce": nonce,
+      "x-auth-signature": signature,
+    },
+  });
+};
 
 const fetchMcicons = async () => {
-  for (const base of MCICONS_BASE_URLS) {
-    try {
-      const response = await fetch(`${base}/mcicons`);
-      if (!response.ok) {
-        console.warn(`Failed to fetch mcicons from ${base}: ${response.status}`);
-        continue;
-      }
-      const data = await response.json();
-      const files = Array.isArray(data?.files) ? data.files : [];
-      return files
-        .map((file) => {
-          const rawTitle = String(file.title || "").replace(/_/g, " ");
-          const title = rawTitle.replace(/\.[^/.]+$/, "").trim();
-          return {
-            id: `mcicons-${file.id ?? title ?? "unknown"}`,
-            title,
-            credit: file.credit || "",
-            filetype: file.ext || file.filetype,
-            download_url: file.url,
-            subcategory: file.subcategory,
-          };
-        })
-        .filter((item) => item.title);
-    } catch (error) {
-      console.warn(`Failed to fetch mcicons from ${base}:`, error);
+  try {
+    const response = await signedGet("/mcicons");
+    if (!response.ok) {
+      console.warn(`Failed to fetch mcicons: ${response.status}`);
+      return [];
     }
+    const data = await response.json();
+    const files = Array.isArray(data?.files) ? data.files : [];
+    return files
+      .map((file) => {
+        const rawTitle = String(file.title || "").replace(/_/g, " ");
+        const title = rawTitle.replace(/\.[^/.]+$/, "").trim();
+        return {
+          id: `mcicons-${file.id ?? title ?? "unknown"}`,
+          title,
+          credit: file.credit || "",
+          filetype: file.ext || file.filetype,
+          download_url: file.url,
+          subcategory: file.subcategory,
+        };
+      })
+      .filter((item) => item.title);
+  } catch (error) {
+    console.warn("Failed to fetch mcicons:", error);
+    return [];
   }
-  return [];
 };
 
 async function exportResources() {

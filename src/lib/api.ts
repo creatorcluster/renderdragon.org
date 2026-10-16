@@ -1,5 +1,6 @@
 import { readCache, writeCache, clearCache } from "@/lib/cache";
 import { fetchFromAssetsApi } from "@/lib/assetsApi";
+import { ensureAssetsVersionSynced } from "@/lib/assetsVersion";
 import { Resource } from "@/types/resources";
 
 const ALL_RESOURCES_CACHE_KEY = "api:all-resources";
@@ -92,6 +93,7 @@ const normalizeApiResource = (item: ApiResource, category: string): Resource | n
 };
 
 export const fetchCategories = async (): Promise<ApiCategories | null> => {
+  await ensureAssetsVersionSynced();
   const cached = readCache<ApiCategories>(CATEGORIES_CACHE_KEY);
   if (cached) return cached;
 
@@ -104,6 +106,7 @@ export const fetchCategories = async (): Promise<ApiCategories | null> => {
 };
 
 export const fetchCategory = async (category: string): Promise<Resource[]> => {
+  await ensureAssetsVersionSynced();
   const normalized = normalizeCategory(category);
   if (!normalized) return [];
 
@@ -130,6 +133,7 @@ export const fetchCategory = async (category: string): Promise<Resource[]> => {
 };
 
 export const fetchAllResources = async (): Promise<Resource[]> => {
+  await ensureAssetsVersionSynced();
   const cached = readCache<ApiAllResources>(ALL_RESOURCES_CACHE_KEY);
   if (cached && cached.categories && Object.keys(cached.categories).length > 0) {
     const categoryNames = Object.keys(cached.categories)
@@ -180,6 +184,7 @@ export const fetchAllResources = async (): Promise<Resource[]> => {
 };
 
 export const refreshAllResources = async (): Promise<Resource[]> => {
+  await ensureAssetsVersionSynced();
   const data = await fetchJson<ApiAllResources>("/all");
   if (data?.categories) {
     writeCache(ALL_RESOURCES_CACHE_KEY, data);
@@ -191,6 +196,7 @@ export const refreshAllResources = async (): Promise<Resource[]> => {
 };
 
 export const getResourceByCategory = async (category: string): Promise<Resource[]> => {
+  await ensureAssetsVersionSynced();
   const apiCategory = toApiCategory(category);
   const allCached = readCache<ApiAllResources>(ALL_RESOURCES_CACHE_KEY);
   if (allCached?.categories?.[apiCategory]) {

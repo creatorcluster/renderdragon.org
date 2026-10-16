@@ -1,0 +1,40 @@
+name = "codersoft-assets-gateway"
+main = "src/index.ts"
+compatibility_date = "2026-09-23"
+
+# Custom domain in the codersoft.xyz account. renderdragon.org lives in a different
+# Cloudflare account, so the gateway is hosted here (gateway.codersoft.xyz) and the site
+# calls it cross-origin (CORS + SameSite=None cookies). This is the server-side component
+# that holds the signing secret, so no secret ever ships to the browser.
+routes = [
+  { pattern = "gateway.codersoft.xyz", custom_domain = true }
+]
+
+[vars]
+# The router that this gateway signs requests for.
+ROUTER_ORIGIN = "https://api.codersoft.xyz"
+# Client id registered in the router's AuthStore (must match its client id).
+GATEWAY_CLIENT_ID = "renderdragon-gateway"
+# Lifetime of an anonymous/verified browser session cookie, seconds.
+SESSION_TTL_SECONDS = "1800"
+# Require a Cloudflare Turnstile challenge to mint a session (logged-in users are
+# accepted via their Supabase token instead). Set "false" only for local development.
+REQUIRE_TURNSTILE = "true"
+# Hostnames a Turnstile token must have been solved on.
+TURNSTILE_HOSTNAMES = "renderdragon.org,www.renderdragon.org,localhost"
+# Supabase project used to accept an already-logged-in visitor without a challenge.
+SUPABASE_URL = "https://bmywdrwjdqmrkafhiuwn.supabase.co"
+# Set the publishable (anon) key to enable the logged-in bypass. Not a secret.
+SUPABASE_ANON_KEY = "sb_publishable_cI0UN0-LGrQqF_WUqrvZJw_H3sRKyK7"
+# Send the session cookie only over HTTPS. Keep "true"; "false" is for local dev.
+COOKIE_SECURE = "true"
+# Browser origins allowed to use this gateway. Localhost origins are always allowed.
+# ALLOWED_ORIGINS = "https://renderdragon.org,https://www.renderdragon.org"
+
+# Secrets (NOT set here). Provision with `wrangler secret put <NAME>`:
+#   GATEWAY_SECRET    - must equal the secret registered for GATEWAY_CLIENT_ID in the router.
+#   TURNSTILE_SECRET  - the Turnstile widget secret paired with the site key.
+# See README.md.
+
+[observability]
+enabled = true

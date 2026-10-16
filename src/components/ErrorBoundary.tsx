@@ -29,7 +29,7 @@ class ErrorBoundary extends Component<Props, State> {
           <h1 className="text-2xl font-bold mb-4">Something went wrong.</h1>
           <p className="mb-4">We're sorry for the inconvenience. Please try refreshing the page.</p>
           <button
-            className="bg-cow-purple text-white px-4 py-2 rounded hover:bg-cow-purple-dark"
+            className="bg-primary text-white px-4 py-2 rounded hover:bg-primary/90"
             onClick={() => this.setState({ hasError: false })}
           >
             Try again

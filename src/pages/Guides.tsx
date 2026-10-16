@@ -147,8 +147,8 @@ const GuidesPage = () => {
       <main className="flex-grow pt-24 pb-16 cow-grid-bg">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
-<h1 className="text-4xl md:text-5xl font-minecraftia mb-8 text-center">
-               <span className="text-cow-purple">Minecraft</span> Guides
+<h1 className="text-4xl md:text-5xl mb-8 text-center">
+               <span className="text-primary">Minecraft</span> Guides
             </h1>
 
             <p
@@ -170,7 +170,7 @@ const GuidesPage = () => {
                 {guides.map((guide) => (
                   <Card
                     key={guide.id}
-                    className="pixel-corners border border-border hover:border-primary transition-all cursor-pointer"
+                    className=" border border-border hover:border-primary transition-all cursor-pointer"
                     onClick={() => handleOpenGuide(guide)}
                   >
                     <CardHeader>
@@ -186,7 +186,7 @@ const GuidesPage = () => {
                           </span>
                         </div>
                       </div>
-                      <CardTitle className="font-minecraftia text-xl">
+                      <CardTitle className="text-xl">
                         {guide.title}
                       </CardTitle>
                       <CardDescription

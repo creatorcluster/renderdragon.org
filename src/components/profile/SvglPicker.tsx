@@ -169,7 +169,7 @@ export function SvglPicker({ value, onChange }: SvglPickerProps) {
                                             className="justify-between"
                                         >
                                             <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 flex items-center justify-center bg-muted/50 rounded p-1">
+                                                <div className="w-8 h-8 flex items-center justify-center bg-muted rounded p-1">
                                                     <img
                                                         src={icon.fullUrl}
                                                         alt={icon.title}

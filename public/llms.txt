@@ -1,0 +1,67 @@
+# RenderDragon Partner Program
+
+> Invite-only access to the RenderDragon asset catalog and to "Sign in with RenderDragon" (OAuth 2.1). Partners read assets and authenticate RenderDragon users inside their own apps.
+
+RenderDragon is a free resource library and toolset for Minecraft creators. Partners get two things: a read-only asset API, and an OAuth 2.1 sign-in provider. Access is granted by invitation; request it through the contact page.
+
+## Asset API
+
+- Base URL: `https://api.codersoft.xyz`
+- Auth: every request carries an HMAC-SHA256 signature. No cookies, no bearer tokens.
+- Read-only. Partners never write to the catalog.
+
+Signed request headers: `x-auth-client`, `x-auth-timestamp` (unix seconds, within 300s), `x-auth-nonce` (random, one use), `x-auth-signature`. Send a `User-Agent`; requests without one are blocked at the edge.
+
+The signature is hex HMAC-SHA256 of this string, newlines included:
+
+```
+v1
+<METHOD>
+<PATH?QUERY>
+<CLIENT_ID>
+<TIMESTAMP>
+<NONCE>
+<SHA256_HEX(BODY)>
+```
+
+Endpoints (GET):
+
+- `/all` returns every category and asset.
+- `/categories` returns the category list.
+- `/category/:name` returns one category.
+- `/mcicons` returns Minecraft icons.
+- `/fonts` returns fonts.
+- `/__version` is public and returns a catalog hash for caching.
+
+An asset looks like `{ id, title, credit, filename, ext, url, size, subcategory }`. Show `credit` when it is set.
+
+## Sign in with RenderDragon
+
+- Protocol: OAuth 2.1 authorization code with PKCE.
+- Issuer: `https://bmywdrwjdqmrkafhiuwn.supabase.co/auth/v1`
+- Authorize: `<issuer>/oauth/authorize`
+- Token: `<issuer>/oauth/token` (confidential clients authenticate with HTTP Basic)
+- Keys: `<issuer>/.well-known/jwks.json`
+- Scopes: `profile`, `email`, `favourites:read`
+
+Flow: redirect the user to `/oauth/authorize` with a PKCE `code_challenge`, they approve on RenderDragon, you receive a code at your redirect URI, then exchange it at `/oauth/token` for an access token and a refresh token.
+
+With Supabase: add RenderDragon as a custom OAuth provider in your Supabase project using the issuer above, then call `supabase.auth.signInWithOAuth({ provider: "renderdragon" })`. Your project stores the session like any other provider.
+
+Without Supabase: use any OAuth 2.1 library or plain HTTP against the three endpoints above. Validate access tokens with the JWKS. A public client sends no secret and relies on PKCE.
+
+Users see exactly which fields an app reads before they approve, and can disconnect any app from their RenderDragon account.
+
+## Docs
+
+- [Partner integration guide](https://renderdragon.org/partners/docs): full walkthrough with code for both the API and sign-in.
+- [Contact](https://renderdragon.org/contact): request access.
+- [Privacy](https://renderdragon.org/privacy)
+- [Terms](https://renderdragon.org/tos)
+
+## Notes
+
+- Invite-only. There is no self-serve signup.
+- One organization maps to one OAuth app.
+- Keep the API secret server-side. It is shown once when you create the key.
+- Rate limits are per key. Cache with `/__version` to stay under them.

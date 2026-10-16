@@ -25,7 +25,7 @@ const cards = [
     tagIcons: [IconMusic, IconWaveSine, IconPhoto, IconTypography],
     link: "/resources",
     cta: "Browse resources",
-    accent: "from-cow-purple/10 to-cow-purple/5",
+    accent: "from-primary/10 to-primary/5",
   },
   {
     icon: IconWand,
@@ -57,13 +57,13 @@ const ValueProps = () => {
       <div className="relative container mx-auto px-4">
         <div className="text-center mb-14 md:mb-20 max-w-3xl mx-auto">
           <h2
-            className="font-minecraftia text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-6 text-foreground leading-tight"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-6 text-foreground leading-tight"
           >
             Everything you need.
             <br />
-            <span className="text-cow-purple">Nothing you don't.</span>
+            <span className="text-primary">Nothing you don't.</span>
           </h2>
-          <p className="font-jetbrains-mono text-xl md:text-2xl text-foreground/70 leading-tight">
+          <p className="text-xl md:text-2xl text-foreground/70 leading-tight">
             Three pillars. One hub. Built so you can stop searching and start shipping.
           </p>
         </div>
@@ -79,21 +79,21 @@ const ValueProps = () => {
             <motion.div key={card.title} variants={item}>
               <Link
                 to={card.link}
-                className="group block h-full pixel-card bg-card hover:bg-card/80 border-2 border-border hover:border-cow-purple p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-cow-purple/20 relative overflow-hidden"
+                className="group block h-full rounded-xl border border-border bg-card p-4 bg-card hover:bg-card border-2 border-border hover:border-primary p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-primary/20 relative overflow-hidden"
               >
                 <div className={`absolute inset-0 bg-gradient-to-br ${card.accent} opacity-0 group-hover:opacity-100 transition-opacity`} />
 
                 <div className="relative">
                   <div className="flex items-start mb-5">
-                    <div className="w-14 h-14 bg-cow-purple/15 border-2 border-cow-purple pixel-corners flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                      <card.icon className="w-7 h-7 text-cow-purple" stroke={2} />
+                    <div className="w-14 h-14 bg-primary/15 border-2 border-primary  flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <card.icon className="w-7 h-7 text-primary" stroke={2} />
                     </div>
                   </div>
 
-                  <h3 className="font-jetbrains-mono text-2xl md:text-3xl text-foreground mb-3 tracking-wide uppercase">
+                  <h3 className="text-2xl md:text-3xl text-foreground mb-3 tracking-wide uppercase">
                     {card.title}
                   </h3>
-                  <p className="font-jetbrains-mono text-base md:text-lg text-foreground/70 mb-6 leading-snug">
+                  <p className="text-base md:text-lg text-foreground/70 mb-6 leading-snug">
                     {card.description}
                   </p>
 
@@ -103,7 +103,7 @@ const ValueProps = () => {
                       return (
                         <span
                           key={tag}
-                          className="inline-flex items-center gap-1.5 font-jetbrains-mono text-sm text-foreground/80 bg-background border-2 border-border pixel-corners px-2.5 py-1"
+                          className="inline-flex items-center gap-1.5 text-sm text-foreground/80 bg-background border-2 border-border  px-2.5 py-1"
                         >
                           <Icon className="w-3.5 h-3.5" />
                           {tag}
@@ -112,7 +112,7 @@ const ValueProps = () => {
                     })}
                   </div>
 
-                  <div className="flex items-center gap-2 font-jetbrains-mono text-lg text-cow-purple uppercase tracking-wider group-hover:gap-3 transition-all pt-2 border-t-2 border-dashed border-border">
+                  <div className="flex items-center gap-2 text-lg text-primary uppercase tracking-wider group-hover:gap-3 transition-all pt-2 border-t-2 border-dashed border-border">
                     {card.cta}
                     <IconArrowRight className="w-5 h-5" />
                   </div>

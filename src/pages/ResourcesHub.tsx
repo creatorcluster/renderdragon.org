@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState, useCallback, lazy, Suspense, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useSearchParams } from 'react-router-dom';
 import Footer from '@/components/Footer';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { toast } from 'sonner';
@@ -9,6 +10,7 @@ import { Resource, getResourceUrl } from '@/types/resources';
 import { MusicMood } from '@/types/music';
 import { DownloadProgress } from '@/lib/download';
 import { buildMusicLink } from '@/utils/musicLink';
+import { fetchFromAssetsApi } from '@/lib/assetsApi';
 import ResourceFilters from '@/components/resources/ResourceFilters';
 import SortSelector from '@/components/resources/SortSelector';
 import ResourcesList from '@/components/resources/ResourcesList';
@@ -22,27 +24,29 @@ import McSoundsBrowser from '@/components/resources/McSoundsBrowser';
 import McIconsBrowser from '@/components/resources/McIconsBrowser';
 import AuthDialog from '@/components/auth/AuthDialog';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { IconArrowUp, IconHeart, IconSearch, IconPackage, IconMusic, IconMoodHappy, IconFilter, IconPlayerPlay, IconAlbum } from '@tabler/icons-react';
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet';
+import { IconHeart, IconSearch, IconPackage, IconMusic, IconMoodHappy, IconFilter, IconPlayerPlay, IconAlbum } from '@tabler/icons-react';
 import { Helmet } from "react-helmet-async";
 
 
 
 const ResourceDetailDialog = lazy(() => import('@/components/resources/ResourceDetailDialog'));
+const McIconAnimationDialog = lazy(() => import('@/components/resources/McIconAnimationDialog'));
 
 const LoadingSpinner = () => (
   <div className="flex justify-center items-center p-8">
-    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-cow-purple"></div>
+    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
   </div>
 );
 
 const ResourcesHub = () => {
-  const [showScrollTop, setShowScrollTop] = useState(false);
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
+  const [animatingResource, setAnimatingResource] = useState<Resource | null>(null);
   const [activeTab, setActiveTab] = useState<'resources' | 'favorites' | 'creator-packs' | 'music-packs'>('resources');
   const [selectedMoods, setSelectedMoods] = useState<string[]>([]);
   const [mobileMoodFilterOpen, setMobileMoodFilterOpen] = useState(false);
   const [musicView, setMusicView] = useState<'community' | 'minecraft'>('community');
+  const [searchParams] = useSearchParams();
   const [musicLink, setMusicLink] = useState<{ resource: Resource; link: string } | null>(null);
 
   const {
@@ -89,7 +93,7 @@ const ResourcesHub = () => {
 
   useEffect(() => {
     if (isMusicView && musicMoodsData.length === 0) {
-      fetch('/data/music_moods.json')
+      fetchFromAssetsApi('/music_moods')
         .then(res => res.json())
         .then(data => setMusicMoodsData(data))
         .catch(err => console.error('Failed to load music moods:', err));
@@ -132,20 +136,13 @@ const ResourcesHub = () => {
   }, [resources, isMcIconsView]);
 
   useEffect(() => {
-    const handleScroll = () => {
-      const scrolled = window.pageYOffset > 400;
-      setShowScrollTop(scrolled);
-    };
-
     const handleShowFavorites = () => {
       setActiveTab('favorites');
     };
 
-    window.addEventListener('scroll', handleScroll);
     window.addEventListener('showFavorites', handleShowFavorites);
 
     return () => {
-      window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('showFavorites', handleShowFavorites);
     };
   }, []);
@@ -164,13 +161,13 @@ const ResourcesHub = () => {
     }
   }, [selectedCategory]);
 
+  // Deep links from the account menu and shared links: /resources?tab=...
+  const tabParam = searchParams.get('tab');
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const tabParam = urlParams.get('tab');
     if (tabParam === 'favorites') setActiveTab('favorites');
     else if (tabParam === 'creator-packs') setActiveTab('creator-packs');
     else if (tabParam === 'music-packs') setActiveTab('music-packs');
-  }, []);
+  }, [tabParam]);
 
   // Deep link from a shared music link: /resources?track=<id>&file=<name>&url=<direct>
   const deepLinkHandled = useRef(false);
@@ -202,13 +199,6 @@ const ResourcesHub = () => {
     ['track', 'cat', 'file', 'url'].forEach((key) => cleanUrl.searchParams.delete(key));
     window.history.replaceState({}, '', `${cleanUrl.pathname}${cleanUrl.search}${cleanUrl.hash}`);
   }, [resources, isLoading, setSelectedResource, handleCategoryChange]);
-
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
-  };
 
   const handleSearchWrapped = (e: React.ChangeEvent<HTMLInputElement>) => {
     handleSearch(e);
@@ -270,19 +260,13 @@ const ResourcesHub = () => {
         inputRef={inputRef}
       />
 
-      {(selectedCategory === 'minecraft-icons' || selectedCategory === 'mcsounds') && (
-        <p className="text-xs text-center text-muted-foreground mb-6 -mt-4 opacity-50 hover:opacity-100 transition-opacity">
-          Powered by Hamburger API
-        </p>
-      )}
-
       {isMusicView && (
         <div className="flex items-center justify-center gap-2 mb-6">
           <Button
             variant={musicView === 'community' ? 'default' : 'outline'}
             size="sm"
             onClick={() => setMusicView('community')}
-            className="pixel-corners"
+            className=""
           >
             <IconMusic className="h-4 w-4 mr-2" />
             Community Music
@@ -291,7 +275,7 @@ const ResourcesHub = () => {
             variant={musicView === 'minecraft' ? 'default' : 'outline'}
             size="sm"
             onClick={() => setMusicView('minecraft')}
-            className="pixel-corners"
+            className=""
           >
             <IconPlayerPlay className="h-4 w-4 mr-2" />
             Minecraft Music
@@ -299,30 +283,25 @@ const ResourcesHub = () => {
         </div>
       )}
 
-      {isMinecraftMusicView && (
-        <p className="text-xs text-center text-muted-foreground mb-6 -mt-2 opacity-50 hover:opacity-100 transition-opacity">
-          Powered by Minecraft Creator-Safe Playlist API
-        </p>
-      )}
-
       {isMinecraftMusicView && isMobile && (
         <div className="mb-4">
           <Sheet open={mobileMoodFilterOpen} onOpenChange={setMobileMoodFilterOpen}>
             <SheetTrigger asChild>
-              <Button variant="outline" size="sm" className="w-full pixel-corners">
+              <Button variant="outline" size="sm" className="w-full ">
                 <IconAlbum className="h-4 w-4 mr-2" />
                 Filter by Album
                 {minecraftMusic.selectedAlbum && (
-                  <span className="ml-2 bg-cow-purple text-white text-xs px-1.5 py-0.5 rounded truncate max-w-[100px]">
+                  <span className="ml-2 bg-primary text-primary-foreground text-xs px-1.5 py-0.5 rounded truncate max-w-[100px]">
                     {minecraftMusic.selectedAlbum}
                   </span>
                 )}
               </Button>
             </SheetTrigger>
-            <SheetContent side="bottom" className="h-[70vh] pixel-corners">
+            <SheetContent side="bottom" className="h-[70vh] ">
+              <SheetTitle className="sr-only">Filter Minecraft music</SheetTitle>
               <div className="h-full py-2">
-                <h3 className="text-lg font-jetbrains-mono mb-4 flex items-center gap-2">
-                  <IconAlbum className="h-5 w-5 text-cow-purple" />
+                <h3 className="text-lg mb-4 flex items-center gap-2">
+                  <IconAlbum className="h-5 w-5 text-primary" />
                   Filter by Album
                 </h3>
                 <MinecraftMusicFilter
@@ -346,20 +325,21 @@ const ResourcesHub = () => {
         <div className="mb-4">
           <Sheet open={mobileMoodFilterOpen} onOpenChange={setMobileMoodFilterOpen}>
             <SheetTrigger asChild>
-              <Button variant="outline" size="sm" className="w-full pixel-corners">
+              <Button variant="outline" size="sm" className="w-full ">
                 <IconFilter className="h-4 w-4 mr-2" />
                 Filter by Mood
                 {selectedMoods.length > 0 && (
-                  <span className="ml-2 bg-cow-purple text-white text-xs px-1.5 py-0.5 rounded">
+                  <span className="ml-2 bg-primary text-primary-foreground text-xs px-1.5 py-0.5 rounded">
                     {selectedMoods.length}
                   </span>
                 )}
               </Button>
             </SheetTrigger>
-            <SheetContent side="bottom" className="h-[70vh] pixel-corners">
+            <SheetContent side="bottom" className="h-[70vh] ">
+              <SheetTitle className="sr-only">Filter music by mood</SheetTitle>
               <div className="h-full py-2">
-                <h3 className="text-lg font-jetbrains-mono mb-4 flex items-center gap-2">
-                  <IconMoodHappy className="h-5 w-5 text-cow-purple" />
+                <h3 className="text-lg mb-4 flex items-center gap-2">
+                  <IconMoodHappy className="h-5 w-5 text-primary" />
                   Filter by Mood
                 </h3>
                 <MusicMoodFilter
@@ -403,6 +383,7 @@ const ResourcesHub = () => {
           onClearFilters={handleClearSearch}
           hasCategoryResources={hasCategoryResources}
             onMusicLink={onMusicLink}
+            onAnimate={setAnimatingResource}
           />
       )}
     </>
@@ -429,8 +410,8 @@ const ResourcesHub = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <h1 className="text-4xl md:text-5xl font-minecraftia font-bold mb-2 text-center">Resources Hub</h1>
-            <p className="text-lg text-muted-foreground text-center max-w-2xl mx-auto font-jetbrains-mono">Discover and download a wide range of resources to enhance your RenderDragon experience.</p>
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-3 text-center">Resources Hub</h1>
+            <p className="text-lg text-muted-foreground text-center max-w-2xl mx-auto ">Discover and download a wide range of resources to enhance your RenderDragon experience.</p>
           </motion.div>
 
           <motion.div
@@ -444,7 +425,7 @@ const ResourcesHub = () => {
                 variant={activeTab === 'resources' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setActiveTab('resources')}
-                className="pixel-corners"
+                className=""
               >
                 <IconSearch className="h-4 w-4 mr-2" />
                 Resources
@@ -454,12 +435,12 @@ const ResourcesHub = () => {
                   variant={activeTab === 'favorites' ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => setActiveTab('favorites')}
-                  className="pixel-corners"
+                  className=""
                 >
                   <IconHeart className="h-4 w-4 mr-2" />
                   Favorites
                 </Button>
-                <span className="absolute -top-2 -right-3 bg-cow-purple text-white text-[10px] px-1.5 py-0.5 rounded leading-none uppercase tracking-wide border border-background shadow-sm z-10 pointer-events-none">
+                <span className="absolute -top-2 -right-3 bg-primary text-primary-foreground text-[10px] px-1.5 py-0.5 rounded leading-none uppercase tracking-wide border border-background shadow-sm z-10 pointer-events-none">
                   NEW
                 </span>
               </div>
@@ -468,12 +449,12 @@ const ResourcesHub = () => {
                   variant={activeTab === 'creator-packs' ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => setActiveTab('creator-packs')}
-                  className="pixel-corners"
+                  className=""
                 >
                   <IconPackage className="h-4 w-4 mr-2" />
                   Creator Packs
                 </Button>
-                <span className="absolute -top-2 -right-3 bg-cow-purple text-white text-[10px] px-1.5 py-0.5 rounded leading-none uppercase tracking-wide border border-background shadow-sm z-10 pointer-events-none">
+                <span className="absolute -top-2 -right-3 bg-primary text-primary-foreground text-[10px] px-1.5 py-0.5 rounded leading-none uppercase tracking-wide border border-background shadow-sm z-10 pointer-events-none">
                   NEW
                 </span>
               </div>
@@ -482,12 +463,12 @@ const ResourcesHub = () => {
                   variant={activeTab === 'music-packs' ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => setActiveTab('music-packs')}
-                  className="pixel-corners"
+                  className=""
                 >
                   <IconMusic className="h-4 w-4 mr-2" />
                   Music Packs
                 </Button>
-                <span className="absolute -top-2 -right-3 bg-cow-purple text-white text-[10px] px-1.5 py-0.5 rounded leading-none uppercase tracking-wide border border-background shadow-sm z-10 pointer-events-none">
+                <span className="absolute -top-2 -right-3 bg-primary text-primary-foreground text-[10px] px-1.5 py-0.5 rounded leading-none uppercase tracking-wide border border-background shadow-sm z-10 pointer-events-none">
                   NEW
                 </span>
               </div>
@@ -500,7 +481,7 @@ const ResourcesHub = () => {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.3 }}
-                  className="max-w-7xl mx-auto"
+                  className="w-full"
                 >
                   <FavoritesTab onSelectResource={setSelectedResource} />
                 </motion.div>
@@ -533,7 +514,7 @@ const ResourcesHub = () => {
                   transition={{ duration: 0.3 }}
                 >
                   {(isMcSoundsView || isMcIconsView || isMusicView) && !isMobile ? (
-                    <div className="flex gap-6 max-w-7xl mx-auto">
+                    <div className="flex gap-6 w-full">
                       {isMusicView && !isMinecraftMusicView && (
                         <div className="w-64 flex-shrink-0">
                           <div className="sticky top-28 h-[calc(100vh-8rem)]">
@@ -610,6 +591,13 @@ const ResourcesHub = () => {
         />
       </Suspense>
 
+      <Suspense fallback={null}>
+        <McIconAnimationDialog
+          resource={animatingResource}
+          onClose={() => setAnimatingResource(null)}
+        />
+      </Suspense>
+
       <AuthDialog
         open={authDialogOpen}
         onOpenChange={setAuthDialogOpen}
@@ -620,29 +608,6 @@ const ResourcesHub = () => {
         link={musicLink?.link ?? ''}
         onClose={() => setMusicLink(null)}
       />
-
-
-
-
-      <AnimatePresence>
-        {showScrollTop && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            <Button
-              onClick={scrollToTop}
-              className="fixed bottom-8 right-8 z-[9999] h-12 w-12 rounded-full shadow-lg bg-cow-purple hover:bg-cow-purple-dark transition-all duration-300 opacity-90 hover:opacity-100 text-white border-2 border-white/10"
-              size="icon"
-              aria-label="Scroll to top"
-            >
-              <IconArrowUp className="h-5 w-5" />
-            </Button>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 };

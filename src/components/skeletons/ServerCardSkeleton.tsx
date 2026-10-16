@@ -1,7 +1,7 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
 const ServerCardSkeleton = () => (
-  <div className="pixel-card overflow-hidden p-6 flex flex-col h-full space-y-4">
+  <div className="rounded-xl border border-border bg-card p-4 overflow-hidden p-6 flex flex-col h-full space-y-4">
     <div className="flex items-center gap-4">
       <Skeleton className="w-16 h-16 rounded-full" />
       <div className="flex-1 space-y-2">

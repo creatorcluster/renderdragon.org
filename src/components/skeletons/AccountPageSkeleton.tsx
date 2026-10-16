@@ -9,7 +9,7 @@ const AccountPageSkeleton = () => (
       <Skeleton className="h-10 w-64" />
     </div>
 
-    <Card className="pixel-corners border-2 border-cow-purple/20">
+    <Card className=" border-2 border-primary/20">
       <CardHeader className="pb-4">
         <div className="flex items-center gap-3">
           <Skeleton className="h-16 w-16 rounded-full" />

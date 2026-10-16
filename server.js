@@ -1,4 +1,4 @@
-import 'dotenv/config';
+import dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
 import { Readable } from 'stream';
@@ -7,6 +7,7 @@ import downloadHandler from './api/download.js';
 import downloadThumbnailHandler from './api/downloadThumbnail.js';
 import generateTitlesHandler from './api/generateTitles.js';
 import deleteAccountHandler from './api/deleteAccount.js';
+import avatarHandler from './api/avatar.js';
 import looneyCheckHandler from './api/looney-check.js';
 import { handler as musicLinkHandler } from './api/music-link.js';
 import { handler as trackHandler } from './api/track.js';
@@ -14,6 +15,9 @@ import { handler as statsHandler } from './api/stats.js';
 import { isAllowedOrigin } from './api/cors.js';
 import { createRouteHandler } from 'uploadthing/express';
 import { uploadRouter } from './src/integrations/uploadthing/router.js';
+
+// Match Vite's precedence: .env.local overrides .env.
+dotenv.config({ path: ['.env.local', '.env'] });
 
 const app = express();
 const port = 3000;
@@ -76,6 +80,7 @@ app.all('/api/download', createAdapter(downloadHandler));
 app.all('/api/downloadThumbnail', createAdapter(downloadThumbnailHandler));
 app.all('/api/generateTitles', createAdapter(generateTitlesHandler));
 app.all('/api/deleteAccount', createAdapter(deleteAccountHandler));
+app.all('/api/avatar', createAdapter(avatarHandler));
 app.all('/api/looney-check', createAdapter(looneyCheckHandler));
 app.all('/api/music-link', createAdapter(musicLinkHandler));
 app.all('/api/track', createAdapter(trackHandler));

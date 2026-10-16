@@ -3,8 +3,9 @@ import type { MouseEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
+
 import { IconChevronRight, IconChevronDown, IconFolder, IconFolderOpen, IconSearch, IconVolume, IconX } from '@tabler/icons-react';
+import PixelSvgIcon from '@/components/PixelSvgIcon';
 
 interface McSoundsBrowserProps {
   subcategories: string[];
@@ -107,8 +108,8 @@ const CategoryItem = ({
           flex items-center gap-1 py-1.5 px-2 rounded-md cursor-pointer
           transition-colors duration-150 group
           ${isSelected 
-            ? 'bg-cow-purple/20 text-cow-purple' 
-            : 'hover:bg-accent/50'
+            ? 'bg-primary/20 text-primary' 
+            : 'hover:bg-accent'
           }
         `}
         style={{ paddingLeft }}
@@ -143,7 +144,7 @@ const CategoryItem = ({
         <span className="text-sm truncate flex-grow">{formatCategoryName(node.name)}</span>
         
         {node.count !== undefined && (
-          <span className="text-xs text-muted-foreground bg-secondary/50 px-1.5 py-0.5 rounded">
+          <span className="text-xs text-primary bg-primary/10 px-1.5 py-0.5 rounded">
             {node.count}
           </span>
         )}
@@ -292,12 +293,12 @@ const McSoundsBrowser = ({
   }, [subcategories, resourceCount]);
   
   return (
-    <div className="h-full flex flex-col bg-card/50 border border-border rounded-lg pixel-corners overflow-hidden">
+    <div className="h-full flex flex-col bg-card border border-border rounded-lg  overflow-hidden">
       <div className="p-3 border-b border-border">
-        <h3 className="text-sm font-jetbrains-mono text-muted-foreground mb-2 flex items-center gap-2">
-          <IconVolume className="h-4 w-4 text-cow-purple" />
+        <div className="text-sm text-muted-foreground mb-2 flex items-center gap-2">
+          <PixelSvgIcon name="sound" className="h-4 w-4 text-primary" />
           MC Sounds Browser
-        </h3>
+        </div>
         
         <div className="relative mb-2">
           <IconSearch className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -305,7 +306,7 @@ const McSoundsBrowser = ({
             placeholder="Search categories..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-8 h-8 text-sm pixel-input"
+            className="pl-8 h-8 text-sm "
           />
           {searchQuery && (
             <Button
@@ -340,7 +341,7 @@ const McSoundsBrowser = ({
       </div>
       
       {selectedSubcategory && (
-        <div className="px-3 py-2 bg-cow-purple/10 border-b border-border flex items-center justify-between">
+        <div className="px-3 py-2 bg-primary/10 border-b border-border flex items-center justify-between">
           <span className="text-xs text-muted-foreground truncate flex-1">
             Selected: {formatCategoryName(selectedSubcategory.split('/').pop() || '')}
           </span>
@@ -355,24 +356,24 @@ const McSoundsBrowser = ({
         </div>
       )}
       
-      <ScrollArea className="flex-1">
+      <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar">
         <div className="p-2">
           <motion.div
             className={`
               flex items-center gap-1 py-1.5 px-2 rounded-md cursor-pointer mb-1
               transition-colors duration-150
               ${!selectedSubcategory 
-                ? 'bg-cow-purple/20 text-cow-purple' 
-                : 'hover:bg-accent/50'
+                ? 'bg-primary/20 text-primary' 
+                : 'hover:bg-accent'
               }
             `}
             onClick={() => handleSelect(null)}
             whileHover={{ x: 2 }}
           >
             <div className="w-3.5" />
-            <IconFolderOpen className="h-4 w-4 text-cow-purple" />
+            <IconFolderOpen className="h-4 w-4 text-primary" />
             <span className="text-sm font-medium">All Sounds</span>
-            <span className="text-xs text-muted-foreground bg-secondary/50 px-1.5 py-0.5 rounded ml-auto">
+            <span className="text-xs text-primary bg-primary/10 px-1.5 py-0.5 rounded ml-auto">
               {subcategories.length} categories
             </span>
           </motion.div>
@@ -395,7 +396,7 @@ const McSoundsBrowser = ({
             </div>
           )}
         </div>
-      </ScrollArea>
+      </div>
     </div>
   );
 };

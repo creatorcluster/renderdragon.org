@@ -9,6 +9,16 @@ const FALLBACK_ADMIN_EMAILS = [
 
 const GRANULARITIES = new Set(['day', 'week', 'month']);
 
+// The local Express adapter in server.js passes plain objects, while Vercel
+// passes a real Request; support both shapes.
+function getHeader(request, name) {
+  const headers = request.headers;
+  if (!headers) return null;
+  if (typeof headers.get === 'function') return headers.get(name);
+  const lower = name.toLowerCase();
+  return headers[lower] ?? headers[name] ?? null;
+}
+
 function adminEmails() {
   const configured = (process.env.ANALYTICS_ADMIN_EMAILS || '')
     .split(',')
@@ -18,7 +28,7 @@ function adminEmails() {
 }
 
 function corsHeaders(request) {
-  const origin = request.headers.get('origin');
+  const origin = getHeader(request, 'origin');
   const headers = {
     'Access-Control-Allow-Methods': 'GET, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
@@ -58,7 +68,7 @@ export async function handler(request) {
     return json({ error: 'server not configured' }, 500, headers);
   }
 
-  const authHeader = request.headers.get('authorization') || '';
+  const authHeader = getHeader(request, 'authorization') || '';
   if (!authHeader.toLowerCase().startsWith('bearer ')) {
     return json({ error: 'unauthorized' }, 401, headers);
   }

@@ -41,7 +41,7 @@ const DEFAULT_FONTS = [
     { name: 'Geist Mono', value: 'mono' },
     { name: 'Inter', value: 'inter' },
     { name: 'Serif', value: 'serif' },
-    { name: 'Pixel (VT323)', value: 'pixel' },
+    { name: 'Normal', value: 'normal' },
 ];
 
 export const FontPicker: React.FC<FontPickerProps> = ({ value, onFontChange }) => {
@@ -123,8 +123,10 @@ export const FontPicker: React.FC<FontPickerProps> = ({ value, onFontChange }) =
         }
     };
 
+    const selectValue = value === 'pixel' ? 'normal' : value;
+
     return (
-        <Select value={value} onValueChange={handleValueChange} disabled={loading && externalFonts.length === 0}>
+        <Select value={selectValue} onValueChange={handleValueChange} disabled={loading && externalFonts.length === 0}>
             <SelectTrigger>
                 <SelectValue placeholder={loading ? "Loading fonts..." : "Select Font"} />
             </SelectTrigger>

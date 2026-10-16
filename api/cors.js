@@ -7,6 +7,8 @@ export const allowedOrigins = new Set([
   'http://127.0.0.1:3000',
   'https://renderdragon.org',
   'https://www.renderdragon.org',
+  'https://api.codersoft.xyz',
+  'https://assets.codersoft.xyz',
   'https://assets-api-worker.powernplant101-c6b.workers.dev',
 ]);
 

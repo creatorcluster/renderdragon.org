@@ -56,7 +56,7 @@ export function AdBlockDetector() {
         <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
             <AlertDialogContent>
                 <AlertDialogHeader>
-                    <AlertDialogTitle className="font-minecraftia text-2xl">AdBlocker Detected</AlertDialogTitle>
+                    <AlertDialogTitle className="text-2xl">AdBlocker Detected</AlertDialogTitle>
                     <AlertDialogDescription className="space-y-2">
                         <p>
                             It looks like you are using an adblocker.

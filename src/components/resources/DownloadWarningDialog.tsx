@@ -32,7 +32,7 @@ const DownloadWarningDialog: React.FC<DownloadWarningDialogProps> = ({ isOpen, o
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
             <DialogContent className="sm:max-w-md">
                 <DialogHeader>
-                    <DialogTitle className="flex items-center gap-2 text-destructive font-minecraftia text-xl">
+                    <DialogTitle className="flex items-center gap-2 text-destructive text-xl">
                         <IconAlertTriangle className="h-5 w-5" />
                         External Link Warning
                     </DialogTitle>
@@ -49,18 +49,18 @@ const DownloadWarningDialog: React.FC<DownloadWarningDialogProps> = ({ isOpen, o
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter className="flex-col sm:flex-row gap-2 mt-4">
-                    <Button variant="outline" onClick={onClose} className="pixel-corners w-full sm:w-auto">
+                    <Button variant="outline" onClick={onClose} className=" w-full sm:w-auto">
                         Cancel
                     </Button>
                     {isValid ? (
                         <a href={downloadUrl} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto" onClick={onClose}>
-                            <Button className="pixel-corners bg-cow-purple hover:bg-cow-purple/90 w-full sm:w-auto">
+                            <Button className=" bg-primary hover:bg-primary/90 w-full sm:w-auto">
                                 <IconExternalLink className="mr-2 h-4 w-4" />
                                 Continue to Download
                             </Button>
                         </a>
                     ) : (
-                        <Button disabled className="pixel-corners bg-cow-purple hover:bg-cow-purple/90 w-full sm:w-auto">
+                        <Button disabled className=" bg-primary hover:bg-primary/90 w-full sm:w-auto">
                             <IconExternalLink className="mr-2 h-4 w-4" />
                             Invalid URL
                         </Button>

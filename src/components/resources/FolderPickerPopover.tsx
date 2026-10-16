@@ -143,7 +143,7 @@ const FolderPickerPopover = ({
                         {/* No folder / unsorted option */}
                         <button
                             onClick={() => handleFolderClick(null)}
-                            className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-sm text-left hover:bg-muted/50 transition-colors"
+                            className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-sm text-left hover:bg-muted transition-colors"
                         >
                             <IconFolder size={15} className="text-muted-foreground flex-shrink-0" />
                             <span className="truncate text-muted-foreground">No folder</span>
@@ -163,7 +163,7 @@ const FolderPickerPopover = ({
                                         "w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-sm text-left transition-colors",
                                         isFull
                                             ? "opacity-50 cursor-not-allowed"
-                                            : "hover:bg-muted/50 cursor-pointer"
+                                            : "hover:bg-muted cursor-pointer"
                                     )}
                                 >
                                     <div

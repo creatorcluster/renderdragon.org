@@ -201,8 +201,8 @@ const Utils = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-           <h1 className="text-4xl md:text-5xl font-minecraftia mb-4">
-            Useful <span className="text-cow-purple">Utilities</span>
+           <h1 className="text-4xl md:text-5xl mb-4">
+            Useful <span className="text-primary">Utilities</span>
           </h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             A curated collection of free and premium utilities to enhance your content creation workflow
@@ -215,7 +215,7 @@ const Utils = () => {
               <TabsTrigger
                 key={category}
                 value={category}
-                className="pixel-corners data-[state=active]:bg-cow-purple data-[state=active]:text-white flex items-center gap-2 h-12"
+                className=" data-[state=active]:bg-primary data-[state=active]:text-white flex items-center gap-2 h-12"
               >
                 {getCategoryIcon(category)}
                 <span className="capitalize">{category.replace('-', ' ')}</span>
@@ -247,10 +247,10 @@ const Utils = () => {
                         rel="noopener noreferrer"
                         className="block h-full"
                       >
-                        <Card className="h-full transition-all duration-300 hover:shadow-xl pixel-corners border-2 border-primary/20 hover:border-primary/40">
+                        <Card className="h-full transition-all duration-300 hover:shadow-xl  border-2 border-primary/20 hover:border-primary/40">
                           <CardHeader>
                             <CardTitle className="flex items-center justify-between">
-                              <span className="font-jetbrains-mono text-xl">{item.name}</span>
+                              <span className="text-xl">{item.name}</span>
                               {item.isFree && (
                                 <span className="bg-green-500/10 text-green-500 text-xs px-2 py-1 rounded-md">
                                   Free

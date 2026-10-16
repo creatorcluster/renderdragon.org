@@ -42,7 +42,8 @@ const ProfileThemeEngine: React.FC<ProfileThemeEngineProps> = ({ config, childre
                 case 'mono': fontStack = '"Geist Mono", monospace'; break;
                 case 'inter': fontStack = '"Inter", sans-serif'; break;
                 case 'serif': fontStack = 'serif'; break;
-                case 'pixel': fontStack = '"VT323", monospace'; break;
+                case 'normal':
+                case 'pixel': fontStack = '\'Inter\', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif'; break;
                 default: fontStack = 'sans-serif';
             }
         }

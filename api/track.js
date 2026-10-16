@@ -9,8 +9,30 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 const BOT_RE =
   /bot|crawl|spider|slurp|bingpreview|headless|lighthouse|pingdom|uptime|monitor|facebookexternalhit|whatsapp|telegram|discordbot|preview/i;
 
+// The local Express adapter in server.js passes plain objects, while Vercel
+// passes a real Request; support both shapes.
+function getHeader(request, name) {
+  const headers = request.headers;
+  if (!headers) return null;
+  if (typeof headers.get === 'function') return headers.get(name);
+  const lower = name.toLowerCase();
+  return headers[lower] ?? headers[name] ?? null;
+}
+
+async function readJsonBody(request) {
+  if (request.body && typeof request.body === 'object') return request.body;
+  if (typeof request.json === 'function') {
+    try {
+      return await request.json();
+    } catch {
+      return {};
+    }
+  }
+  return {};
+}
+
 function corsHeaders(request) {
-  const origin = request.headers.get('origin');
+  const origin = getHeader(request, 'origin');
   const headers = {
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
@@ -38,7 +60,7 @@ function supabaseConfig() {
 }
 
 async function resolveUser(url, anonKey, request) {
-  const header = request.headers.get('authorization') || request.headers.get('Authorization');
+  const header = getHeader(request, 'authorization');
   if (!header || !header.toLowerCase().startsWith('bearer ')) return null;
   const accessToken = header.slice(7).trim();
   if (!accessToken) return null;
@@ -66,15 +88,10 @@ export async function handler(request) {
     });
   }
 
-  const userAgent = request.headers.get('user-agent') || '';
+  const userAgent = getHeader(request, 'user-agent') || '';
   if (!userAgent || BOT_RE.test(userAgent)) return new Response(null, { status: 204, headers });
 
-  let payload = {};
-  try {
-    payload = await request.json();
-  } catch {
-    payload = {};
-  }
+  const payload = await readJsonBody(request);
 
   const browserId = truncate(payload?.browserId, 64);
   if (!browserId || !UUID_RE.test(browserId)) return new Response(null, { status: 204, headers });
@@ -88,7 +105,7 @@ export async function handler(request) {
   try {
     const user = anonKey ? await resolveUser(url, anonKey, request) : null;
     const visitorKey = user ? `u:${user.id}` : `b:${browserId}`;
-    const country = request.headers.get('x-vercel-ip-country') || null;
+    const country = getHeader(request, 'x-vercel-ip-country') || null;
 
     const admin = createClient(url, secretKey, {
       auth: { autoRefreshToken: false, persistSession: false },

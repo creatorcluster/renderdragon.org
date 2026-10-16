@@ -27,6 +27,7 @@ interface ResourcesListProps {
   hasCategoryResources: boolean;
   filteredResources: Resource[];
   onMusicLink?: (resource: Resource) => void;
+  onAnimate?: (resource: Resource) => void;
 }
 
 const ResourcesList = ({
@@ -40,6 +41,7 @@ const ResourcesList = ({
   hasCategoryResources,
   filteredResources,
   onMusicLink,
+  onAnimate,
 }: ResourcesListProps) => {
   const [currentPage, setCurrentPage] = React.useState(1);
   const itemsPerPage = 12;
@@ -121,13 +123,13 @@ const ResourcesList = ({
           <Button
             onClick={onClearFilters}
             variant="outline"
-            className="pixel-corners"
+            className=""
           >
             <IconX className="mr-2 h-4 w-4" />
             Clear Filters
           </Button>
           <Button
-            className="pixel-corners bg-cow-purple hover:bg-cow-purple/80"
+            className=" bg-primary hover:bg-primary/90"
             onClick={() =>
               window.open("https://discord.renderdragon.org", "_blank", "noopener,noreferrer")
             }
@@ -140,7 +142,7 @@ const ResourcesList = ({
             Contribute Resources
           </Button>
           <Button
-            className="pixel-corners bg-cow-purple hover:bg-cow-purple/80"
+            className=" bg-primary hover:bg-primary/90"
             onClick={() =>
               window.open(
                 "https://creatoronwheels.netlify.app/resources",
@@ -184,6 +186,7 @@ const ResourcesList = ({
                 resource={resource}
                 onClick={onSelectResource}
                 onMusicLink={onMusicLink}
+                onAnimate={onAnimate}
               />
           </motion.div>
         ))}

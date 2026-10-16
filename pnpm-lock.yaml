@@ -29,6 +29,9 @@ importers:
       '@fontsource/jetbrains-mono':
         specifier: ^5.2.8
         version: 5.2.8
+      '@fontsource/montserrat':
+        specifier: ^5.3.0
+        version: 5.3.0
       '@google/genai':
         specifier: ^0.13.0
         version: 0.13.0
@@ -221,6 +224,9 @@ importers:
       gl-matrix:
         specifier: ^3.4.4
         version: 3.4.4
+      highlight.js:
+        specifier: ^11.12.0
+        version: 11.12.0
       html2canvas:
         specifier: ^1.4.1
         version: 1.4.1
@@ -881,6 +887,9 @@ packages:
 
   '@fontsource/jetbrains-mono@5.2.8':
     resolution: {integrity: sha512-6w8/SG4kqvIMu7xd7wt6x3idn1Qux3p9N62s6G3rfldOUYHpWcc2FKrqf+Vo44jRvqWj2oAtTHrZXEP23oSKwQ==}
+
+  '@fontsource/montserrat@5.3.0':
+    resolution: {integrity: sha512-iQPDtZOnmM5ih4JBGaMSXisRap0ixb9bAUw2hDtY7EjVfaqiiNlKtVuJl9XclxUwtwMMHNcWXfQR6zI9x05+Tg==}
 
   '@google/genai@0.13.0':
     resolution: {integrity: sha512-eaEncWt875H7046T04mOpxpHJUM+jLIljEf+5QctRyOeChylE/nhpwm1bZWTRWoOu/t46R9r+PmgsJFhTpE7tQ==}
@@ -3439,6 +3448,10 @@ packages:
   hast-util-whitespace@3.0.0:
     resolution: {integrity: sha512-88JUN06ipLwsnv+dVn+OIYOvAuvBMy/Qoi6O7mQHxdPXpjy+Cd6xRkWwux7DKO+4sYILtLBRIKgsdpS2gQc7qw==}
 
+  highlight.js@11.12.0:
+    resolution: {integrity: sha512-nbfWpyRMcMrPMmDwJB+dhX/eiaPKtc2RB+0QZskqJ3WjRA/FDS0e9hZrx8EC/lbEv8gXy98FcDbNa/dspAaJMg==}
+    engines: {node: '>=12.0.0'}
+
   hoist-non-react-statics@3.3.2:
     resolution: {integrity: sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==}
 
@@ -5432,6 +5445,8 @@ snapshots:
   '@fontsource/geist-sans@5.2.5': {}
 
   '@fontsource/jetbrains-mono@5.2.8': {}
+
+  '@fontsource/montserrat@5.3.0': {}
 
   '@google/genai@0.13.0':
     dependencies:
@@ -8048,6 +8063,8 @@ snapshots:
   hast-util-whitespace@3.0.0:
     dependencies:
       '@types/hast': 3.0.4
+
+  highlight.js@11.12.0: {}
 
   hoist-non-react-statics@3.3.2:
     dependencies:

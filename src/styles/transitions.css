@@ -1,0 +1,243 @@
+/* transitions.dev skills — https://skills.sh/jakubantalik/transitions-dev/transitions-dev
+   Universal :root tokens, then the three transitions used by partner onboarding
+   (page side-by-side, text states swap, success check). Snippets are kept verbatim
+   from the skill, including their prefers-reduced-motion guards. */
+
+/* transitions-dev — copy this :root block into your project once.
+   Every transition snippet reads from these semantic names. */
+:root {
+  /* Card resize */
+  --resize-dur: 300ms;
+  --resize-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Number pop-in */
+  --digit-dur: 500ms;
+  --digit-distance: 8px;
+  --digit-stagger: 70ms;
+  --digit-blur: 2px;
+  --digit-ease: cubic-bezier(0.34, 1.45, 0.64, 1);
+  --digit-dir-x: 0;
+  --digit-dir-y: 1;
+  /* Notification badge */
+  --badge-slide-dur: 260ms;
+  --badge-pop-dur: 500ms;
+  --badge-pop-close-dur: 180ms;
+  --badge-fade-dur: 400ms;
+  --badge-fade-close-dur: 180ms;
+  --badge-blur: 2px;
+  --badge-offset-x: -8.2px;
+  --badge-offset-y: 12.4px;
+  --badge-slide-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --badge-pop-ease: cubic-bezier(0.34, 1.36, 0.64, 1);
+  --badge-close-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  /* Text states swap */
+  --text-swap-dur: 200ms;
+  --text-swap-translate-y: 8px;
+  --text-swap-blur: 2px;
+  --text-swap-ease: ease-out;
+  /* Menu dropdown */
+  --dropdown-open-dur: 250ms;
+  --dropdown-close-dur: 150ms;
+  --dropdown-pre-scale: 0.97;
+  --dropdown-closing-scale: 0.99;
+  --dropdown-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Modal open / close */
+  --modal-open-dur: 250ms;
+  --modal-close-dur: 150ms;
+  --modal-scale: 0.96;
+  --modal-scale-close: 0.96;
+  --modal-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Panel reveal */
+  --panel-open-dur: 400ms;
+  --panel-close-dur: 350ms;
+  --panel-translate-y: 100px;
+  --panel-blur: 2px;
+  --panel-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Page side-by-side */
+  --page-slide-dur: 200ms;
+  --page-fade-dur: 200ms;
+  --page-slide-distance: 8px;
+  --page-blur: 3px;
+  --page-stagger: 0ms;
+  --page-exit-enabled: 1;
+  --page-slide-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --page-fade-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Icon swap */
+  --icon-swap-dur: 200ms;
+  --icon-swap-blur: 2px;
+  --icon-swap-start-scale: 0.25;
+  --icon-swap-ease: ease-in-out;
+  /* Success check */
+  --check-opacity-dur: 550ms;
+  --check-rotate-dur: 550ms;
+  --check-rotate-from: 80deg;
+  --check-bob-dur: 450ms;
+  --check-y-amount: 40px;
+  --check-blur-dur: 500ms;
+  --check-blur-from: 10px;
+  --check-path-dur: 550ms;
+  --check-path-delay: 80ms;
+  --check-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --check-ease-opacity: cubic-bezier(0.22, 1, 0.36, 1);
+  --check-ease-rotate: cubic-bezier(0.22, 1, 0.36, 1);
+  --check-ease-bob: cubic-bezier(0.34, 1.35, 0.64, 1);
+  --check-ease-path: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Avatar group hover */
+  --avatar-lift: -4px;
+  --avatar-dur: 320ms;
+  --avatar-scale: 1.05;
+  --avatar-falloff: 0.45;
+  --avatar-ease-in: cubic-bezier(0.22, 1, 0.36, 1);
+  --avatar-ease-out: cubic-bezier(0.34, 3.85, 0.64, 1);
+  /* Error state shake */
+  --shake-distance: 6px;
+  --shake-overshoot: 4px;
+  --shake-dur-a: 80ms;
+  --shake-dur-b: 60ms;
+  --shake-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --revert-hold: 3000ms;
+  --revert-dur: 280ms;
+}
+
+/* ---------------------------------- Page side-by-side (08) ---------------------------------- */
+
+.t-page-slide {
+  position: relative;
+}
+.t-page-slide .t-page[data-page-id="1"] {
+  --t-page-from-x: calc(var(--page-slide-distance) * -1);
+}
+.t-page-slide .t-page[data-page-id="2"] {
+  --t-page-from-x: var(--page-slide-distance);
+}
+.t-page-slide .t-page {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(calc(var(--t-page-from-x, 0px) * var(--page-exit-enabled)));
+  filter: blur(calc(var(--page-blur) * var(--page-exit-enabled)));
+  transition:
+    opacity   var(--page-fade-dur)  var(--page-fade-ease),
+    transform var(--page-slide-dur) var(--page-slide-ease),
+    filter    var(--page-slide-dur) var(--page-slide-ease);
+  will-change: opacity, transform, filter;
+}
+.t-page-slide[data-page="1"] .t-page[data-page-id="1"],
+.t-page-slide[data-page="2"] .t-page[data-page-id="2"] {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0);
+  filter: blur(0);
+  transition-delay: var(--page-stagger);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .t-page-slide .t-page { transition: none !important; }
+}
+
+/* ---------------------- N-step extension (reuses the page-* tokens) ---------------------- */
+/* Same timing/easing/blur as the page side-by-side snippet, generalised to any number of
+   steps. A step's --t-step-from is set to -distance (before the active step), +distance
+   (after), or 0, so moving forward the outgoing step slides left and the incoming one
+   enters from the right — direction falls out of the step order. */
+
+.t-steps {
+  position: relative;
+}
+.t-steps .t-step {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(calc(var(--t-step-from, 0px) * var(--page-exit-enabled)));
+  filter: blur(calc(var(--page-blur) * var(--page-exit-enabled)));
+  transition:
+    opacity   var(--page-fade-dur)  var(--page-fade-ease),
+    transform var(--page-slide-dur) var(--page-slide-ease),
+    filter    var(--page-slide-dur) var(--page-slide-ease);
+  will-change: opacity, transform, filter;
+}
+.t-steps .t-step[data-active="true"] {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0);
+  filter: blur(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .t-steps .t-step { transition: none !important; }
+}
+
+/* ---------------------------------- Text states swap (04) ---------------------------------- */
+
+.t-text-swap {
+  display: inline-block;
+  transform: translateY(0);
+  filter: blur(0);
+  opacity: 1;
+  transition:
+    transform var(--text-swap-dur) var(--text-swap-ease),
+    filter    var(--text-swap-dur) var(--text-swap-ease),
+    opacity   var(--text-swap-dur) var(--text-swap-ease);
+  will-change: transform, filter, opacity;
+}
+.t-text-swap.is-exit {
+  transform: translateY(calc(var(--text-swap-translate-y) * -1));
+  filter: blur(var(--text-swap-blur));
+  opacity: 0;
+}
+.t-text-swap.is-enter-start {
+  transform: translateY(var(--text-swap-translate-y));
+  filter: blur(var(--text-swap-blur));
+  opacity: 0;
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .t-text-swap { transition: none !important; }
+}
+
+/* ---------------------------------- Success check (10) ---------------------------------- */
+
+.t-success-check {
+  display: inline-block;
+  transform-origin: center;
+  opacity: 0;
+  will-change: transform, opacity, filter;
+}
+.t-success-check svg { display: block; overflow: visible; }
+.t-success-check svg path {
+  stroke-dasharray: 46;
+  stroke-dashoffset: 46;
+}
+
+.t-success-check[data-state="in"] {
+  animation:
+    t-check-fade   var(--check-opacity-dur) var(--check-ease-opacity) forwards,
+    t-check-rotate var(--check-rotate-dur)  var(--check-ease-rotate)  forwards,
+    t-check-blur   var(--check-blur-dur)    var(--check-ease-out)     forwards,
+    t-check-bob    var(--check-bob-dur)     var(--check-ease-bob)     forwards;
+}
+.t-success-check[data-state="in"] svg path {
+  animation: t-check-draw var(--check-path-dur) var(--check-ease-path) var(--check-path-delay, 0ms) forwards;
+}
+
+@keyframes t-check-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes t-check-rotate {
+  from { transform: rotate(var(--check-rotate-from)); }
+  to   { transform: rotate(0deg); }
+}
+@keyframes t-check-blur {
+  from { filter: blur(var(--check-blur-from)); }
+  to   { filter: blur(0); }
+}
+@keyframes t-check-bob {
+  from { translate: 0 var(--check-y-amount); }
+  to   { translate: 0 0; }
+}
+@keyframes t-check-draw { to { stroke-dashoffset: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .t-success-check { animation: none !important; opacity: 1; }
+  .t-success-check svg path { animation: none !important; stroke-dashoffset: 0 !important; }
+}
