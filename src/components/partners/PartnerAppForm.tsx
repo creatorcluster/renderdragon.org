@@ -11,6 +11,8 @@ import { toast } from "sonner";
 import { PARTNER_PERMISSIONS, type PartnerPermissionId } from "@/lib/partners/permissions";
 import { updatePartnerApp, type PartnerApp } from "@/lib/partners/client";
 import { RedirectUriField } from "@/components/partners/RedirectUriField";
+import { ClientId } from "@/components/partners/ClientId";
+import { ImageUpload } from "@/components/profile/ImageUpload";
 
 export function PartnerAppForm({ app, onSaved }: { app: PartnerApp; onSaved: () => void }) {
   const [name, setName] = useState(app.name);
@@ -54,13 +56,33 @@ export function PartnerAppForm({ app, onSaved }: { app: PartnerApp; onSaved: () 
       </div>
 
       <div className="flex flex-col gap-2">
-        <Label htmlFor="app-logo">Logo URL</Label>
-        <Input
-          id="app-logo"
-          value={logoUrl}
-          onChange={(event) => setLogoUrl(event.target.value)}
-          placeholder="https://…/logo.png"
-        />
+        <Label>App icon</Label>
+        <div className="chamfer flex items-center gap-4 border border-border p-4">
+          {logoUrl ? (
+            <img
+              src={logoUrl}
+              alt=""
+              className="size-14 shrink-0 chamfer border border-border object-cover"
+              referrerPolicy="no-referrer"
+            />
+          ) : (
+            <div className="flex size-14 shrink-0 items-center justify-center chamfer border border-border bg-card font-heading text-xl font-bold text-primary">
+              {(name.trim() || "A").charAt(0).toUpperCase()}
+            </div>
+          )}
+          <div className="flex min-w-0 flex-col gap-1.5">
+            <ImageUpload
+              bucket="showcase"
+              folder="partner-logos"
+              label={logoUrl ? "Replace icon" : "Upload icon"}
+              currentImage={logoUrl}
+              onUpload={(url) => setLogoUrl(url)}
+            />
+            <p className="text-xs text-muted-foreground">
+              Shown on the consent screen. PNG, JPG or GIF up to 5 MB.
+            </p>
+          </div>
+        </div>
       </div>
 
       <div className="flex flex-col gap-2">
@@ -124,9 +146,16 @@ export function PartnerAppForm({ app, onSaved }: { app: PartnerApp; onSaved: () 
       <Separator />
 
       <dl className="grid gap-4 sm:grid-cols-2">
-        <div>
+        <div className="min-w-0">
           <dt className="text-xs text-muted-foreground">Client id</dt>
-          <dd className="mt-1 truncate font-mono text-sm">{app.supabase_client_id ?? "—"}</dd>
+          <dd className="mt-1 min-w-0">
+            <ClientId clientId={app.supabase_client_id} />
+          </dd>
+          {!app.supabase_client_id && (
+            <p className="mt-1 text-xs text-muted-foreground">
+              We register your OAuth client once your redirect URIs are set, then your client id appears here.
+            </p>
+          )}
         </div>
         <div>
           <dt className="text-xs text-muted-foreground">Client type</dt>

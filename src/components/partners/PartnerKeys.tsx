@@ -99,7 +99,7 @@ export function PartnerKeys({
           </p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-[var(--radius)] border border-border">
+        <div className="overflow-hidden rounded-[var(--radius)] border border-border bg-card">
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">

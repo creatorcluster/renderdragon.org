@@ -198,6 +198,10 @@ const App = () => {
                       element={<Navigate to="/gappa" replace />}
                     />
                     <Route
+                      path="/music-copyright-checker"
+                      element={<Navigate to="/renderbot" replace />}
+                    />
+                    <Route
                       path="/gappa"
                       element={<MusicCopyright />}
                     />

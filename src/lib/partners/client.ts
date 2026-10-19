@@ -193,16 +193,56 @@ export async function listPartnerUsage(orgId: string, days = 30): Promise<Partne
   return (data as PartnerUsageEvent[]) ?? [];
 }
 
+export interface PartnerDailyStats {
+  date: string;
+  calls: number;
+  errors: number;
+  p95LatencyMs: number;
+}
+
+export interface PartnerEndpointStats {
+  endpoint: string;
+  calls: number;
+  errors: number;
+  errorRate: number;
+  p95LatencyMs: number;
+}
+
+export interface PartnerStatusStats {
+  status: number | null;
+  calls: number;
+}
+
+export interface PartnerUserDayStats {
+  date: string;
+  signIns: number;
+  revocations: number;
+}
+
 export interface PartnerStats {
   totalUsers: number;
   activeUsers: number;
   revokedUsers: number;
   activeKeys: number;
   calls: number;
+  errors: number;
   errorRate: number;
   p95LatencyMs: number;
-  dailyCalls: { date: string; calls: number }[];
+  daily: PartnerDailyStats[];
+  userDaily: PartnerUserDayStats[];
+  endpoints: PartnerEndpointStats[];
+  statuses: PartnerStatusStats[];
+  recentEvents: PartnerUsageEvent[];
 }
+
+/** 95th percentile (nearest-rank) for a list of numeric samples. */
+function percentile95(values: number[]): number {
+  if (values.length === 0) return 0;
+  const sorted = [...values].sort((a, b) => a - b);
+  return sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * 0.95))];
+}
+
+const isErrorStatus = (status: number | null) => status !== null && status >= 400;
 
 export function summarizeUsage(
   consents: PartnerConsent[],
@@ -221,27 +261,99 @@ export function summarizeUsage(
   const activeKeys = keys.filter((key) => key.status === "active").length;
 
   const calls = events.length;
-  const errors = events.filter((event) => event.status !== null && event.status >= 400).length;
+  const errors = events.filter((event) => isErrorStatus(event.status)).length;
   const errorRate = calls > 0 ? errors / calls : 0;
+  const p95LatencyMs = percentile95(
+    events
+      .map((event) => event.latency_ms)
+      .filter((value): value is number => typeof value === "number"),
+  );
 
-  const latencies = events
-    .map((event) => event.latency_ms)
-    .filter((value): value is number => typeof value === "number")
-    .sort((a, b) => a - b);
-  const p95LatencyMs = latencies.length > 0 ? latencies[Math.floor(latencies.length * 0.95)] : 0;
-
-  const buckets = new Map<string, number>();
+  const buckets = new Map<string, { calls: number; errors: number; latencies: number[] }>();
+  const userBuckets = new Map<string, { signIns: number; revocations: number }>();
   for (let i = days - 1; i >= 0; i -= 1) {
     const date = new Date(now - i * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
-    buckets.set(date, 0);
+    buckets.set(date, { calls: 0, errors: 0, latencies: [] });
+    userBuckets.set(date, { signIns: 0, revocations: 0 });
   }
-  for (const event of events) {
-    const date = event.ts.slice(0, 10);
-    if (buckets.has(date)) buckets.set(date, (buckets.get(date) ?? 0) + 1);
-  }
-  const dailyCalls = [...buckets.entries()].map(([date, count]) => ({ date, calls: count }));
 
-  return { totalUsers, activeUsers, revokedUsers, activeKeys, calls, errorRate, p95LatencyMs, dailyCalls };
+  for (const consent of consents) {
+    const granted = userBuckets.get(consent.granted_at.slice(0, 10));
+    if (granted) granted.signIns += 1;
+    if (consent.revoked_at) {
+      const revoked = userBuckets.get(consent.revoked_at.slice(0, 10));
+      if (revoked) revoked.revocations += 1;
+    }
+  }
+
+  const endpointMap = new Map<string, { calls: number; errors: number; latencies: number[] }>();
+  const statusMap = new Map<number | null, number>();
+
+  for (const event of events) {
+    const bucket = buckets.get(event.ts.slice(0, 10));
+    if (bucket) {
+      bucket.calls += 1;
+      if (isErrorStatus(event.status)) bucket.errors += 1;
+      if (typeof event.latency_ms === "number") bucket.latencies.push(event.latency_ms);
+    }
+
+    const endpoint = event.endpoint?.trim() || "Unattributed";
+    const endpointEntry = endpointMap.get(endpoint) ?? { calls: 0, errors: 0, latencies: [] };
+    endpointEntry.calls += 1;
+    if (isErrorStatus(event.status)) endpointEntry.errors += 1;
+    if (typeof event.latency_ms === "number") endpointEntry.latencies.push(event.latency_ms);
+    endpointMap.set(endpoint, endpointEntry);
+
+    statusMap.set(event.status, (statusMap.get(event.status) ?? 0) + 1);
+  }
+
+  const daily: PartnerDailyStats[] = [...buckets.entries()].map(([date, bucket]) => ({
+    date,
+    calls: bucket.calls,
+    errors: bucket.errors,
+    p95LatencyMs: percentile95(bucket.latencies),
+  }));
+
+  const userDaily: PartnerUserDayStats[] = [...userBuckets.entries()].map(([date, bucket]) => ({
+    date,
+    signIns: bucket.signIns,
+    revocations: bucket.revocations,
+  }));
+
+  const endpoints: PartnerEndpointStats[] = [...endpointMap.entries()]
+    .map(([endpoint, entry]) => ({
+      endpoint,
+      calls: entry.calls,
+      errors: entry.errors,
+      errorRate: entry.calls > 0 ? entry.errors / entry.calls : 0,
+      p95LatencyMs: percentile95(entry.latencies),
+    }))
+    .sort((a, b) => b.calls - a.calls)
+    .slice(0, 10);
+
+  const statuses: PartnerStatusStats[] = [...statusMap.entries()]
+    .map(([status, count]) => ({ status, calls: count }))
+    .sort((a, b) => b.calls - a.calls);
+
+  const recentEvents = [...events]
+    .sort((a, b) => new Date(b.ts).getTime() - new Date(a.ts).getTime())
+    .slice(0, 15);
+
+  return {
+    totalUsers,
+    activeUsers,
+    revokedUsers,
+    activeKeys,
+    calls,
+    errors,
+    errorRate,
+    p95LatencyMs,
+    daily,
+    userDaily,
+    endpoints,
+    statuses,
+    recentEvents,
+  };
 }
 
 export interface PublicPartnerApp {
