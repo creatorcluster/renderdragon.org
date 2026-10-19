@@ -2,11 +2,13 @@
 
 ## Which checkout to work in
 
-- **Canonical:** the worktree **`/Users/techspot/renderdragon-redesign`** (branch `redesign/app`)
-  of the main repo `/Users/techspot/renderdragon.org`. Do your work here.
-- `/Users/techspot/reddragon/renderdragon.org` is a **separate, stale clone** (behind by many
-  commits). Do not work in it; it caused a lot of "wrong code / wrong port" confusion.
-- `/Users/techspot/renderdragon.org` (main checkout) is a worktree on `feat/admin-panel-redesign`.
+- **Canonical:** the worktree **`/Users/techspot/renderdragon-redesign`** of the main repo
+  `/Users/techspot/renderdragon.org`. Do your work here; start feature branches from `origin/main`.
+- `/Users/techspot/reddragon/renderdragon.org` is a **separate, stale clone** (120+ commits behind).
+  Do not work in it; it caused a lot of "wrong code / wrong port" confusion. It has no `AGENTS.md`
+  and its `workers/assets-gateway/` contains only `node_modules` (no `package.json`), so pnpm there
+  dies with `ERR_PNPM_NO_PKG_MANIFEST` — an easy false alarm when following deploy instructions.
+- `/Users/techspot/renderdragon.org` (main checkout) is a worktree on `main`.
 - `origin` = `Coder-soft/renderdragon.org` (fork), `upstream` = `creatorcluster/renderdragon.org`.
 
 ## Repository layout / pull requests
@@ -23,8 +25,26 @@ gh pr create --repo creatorcluster/renderdragon.org --base main --head Coder-sof
 ```
 
 GitHub's native linked-branch feature (`gh issue develop`) does not work in the fork, so reference the
-relevant fork issue by URL in the PR body instead. There is an existing open redesign+partners PR
-(`Coder-soft:redesign/app` → `creatorcluster:main`); pushing to that branch updates it.
+relevant fork issue by URL in the PR body instead.
+
+The `redesign/app` line of work is **fully merged into `main`** (PR #107) and there were no open PRs as
+of 2026-10-19. Branch from `origin/main`; don't use `redesign/app` as a base or expect pushing to it to
+update a PR.
+
+**Merging requires the `creatorcluster` account.** `Coder-soft` can push branches and open PRs but gets
+`does not have the correct permissions to execute MergePullRequest`:
+
+```sh
+gh auth switch --user creatorcluster
+gh pr merge <n> --repo creatorcluster/renderdragon.org --merge
+gh auth switch --user Coder-soft   # restore the active account afterwards
+```
+
+Two checks are red on fork PRs for environmental reasons — don't chase them:
+
+- `Vercel` → "Authorization required to deploy": the fork PR has to be authorized in Vercel.
+- `review` (opencode workflow) → "Could not fetch an OIDC token … add `id-token: write`": the job dies in
+  about a second without reviewing anything. CodeRabbit is the review that actually runs.
 
 ## Dev environment
 
@@ -75,6 +95,13 @@ relevant fork issue by URL in the PR body instead. There is an existing open red
   id `api-router`).
 - **Supabase OAuth 2.1 server** is enabled (`site_url=https://renderdragon.org`,
   `oauth_server_authorization_path=/oauth/consent`, dynamic registration off). Consent notes below.
+- **The browser session transport is cookie *or* bearer, on purpose.** `POST /__session` mints an
+  HMAC-signed token, sets it as the `rdgw` cookie **and** returns it in the body; `/__session` and every
+  proxied path accept either the cookie or `Authorization: Bearer <token>`. The cookie is *third-party*
+  (`renderdragon.org` → `gateway.codersoft.xyz`), so Safari/ITP, Brave, Chrome incognito and strict
+  ETP/Firefox drop it — the bearer path is what keeps those visitors (Resources Hub, Font Picker,
+  Showcases, Background Generator) working. Keep both when editing `workers/assets-gateway` or
+  `src/lib/assetsApi.ts`; never make the cookie the only credential again.
 
 ## Secrets (NAMES ONLY — never print, echo, or commit values)
 
@@ -132,8 +159,10 @@ relevant fork issue by URL in the PR body instead. There is an existing open red
 ## Deploy & verify
 
 ```sh
-# Workers
-cd workers/<api-router|assets-gateway> && pnpm install --ignore-workspace && pnpm exec wrangler deploy
+# Workers — run from the CANONICAL worktree (see "Which checkout to work in").
+# `pnpm install --ignore-workspace` is only needed if node_modules is missing.
+cd /Users/techspot/renderdragon-redesign/workers/<api-router|assets-gateway>
+pnpm exec wrangler deploy          # add --dry-run to validate the bundle without deploying
 
 # SQL migration
 sbase apply-migration --project-id bmywdrwjdqmrkafhiuwn --name <name> --file <path.sql>
@@ -151,6 +180,11 @@ curl https://gateway.codersoft.xyz/__version
 curl https://hamburger.codersoft.xyz/__health
 curl https://kuma.codersoft.xyz/api/status-page/renderdragon | head -c 200
 curl https://renderdragon.org/api/uptime | head -c 200
+
+# Session transport (401 without a session is expected; both must behave the same)
+curl -si https://gateway.codersoft.xyz/__session | head -1
+curl -si https://gateway.codersoft.xyz/__session -H "Authorization: Bearer <token>" | head -1
+curl -si https://gateway.codersoft.xyz/all      -H "Authorization: Bearer <token>" | head -1
 ```
 
 - **Auto-update:** pushing to `Renderdragonorg/resources_renderdragon` fires its webhook →
@@ -180,4 +214,7 @@ curl https://renderdragon.org/api/uptime | head -c 200
 - OIDC asymmetric signing keys are not yet enabled in Supabase. `standardScopesFor` requests
   `openid` (per `oauth-consent.md`), which needs RS256/ES256 signing keys enabled before ID tokens work.
 - Demo OAuth clients should be deleted.
-- The site must be deployed from this branch for production to call the gateway.
+- Production deploys from **`creatorcluster/renderdragon.org` `main`** (Vercel Production deployments
+  follow main SHAs, e.g. `07e76a9` on 2026-10-19), so merging a PR to `main` is enough for the site.
+  Worker deploys are **manual** (`wrangler deploy` from the canonical worktree) — merging never ships
+  Worker code.
