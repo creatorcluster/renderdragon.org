@@ -35,6 +35,7 @@ export const useResources = () => {
   const [loadedFonts, setLoadedFonts] = useState<string[]>([]);
   const [fontPreviewText, setFontPreviewText] = useState<string>("Aa Bb Cc");
   const [availableCategories, setAvailableCategories] = useState<string[]>([]);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
   const fetchIdRef = useRef(0);
 
@@ -44,6 +45,7 @@ export const useResources = () => {
     const loadResources = async () => {
       setIsLoading(true);
       setResources([]);
+      setLoadError(null);
 
       try {
         const categories = getAvailableCategories();
@@ -66,6 +68,9 @@ export const useResources = () => {
         console.error("Error fetching resources:", error);
         if (currentFetchId === fetchIdRef.current) {
           setResources([]);
+          setLoadError(
+            error instanceof Error && error.message ? error.message : "Unable to load resources"
+          );
         }
       } finally {
         if (currentFetchId === fetchIdRef.current) {
@@ -267,6 +272,11 @@ export const useResources = () => {
     return cacheImage(url);
   }, []);
 
+  const retryResources = useCallback(() => {
+    fetchIdRef.current++;
+    setRefreshKey(prev => prev + 1);
+  }, []);
+
   return {
     resources,
     selectedResource,
@@ -286,6 +296,7 @@ export const useResources = () => {
     availableSubcategories,
     availableCategories,
     hasCategoryResources,
+    loadError,
     handleSearchSubmit,
     handleClearSearch,
     handleCategoryChange,
@@ -302,5 +313,6 @@ export const useResources = () => {
       setRefreshKey(prev => prev + 1);
       setSelectedCategory(null);
     },
+    retryResources,
   };
 };

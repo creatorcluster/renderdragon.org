@@ -25,16 +25,23 @@ The gateway only signs requests for a caller that proves it is a real renderdrag
    - `{ "turnstileToken": "<token>" }` for an anonymous visitor (verified server-side against
      Cloudflare Turnstile, including the hostname).
    On success the gateway returns `Set-Cookie: rdgw=…; HttpOnly; Secure; SameSite=None`
-   Path=/api/assets-gw` — a short-lived HMAC-signed session.
-3. Any other `/api/assets-gw/<path>` request must carry that cookie. The gateway signs it
+   Path=/` — a short-lived HMAC-signed session — **and** the same token in the response body
+   (`{ "ok": true, "expiresAt": …, "token": "v1.…" }`).
+3. Any other `/api/assets-gw/<path>` request must carry that session, either as the `rdgw`
+   cookie or as `Authorization: Bearer <token>`. The gateway signs the request
    (HMAC-SHA256, same canonical string as the router) with `GATEWAY_SECRET` and proxies to
    `ROUTER_ORIGIN`.
+
+The bearer form exists because `rdgw` is a **third-party** cookie (`renderdragon.org` →
+`gateway.codersoft.xyz`): Safari/ITP, Brave, Chrome incognito and strict Firefox/ETP drop it,
+which made every catalog request 401 for those visitors. The token is only readable by origins
+allowed by CORS, and it is still handed out as an `HttpOnly` cookie wherever cookies work.
 
 `GET /api/assets-gw/__version` is **public** — no session, no challenge. The SPA caches the
 catalog and compares this version; it only establishes a session (step 2) when the version
 changed, so returning visitors are not challenged.
 
-Spoofed `Origin`, `Referer`, or `X-Auth-*` headers cannot mint a session: the cookie requires a
+Spoofed `Origin`, `Referer`, or `X-Auth-*` headers cannot mint a session: the session requires a
 server-verified Turnstile result (or a Supabase login), and the router independently verifies
 the gateway's signature. Cookies are `HttpOnly` (no JS access), `Secure`, and `SameSite=None`
 (cross-site; `Lax` in local dev), which also blocks CSRF to the upload endpoint.

@@ -73,6 +73,8 @@ const ResourcesHub = () => {
     handleSearch,
     handleDownload,
     availableSubcategories,
+    loadError,
+    retryResources,
   } = useResources();
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -384,6 +386,8 @@ const ResourcesHub = () => {
           hasCategoryResources={hasCategoryResources}
             onMusicLink={onMusicLink}
             onAnimate={setAnimatingResource}
+            loadError={loadError}
+            onRetry={retryResources}
           />
       )}
     </>

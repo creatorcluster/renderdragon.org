@@ -7,33 +7,64 @@ type CachedPayload<T> = {
   data: T;
 };
 
-export const readCache = <T>(key: string): T | null => {
+const readRawCache = <T>(key: string): CachedPayload<T> | null => {
   try {
     const raw = localStorage.getItem(`${CACHE_PREFIX}${key}`);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as CachedPayload<T>;
     if (!parsed?.savedAt || parsed?.data === undefined) return null;
-    if (Date.now() - parsed.savedAt > CACHE_TTL_MS) {
-      localStorage.removeItem(`${CACHE_PREFIX}${key}`);
-      return null;
-    }
-    return parsed.data;
+    return parsed;
   } catch {
     return null;
   }
 };
 
-export const writeCache = <T>(key: string, data: T): void => {
+export const readCache = <T>(key: string): T | null => {
+  const parsed = readRawCache<T>(key);
+  if (!parsed) return null;
+  if (Date.now() - parsed.savedAt > CACHE_TTL_MS) return null;
+  return parsed.data;
+};
+
+// Reads an entry even when its TTL has passed. Used as a last-resort fallback so a
+// visitor still sees the catalog when the asset API (or their session) is unavailable.
+export const readStaleCache = <T>(key: string): T | null =>
+  readRawCache<T>(key)?.data ?? null;
+
+const pruneExpiredCaches = (): void => {
   try {
-    localStorage.setItem(
-      `${CACHE_PREFIX}${key}`,
-      JSON.stringify({
-        savedAt: Date.now(),
-        data,
-      } satisfies CachedPayload<T>)
-    );
+    for (const key of Object.keys(localStorage)) {
+      if (!key.startsWith(CACHE_PREFIX)) continue;
+      try {
+        const parsed = JSON.parse(localStorage.getItem(key) || "") as CachedPayload<unknown>;
+        if (!parsed?.savedAt || Date.now() - parsed.savedAt > CACHE_TTL_MS) {
+          localStorage.removeItem(key);
+        }
+      } catch {
+        localStorage.removeItem(key);
+      }
+    }
   } catch {
-    // ignore quota/storage errors
+    // ignore
+  }
+};
+
+export const writeCache = <T>(key: string, data: T): void => {
+  const serialized = JSON.stringify({
+    savedAt: Date.now(),
+    data,
+  } satisfies CachedPayload<T>);
+
+  try {
+    localStorage.setItem(`${CACHE_PREFIX}${key}`, serialized);
+  } catch {
+    // Most likely out of quota: drop expired entries and try once more.
+    try {
+      pruneExpiredCaches();
+      localStorage.setItem(`${CACHE_PREFIX}${key}`, serialized);
+    } catch {
+      // ignore quota/storage errors
+    }
   }
 };
 

@@ -33,9 +33,61 @@ export async function fetchAssetsVersion(): Promise<string | null> {
 
 let sessionPromise: Promise<void> | null = null;
 
-async function hasSession(): Promise<boolean> {
+// The gateway hands the session back as an HttpOnly cookie, but that cookie is
+// third-party (renderdragon.org -> gateway.codersoft.xyz) and browsers that block
+// third-party cookies (Safari/ITP, Brave, Chrome incognito, strict ETP) drop it,
+// which used to break every catalog request for those visitors. The same signed
+// token is also returned in the session response body and replayed here as a
+// bearer token, so the session works with or without cookies.
+const SESSION_STORAGE_KEY = "rd-assets-gateway-session";
+
+let sessionToken: string | null = null;
+
+const readStoredToken = (): string | null => {
+  if (sessionToken) return sessionToken;
   try {
-    const response = await fetch(`${ASSETS_API_BASE_URL}/__session`, { credentials: "include" });
+    const raw = localStorage.getItem(SESSION_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as { base?: string; token?: string };
+    if (parsed?.base !== ASSETS_API_BASE_URL || typeof parsed.token !== "string" || !parsed.token) {
+      return null;
+    }
+    sessionToken = parsed.token;
+    return sessionToken;
+  } catch {
+    return null;
+  }
+};
+
+const storeToken = (token: string | null): void => {
+  sessionToken = token;
+  try {
+    if (token) {
+      localStorage.setItem(
+        SESSION_STORAGE_KEY,
+        JSON.stringify({ base: ASSETS_API_BASE_URL, token })
+      );
+    } else {
+      localStorage.removeItem(SESSION_STORAGE_KEY);
+    }
+  } catch {
+    // Private mode / quota: the in-memory token still covers this page load.
+  }
+};
+
+const withTokenHeader = (headers: HeadersInit | undefined, token: string | null): Headers => {
+  const merged = new Headers(headers);
+  if (token) merged.set("Authorization", `Bearer ${token}`);
+  return merged;
+};
+
+async function hasSession(): Promise<boolean> {
+  const token = readStoredToken();
+  try {
+    const response = await fetch(`${ASSETS_API_BASE_URL}/__session`, {
+      credentials: "include",
+      headers: withTokenHeader(undefined, token),
+    });
     return response.ok;
   } catch {
     return false;
@@ -59,6 +111,13 @@ async function acquireSession(): Promise<void> {
 
   if (!response.ok) {
     throw new Error(`Unable to establish an assets session (${response.status})`);
+  }
+
+  try {
+    const body = (await response.json()) as { token?: unknown };
+    storeToken(typeof body?.token === "string" && body.token ? body.token : null);
+  } catch {
+    storeToken(null);
   }
 }
 
@@ -86,11 +145,18 @@ export async function fetchFromAssetsApi(path: string, init?: RequestInit): Prom
 
   await ensureAssetsSession();
 
-  const send = () => fetch(assetsApiUrl(path), { ...init, credentials: "include" });
+  const send = () =>
+    fetch(assetsApiUrl(path), {
+      ...init,
+      headers: withTokenHeader(init?.headers, readStoredToken()),
+      credentials: "include",
+    });
+
   let response = await send();
 
   if (response.status === 401) {
     // Session expired or was rejected; re-establish once and retry.
+    storeToken(null);
     sessionPromise = null;
     await ensureAssetsSession();
     response = await send();
