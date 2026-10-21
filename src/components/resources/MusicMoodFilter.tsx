@@ -2,16 +2,20 @@ import { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { IconSearch, IconX, IconMoodHappy } from '@tabler/icons-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { IconSearch, IconX, IconMoodHappy, IconAlertTriangle } from '@tabler/icons-react';
 import { MusicMood } from '@/types/music';
 
 interface MusicMoodFilterProps {
   selectedMoods: string[];
   onMoodChange: (moods: string[]) => void;
   moodsData: MusicMood[];
+  isLoading?: boolean;
+  error?: string | null;
+  onRetry?: () => void;
 }
 
-const MusicMoodFilter = ({ selectedMoods, onMoodChange, moodsData }: MusicMoodFilterProps) => {
+const MusicMoodFilter = ({ selectedMoods, onMoodChange, moodsData, isLoading = false, error = null, onRetry }: MusicMoodFilterProps) => {
   const [moodSearch, setMoodSearch] = useState('');
 
   const allMoods = useMemo(() => {
@@ -41,7 +45,10 @@ const MusicMoodFilter = ({ selectedMoods, onMoodChange, moodsData }: MusicMoodFi
     setMoodSearch('');
   };
 
-  if (allMoods.length === 0) return null;
+  // The panel used to return null whenever the master mood list came back empty,
+  // so a failed /music_moods request hid the whole filter with no explanation.
+  const hasMoods = allMoods.length > 0;
+  const showBody = !isLoading && !error && hasMoods;
 
   return (
     <div className="h-full flex flex-col bg-card border border-border rounded-lg  overflow-hidden">
@@ -58,8 +65,9 @@ const MusicMoodFilter = ({ selectedMoods, onMoodChange, moodsData }: MusicMoodFi
             value={moodSearch}
             onChange={(e) => setMoodSearch(e.target.value)}
             className="pl-8 h-8 text-sm "
+            disabled={!showBody}
           />
-          {moodSearch && (
+          {moodSearch && showBody && (
             <Button
               variant="ghost"
               size="icon"
@@ -90,7 +98,27 @@ const MusicMoodFilter = ({ selectedMoods, onMoodChange, moodsData }: MusicMoodFi
       
       <ScrollArea className="flex-1">
         <div className="p-2">
-          {filteredMoods.map(mood => (
+          {isLoading && (
+            <div className="space-y-2 py-1" aria-busy="true" aria-label="Loading moods">
+              {Array.from({ length: 10 }).map((_, index) => (
+                <Skeleton key={index} className="h-6 w-full" />
+              ))}
+            </div>
+          )}
+
+          {!isLoading && error && (
+            <div className="text-center px-2 py-8 text-muted-foreground text-sm">
+              <IconAlertTriangle className="h-5 w-5 mx-auto mb-2 text-destructive" />
+              <p>{error}</p>
+              {onRetry && (
+                <Button variant="outline" size="sm" className="mt-3" onClick={onRetry}>
+                  Try again
+                </Button>
+              )}
+            </div>
+          )}
+
+          {showBody && filteredMoods.map(mood => (
             <div
               key={mood}
               className={`
@@ -107,9 +135,15 @@ const MusicMoodFilter = ({ selectedMoods, onMoodChange, moodsData }: MusicMoodFi
             </div>
           ))}
           
-          {filteredMoods.length === 0 && moodSearch && (
+          {showBody && filteredMoods.length === 0 && moodSearch && (
             <div className="text-center py-8 text-muted-foreground text-sm">
               No moods match your search
+            </div>
+          )}
+
+          {!isLoading && !error && !hasMoods && (
+            <div className="text-center py-8 px-2 text-muted-foreground text-sm">
+              No mood tags available yet.
             </div>
           )}
         </div>

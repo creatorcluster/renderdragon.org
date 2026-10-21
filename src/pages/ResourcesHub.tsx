@@ -88,19 +88,32 @@ const ResourcesHub = () => {
   const minecraftMusic = useMinecraftMusic(isMinecraftMusicView);
 
   const [musicMoodsData, setMusicMoodsData] = useState<MusicMood[]>([]);
+  const [moodsStatus, setMoodsStatus] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle');
 
   useEffect(() => {
     ensurePlaylistCached();
   }, []);
 
-  useEffect(() => {
-    if (isMusicView && musicMoodsData.length === 0) {
-      fetchFromAssetsApi('/music_moods')
-        .then(res => res.json())
-        .then(data => setMusicMoodsData(data))
-        .catch(err => console.error('Failed to load music moods:', err));
+  const loadMusicMoods = useCallback(async () => {
+    setMoodsStatus('loading');
+    try {
+      const response = await fetchFromAssetsApi('/music_moods');
+      if (!response.ok) throw new Error(`music moods request failed (${response.status})`);
+      const data = await response.json();
+      if (!Array.isArray(data)) throw new Error('music moods response was not a list');
+      setMusicMoodsData(data);
+      setMoodsStatus('ready');
+    } catch (err) {
+      console.error('Failed to load music moods:', err);
+      setMoodsStatus('error');
     }
-  }, [isMusicView, musicMoodsData.length]);
+  }, []);
+
+  useEffect(() => {
+    if (!isMusicView || isMinecraftMusicView) return;
+    if (moodsStatus !== 'idle') return;
+    void loadMusicMoods();
+  }, [isMusicView, isMinecraftMusicView, moodsStatus, loadMusicMoods]);
 
   const moodFilteredResources = useMemo(() => {
     if (!isMusicView || isMinecraftMusicView || selectedMoods.length === 0) return filteredResources;
@@ -353,6 +366,9 @@ const ResourcesHub = () => {
                     }
                   }}
                   moodsData={musicMoodsData}
+                  isLoading={moodsStatus === 'loading' || moodsStatus === 'idle'}
+                  error={moodsStatus === 'error' ? 'Mood filters could not be loaded.' : null}
+                  onRetry={() => setMoodsStatus('idle')}
                 />
               </div>
             </SheetContent>
@@ -526,6 +542,9 @@ const ResourcesHub = () => {
                               selectedMoods={selectedMoods}
                               onMoodChange={setSelectedMoods}
                               moodsData={musicMoodsData}
+                              isLoading={moodsStatus === 'loading' || moodsStatus === 'idle'}
+                              error={moodsStatus === 'error' ? 'Mood filters could not be loaded.' : null}
+                              onRetry={() => setMoodsStatus('idle')}
                             />
                           </div>
                         </div>

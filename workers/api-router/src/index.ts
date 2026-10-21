@@ -49,7 +49,15 @@ const E3_ROUTER_CLIENT_ID = "api-router";
 
 type Group = "assets" | "resources";
 
-const RESOURCE_PREFIXES = ["/categories", "/category", "/all", "/fonts", "/mcicons"];
+const RESOURCE_PREFIXES = ["/categories", "/category", "/all", "/fonts", "/mcicons", "/music_moods"];
+
+// JSON API paths (as opposed to file paths). A 404 here means the origin does not
+// implement the route at all, so the next origin should be tried instead of
+// returning the 404 to the client — that is how /music_moods silently disappeared.
+const JSON_API_PATHS = ["/all", "/categories", "/mcicons", "/fonts", "/music_moods"];
+
+const isJsonApiPath = (pathname: string): boolean =>
+  JSON_API_PATHS.includes(pathname) || pathname.startsWith("/category/");
 
 // Per-origin passive health: an origin that fails is skipped for a cooldown, then retried.
 const originDownUntil = new Map<string, number>();
@@ -104,7 +112,7 @@ const classify = (pathname: string): Group =>
     : "assets";
 
 // Read-only endpoints a partner-scoped key (`assets:read`) may request.
-const PARTNER_READ_PREFIXES = ["/all", "/categories", "/category", "/mcicons", "/fonts"];
+const PARTNER_READ_PREFIXES = ["/all", "/categories", "/category", "/mcicons", "/fonts", "/music_moods"];
 
 const isPartnerReadPath = (pathname: string): boolean =>
   PARTNER_READ_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
@@ -255,6 +263,12 @@ async function fetchUpstream(env: Env, path: string): Promise<{ ok: boolean; sta
         last = { ok: false, status: upstream.status, text: "" };
         continue;
       }
+      if (upstream.status === 404 && !isLast && isJsonApiPath(path)) {
+        // Healthy origin that does not implement this JSON route (e.g. an older
+        // e3 build): ask the next origin rather than handing the 404 to the client.
+        last = { ok: false, status: 404, text: "" };
+        continue;
+      }
       markOriginUp(origin);
       return { ok: upstream.ok, status: upstream.status, text: await upstream.text() };
     } catch {
@@ -400,6 +414,12 @@ export default {
         if (isOriginDownStatus(upstream.status)) {
           console.warn(`${origin} returned ${upstream.status}; trying next origin`);
           markOriginDown(origin, cooldownMs);
+          continue;
+        }
+
+        if (upstream.status === 404 && !isLast && isJsonApiPath(url.pathname)) {
+          console.warn(`${origin} does not implement ${url.pathname} (404); trying next origin`);
+          markOriginUp(origin);
           continue;
         }
 
