@@ -66,7 +66,7 @@ const Admin = () => {
               <TabsList className="grid w-full max-w-2xl grid-cols-3 mb-8">
                 <TabsTrigger value="analytics" className="gap-2">
                   <IconChartAreaLine className="h-4 w-4" />
-                  Traffic Analytics
+                  Site Analytics
                 </TabsTrigger>
                 <TabsTrigger value="blogs" className="gap-2">
                   <IconFileText className="h-4 w-4" />

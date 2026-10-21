@@ -13,6 +13,7 @@ import {
   IconUserCheck,
   IconUserPlus,
   IconUsers,
+  IconUsersGroup,
 } from "@tabler/icons-react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -35,6 +36,10 @@ const usersConfig = {
 
 const visitsConfig = {
   visits: { label: "Visits", color: "hsl(var(--chart-4))" },
+} satisfies ChartConfig;
+
+const signupsConfig = {
+  signups: { label: "Signups", color: "hsl(var(--chart-5))" },
 } satisfies ChartConfig;
 
 const RANGES = [
@@ -78,12 +83,14 @@ const StatCard = ({
   value,
   icon: Icon,
   accent,
+  hint,
   index,
 }: {
   label: string;
   value: number;
   icon: typeof IconUsers;
   accent: string;
+  hint?: string;
   index: number;
 }) => (
   <motion.div
@@ -100,6 +107,7 @@ const StatCard = ({
         <div className="font-mono text-3xl font-semibold">
           <CountUp value={value} />
         </div>
+        {hint ? <p className="mt-1 text-xs text-muted-foreground">{hint}</p> : null}
       </CardContent>
     </Card>
   </motion.div>
@@ -107,8 +115,8 @@ const StatCard = ({
 
 const DashboardSkeleton = () => (
   <div className="flex flex-col gap-6">
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      {Array.from({ length: 4 }).map((_, index) => (
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+      {Array.from({ length: 5 }).map((_, index) => (
         <Skeleton key={index} className="h-[116px] rounded-lg" />
       ))}
     </div>
@@ -140,6 +148,59 @@ export const AnalyticsDashboard = () => {
       })),
     [data, granularity],
   );
+
+  const signupBuckets = useMemo(
+    () =>
+      (data?.signupBuckets ?? []).map((point) => ({
+        ...point,
+        label: formatBucket(granularity, point.bucket),
+      })),
+    [data, granularity],
+  );
+
+  // Traffic buckets only exist for periods with a visit, while signups come
+  // back as a dense series, so the breakdown table merges both on the bucket.
+  const breakdownRows = useMemo(() => {
+    type Row = {
+      bucket: string;
+      label: string;
+      signups: number;
+      newUsers: number;
+      returningUsers: number;
+      uniques: number;
+      visits: number;
+    };
+    const merged = new Map<string, Row>();
+    const row = (bucket: string, label: string): Row => {
+      const existing = merged.get(bucket);
+      if (existing) return existing;
+      const created: Row = {
+        bucket,
+        label,
+        signups: 0,
+        newUsers: 0,
+        returningUsers: 0,
+        uniques: 0,
+        visits: 0,
+      };
+      merged.set(bucket, created);
+      return created;
+    };
+
+    for (const point of buckets) {
+      Object.assign(row(point.bucket, point.label), {
+        newUsers: point.newUsers,
+        returningUsers: point.returningUsers,
+        uniques: point.uniques,
+        visits: point.visits,
+      });
+    }
+    for (const point of signupBuckets) {
+      row(point.bucket, point.label).signups = point.signups;
+    }
+
+    return [...merged.values()].sort((a, b) => a.bucket.localeCompare(b.bucket));
+  }, [buckets, signupBuckets]);
 
   if (loading) {
     return <DashboardSkeleton />;
@@ -189,16 +250,49 @@ export const AnalyticsDashboard = () => {
       ) : (
         data && (
           <div className="flex flex-col gap-6">
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <StatCard label="New users" value={data.totals.newUsers} icon={IconUserPlus} accent="text-chart-1" index={0} />
-              <StatCard label="Returning users" value={data.totals.returningUsers} icon={IconUserCheck} accent="text-chart-2" index={1} />
-              <StatCard label="Unique visitors" value={data.totals.totalUsers} icon={IconUsers} accent="text-chart-3" index={2} />
-              <StatCard label="Visits" value={data.totals.visits} icon={IconEye} accent="text-chart-4" index={3} />
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+              <StatCard
+                label="Signups"
+                value={data.totals.signups ?? 0}
+                icon={IconUserPlus}
+                accent="text-chart-5"
+                hint={`${(data.totals.confirmedSignups ?? 0).toLocaleString()} confirmed`}
+                index={0}
+              />
+              <StatCard label="New visitors" value={data.totals.newUsers} icon={IconUsers} accent="text-chart-1" index={1} />
+              <StatCard label="Returning visitors" value={data.totals.returningUsers} icon={IconUserCheck} accent="text-chart-2" index={2} />
+              <StatCard label="Unique visitors" value={data.totals.totalUsers} icon={IconUsersGroup} accent="text-chart-3" index={3} />
+              <StatCard label="Visits" value={data.totals.visits} icon={IconEye} accent="text-chart-4" index={4} />
             </div>
 
             <Card>
               <CardHeader>
-                <CardTitle>New vs returning</CardTitle>
+                <CardTitle>New signups</CardTitle>
+                <CardDescription>
+                  Accounts created per {granularity} (UTC) — Supabase auth, excludes guests
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ChartContainer config={signupsConfig} className="aspect-auto h-[260px] w-full">
+                  <BarChart data={signupBuckets} margin={{ left: 0, right: 12, top: 8, bottom: 0 }}>
+                    <CartesianGrid vertical={false} />
+                    <XAxis dataKey="label" tickLine={false} axisLine={false} tickMargin={8} minTickGap={24} />
+                    <YAxis allowDecimals={false} tickLine={false} axisLine={false} width={28} />
+                    <ChartTooltip content={<ChartTooltipContent indicator="dot" />} />
+                    <Bar
+                      dataKey="signups"
+                      fill="var(--color-signups)"
+                      radius={[4, 4, 0, 0]}
+                      animationDuration={900}
+                    />
+                  </BarChart>
+                </ChartContainer>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>New vs returning visitors</CardTitle>
                 <CardDescription>Distinct visitors per {granularity} (UTC)</CardDescription>
               </CardHeader>
               <CardContent>
@@ -345,6 +439,7 @@ export const AnalyticsDashboard = () => {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Period</TableHead>
+                      <TableHead className="text-right">Signups</TableHead>
                       <TableHead className="text-right">New</TableHead>
                       <TableHead className="text-right">Returning</TableHead>
                       <TableHead className="text-right">Unique</TableHead>
@@ -352,16 +447,17 @@ export const AnalyticsDashboard = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {buckets.length === 0 ? (
+                    {breakdownRows.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={5} className="py-6 text-center text-muted-foreground">
+                        <TableCell colSpan={6} className="py-6 text-center text-muted-foreground">
                           No data for this range yet.
                         </TableCell>
                       </TableRow>
                     ) : (
-                      [...buckets].reverse().map((point) => (
+                      [...breakdownRows].reverse().map((point) => (
                         <TableRow key={point.bucket}>
                           <TableCell className="font-mono">{point.label}</TableCell>
+                          <TableCell className="text-right font-semibold text-chart-5">{point.signups}</TableCell>
                           <TableCell className="text-right">{point.newUsers}</TableCell>
                           <TableCell className="text-right">{point.returningUsers}</TableCell>
                           <TableCell className="text-right">{point.uniques}</TableCell>
@@ -398,7 +494,7 @@ const Analytics = () => (
           <div className="mb-8 flex items-center gap-3">
             <IconChartAreaLine className="size-8 text-primary" />
             <h1 className="font-heading text-4xl md:text-5xl">
-              Traffic <span className="text-primary">Analytics</span>
+              Site <span className="text-primary">Analytics</span>
             </h1>
           </div>
 

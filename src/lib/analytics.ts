@@ -99,6 +99,12 @@ export interface StatBucket {
   visits: number;
 }
 
+export interface SignupBucket {
+  bucket: string;
+  signups: number;
+  confirmed: number;
+}
+
 export interface AnalyticsStats {
   from: string;
   to: string;
@@ -108,8 +114,14 @@ export interface AnalyticsStats {
     returningUsers: number;
     totalUsers: number;
     visits: number;
+    /** Accounts created in Supabase (auth.users) during the range. */
+    signups: number;
+    /** Of those, how many have a confirmed email. */
+    confirmedSignups: number;
   };
   buckets: StatBucket[];
+  /** Dense series (one entry per bucket, zeros included) of Supabase signups. */
+  signupBuckets: SignupBucket[];
   topPages: { path: string; views: number }[];
   topReferrers: { referrer: string; views: number }[];
 }

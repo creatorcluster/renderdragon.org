@@ -23,16 +23,6 @@ export default defineConfig(() => {
           secure: true,
           rewrite: (path) => path.replace(/^\/api\/assets-gw/, ''),
         },
-        '/api/stats': {
-          target: 'https://analytics.codersoft.xyz',
-          changeOrigin: true,
-          secure: true,
-        },
-        '/api/track': {
-          target: 'https://analytics.codersoft.xyz',
-          changeOrigin: true,
-          secure: true,
-        },
         '/api': {
           target: 'http://localhost:3000',
           changeOrigin: true,
