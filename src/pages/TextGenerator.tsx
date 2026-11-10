@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import Seo from '@/components/Seo';
 import { softwareApplicationSchema } from '@/lib/structuredData';
 import Footer from '@/components/Footer';
@@ -9,21 +9,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { IconDownload, IconUpload } from '@tabler/icons-react';
-import { useResources } from '@/hooks/useResources';
-import { Resource } from '@/types/resources';
+import { useFonts } from '@/hooks/useFonts';
 import { TextSettings } from '@/types/textGenerator';
 import TextPreview from '@/components/text-generator/TextPreview';
 import { toast } from 'sonner';
 import TextGeneratorControlsSkeleton from '@/components/skeletons/TextGeneratorControlsSkeleton';
 
 const TextGenerator = () => {
-  const { resources, isLoading: isLoadingResources, handleCategoryChange } = useResources();
-  const [fonts, setFonts] = useState<Resource[]>([]);
-
-  // Load fonts on mount
-  useEffect(() => {
-    handleCategoryChange('fonts');
-  }, [handleCategoryChange]);
+  const { fonts, isLoading: isLoadingResources } = useFonts();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [settings, setSettings] = useState<TextSettings>({
     text: 'Renderdragon',
@@ -54,12 +47,6 @@ const TextGenerator = () => {
       opacity: 1,
     },
   });
-
-  useEffect(() => {
-    // Filter fonts from resources
-    const fontResources = resources.filter(r => r.category === 'fonts');
-    setFonts(fontResources);
-  }, [resources]);
 
   const handleTextChange = (value: string) => {
     setSettings(prev => ({ ...prev, text: value }));

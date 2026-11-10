@@ -2,7 +2,7 @@ import React, { useState, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useHeartedResources } from '@/hooks/useHeartedResources';
 import { useUserFavorites } from '@/hooks/useUserFavorites';
-import { useResources } from '@/hooks/useResources';
+import { useAllResources } from '@/hooks/useAllResources';
 import { getResourceUrl, Resource } from '@/types/resources';
 import ResourceCard from './ResourceCard';
 import ResourceCardSkeleton from './ResourceCardSkeleton';
@@ -61,7 +61,9 @@ const DraggableResourceCard = ({ resource, onClick }: { resource: Resource; onCl
 const FavoritesTab = ({ onSelectResource }: FavoritesTabProps) => {
   const { isLoading: favoritesLoading } = useHeartedResources();
   const { favoritesData, moveFavorite } = useUserFavorites();
-  const { resources, isLoading: resourcesLoading } = useResources();
+  // Favourites must resolve across every category, not just the one the hub
+  // happens to be showing.
+  const { resources, isLoading: resourcesLoading } = useAllResources();
 
   // Folders hook
   const {

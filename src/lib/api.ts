@@ -3,11 +3,11 @@ import { fetchFromAssetsApi } from "@/lib/assetsApi";
 import { ensureAssetsVersionSynced } from "@/lib/assetsVersion";
 import { Resource } from "@/types/resources";
 
+export { MCICONS_BLACKLISTED_SUBCATEGORIES, downloadCountKey } from "@/lib/resourceKeys";
+
 const ALL_RESOURCES_CACHE_KEY = "api:all-resources";
 const CATEGORIES_CACHE_KEY = "api:categories";
 const CATEGORY_CACHE_PREFIX = "api:category:";
-
-export const MCICONS_BLACKLISTED_SUBCATEGORIES = ['backgrounds'];
 
 export interface ApiResource {
   id: number;
@@ -29,15 +29,6 @@ export interface ApiAllResources {
   categories: Record<string, ApiResource[]>;
 }
 
-/**
- * Download counts are keyed by the numeric resource id. Resources coming from
- * the "main" resource set are identified as `main-<id>`; everything else keeps
- * its own id.
- */
-export const downloadCountKey = (id: string | number): string => {
-  if (typeof id === "number") return String(id);
-  return id.startsWith("main-") ? id.replace("main-", "") : id;
-};
 
 const fetchJson = async <T>(path: string): Promise<T | null> => {
   try {
