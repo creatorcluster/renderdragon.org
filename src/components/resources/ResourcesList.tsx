@@ -1,7 +1,7 @@
 import React from 'react';
 import { Resource } from '@/types/resources';
 import ResourceCard from './ResourceCard';
-import { IconFolderX, IconX } from '@tabler/icons-react';
+import { IconAlertTriangle, IconFolderX, IconRefresh, IconX } from '@tabler/icons-react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -28,6 +28,8 @@ interface ResourcesListProps {
   filteredResources: Resource[];
   onMusicLink?: (resource: Resource) => void;
   onAnimate?: (resource: Resource) => void;
+  loadError?: string | null;
+  onRetry?: () => void;
 }
 
 const ResourcesList = ({
@@ -42,6 +44,8 @@ const ResourcesList = ({
   filteredResources,
   onMusicLink,
   onAnimate,
+  loadError,
+  onRetry,
 }: ResourcesListProps) => {
   const [currentPage, setCurrentPage] = React.useState(1);
   const itemsPerPage = 12;
@@ -67,6 +71,64 @@ const ResourcesList = ({
           <ResourceCardSkeleton key={index} />
         ))}
       </div>
+    );
+  }
+
+  // A failed catalog fetch must never be presented as "no resources": that reads
+  // as an empty library when in fact the request (usually the asset session) failed.
+  if (loadError && resources.length === 0) {
+    return (
+      <motion.div
+        className="text-center py-16 space-y-6"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+      >
+        <motion.div
+          className="flex justify-center mb-4"
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ delay: 0.1, type: "spring", stiffness: 200 }}
+        >
+          <IconAlertTriangle className="h-12 w-12 text-yellow-500" />
+        </motion.div>
+        <motion.h3
+          className="text-2xl font-semibold"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
+          Couldn&apos;t load resources
+        </motion.h3>
+        <motion.p
+          className="text-muted-foreground max-w-md mx-auto"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+        >
+          {loadError}. This is usually a blocked or interrupted connection to our asset
+          service. Check your connection, VPN or ad-blocker, then try again.
+        </motion.p>
+        <motion.div
+          className="flex flex-col sm:flex-row justify-center gap-4 mt-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+        >
+          <Button onClick={onClearFilters} variant="outline">
+            <IconX className="mr-2 h-4 w-4" />
+            Clear Filters
+          </Button>
+          <Button
+            className="bg-primary hover:bg-primary/90"
+            disabled={!onRetry}
+            onClick={() => onRetry?.()}
+          >
+            <IconRefresh className="mr-2 h-4 w-4" />
+            Try Again
+          </Button>
+        </motion.div>
+      </motion.div>
     );
   }
 
@@ -169,6 +231,19 @@ const ResourcesList = ({
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
+      {loadError && resources.length > 0 && (
+        <div className="mb-4 border border-red-500/40 bg-red-500/10 px-4 py-3 text-left">
+          <p className="text-sm text-red-300">
+            Some resources could not be refreshed: {loadError}
+          </p>
+          {onRetry && (
+            <Button variant="outline" size="sm" className="mt-2" onClick={onRetry}>
+              <IconRefresh className="mr-2 h-4 w-4" />
+              Retry
+            </Button>
+          )}
+        </div>
+      )}
       <motion.div
         className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
         initial={{ opacity: 0 }}

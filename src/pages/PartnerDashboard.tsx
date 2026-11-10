@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { IconLoader2, IconArrowRight, IconKey } from "@tabler/icons-react";
@@ -14,6 +14,7 @@ import { PartnerUsers } from "@/components/partners/PartnerUsers";
 import { PartnerKeys } from "@/components/partners/PartnerKeys";
 import { PartnerStatsPanel } from "@/components/partners/PartnerStatsPanel";
 import { PartnerOnboarding } from "@/components/partners/PartnerOnboarding";
+import { ClientId } from "@/components/partners/ClientId";
 import {
   getPartnerContext,
   listPartnerConsents,
@@ -33,9 +34,14 @@ const EMPTY_STATS: PartnerStats = {
   revokedUsers: 0,
   activeKeys: 0,
   calls: 0,
+  errors: 0,
   errorRate: 0,
   p95LatencyMs: 0,
-  dailyCalls: [],
+  daily: [],
+  userDaily: [],
+  endpoints: [],
+  statuses: [],
+  recentEvents: [],
 };
 
 export default function PartnerDashboard() {
@@ -46,9 +52,12 @@ export default function PartnerDashboard() {
   const [keys, setKeys] = useState<PartnerApiKey[]>([]);
   const [stats, setStats] = useState<PartnerStats>(EMPTY_STATS);
   const [authOpen, setAuthOpen] = useState(false);
+  const hasLoadedRef = useRef(false);
 
   const load = useCallback(async () => {
-    setLoading(true);
+    // Only show the full-page loader on the first fetch. Refreshes (e.g. after a
+    // token refresh on tab focus) must not unmount the onboarding wizard.
+    if (!hasLoadedRef.current) setLoading(true);
     try {
       const ctx = await getPartnerContext();
       setContext(ctx);
@@ -63,14 +72,23 @@ export default function PartnerDashboard() {
         setStats(summarizeUsage(consentRows, keyRows, usage));
       }
     } finally {
+      hasLoadedRef.current = true;
       setLoading(false);
     }
   }, []);
 
+  const userId = user?.id;
+
   useEffect(() => {
-    if (!authLoading && user) void load();
-    if (!authLoading && !user) setLoading(false);
-  }, [authLoading, user, load]);
+    if (authLoading) return;
+    if (userId) {
+      // Depend on the id, not the whole user object: Supabase replaces the user
+      // object on TOKEN_REFRESHED (tab focus), which would otherwise re-run this.
+      void load();
+    } else {
+      setLoading(false);
+    }
+  }, [authLoading, userId, load]);
 
   // First-time setup takes over the whole screen — no dashboard chrome.
   if (!authLoading && !loading && user && context?.app && !context.app.onboarded_at) {
@@ -178,7 +196,7 @@ export default function PartnerDashboard() {
                     <TabsTrigger value="stats">Stats</TabsTrigger>
                   </TabsList>
 
-                  <TabsContent value="overview" className="mt-8">
+                  <TabsContent value="overview" forceMount className="mt-8 data-[state=inactive]:hidden">
                     <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
                       <PartnerStatsPanel stats={stats} />
                       <div className="flex flex-col gap-6">
@@ -187,8 +205,14 @@ export default function PartnerDashboard() {
                           <p className="mt-2 text-sm text-muted-foreground">
                             {context.app.description || "No description yet."}
                           </p>
+                          {!context.app.supabase_client_id && (
+                            <p className="mt-3 text-xs text-muted-foreground">
+                              Your OAuth client hasn't been registered yet. Add at least one redirect URI in the
+                              App tab and we'll issue the client id.
+                            </p>
+                          )}
                           <dl className="mt-4 flex flex-col gap-3 text-sm">
-                            <Row label="Client id" value={context.app.supabase_client_id ?? "—"} mono />
+                            <Row label="Client id" value={<ClientId clientId={context.app.supabase_client_id} />} />
                             <Row label="Redirect URIs" value={String(context.app.redirect_uris.length)} />
                             <Row
                               label="Permissions"
@@ -213,19 +237,19 @@ export default function PartnerDashboard() {
                     </div>
                   </TabsContent>
 
-                  <TabsContent value="app" className="mt-8">
+                  <TabsContent value="app" forceMount className="mt-8 data-[state=inactive]:hidden">
                     <PartnerAppForm app={context.app} onSaved={load} />
                   </TabsContent>
 
-                  <TabsContent value="users" className="mt-8">
+                  <TabsContent value="users" forceMount className="mt-8 data-[state=inactive]:hidden">
                     <PartnerUsers consents={consents} onChanged={load} />
                   </TabsContent>
 
-                  <TabsContent value="keys" className="mt-8">
+                  <TabsContent value="keys" forceMount className="mt-8 data-[state=inactive]:hidden">
                     <PartnerKeys keys={keys} onChanged={load} />
                   </TabsContent>
 
-                  <TabsContent value="stats" className="mt-8">
+                  <TabsContent value="stats" forceMount className="mt-8 data-[state=inactive]:hidden">
                     <PartnerStatsPanel stats={stats} />
                   </TabsContent>
                 </Tabs>
@@ -247,11 +271,11 @@ function Metric({ label, value }: { label: string; value: string }) {
   );
 }
 
-function Row({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
+function Row({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="flex items-center justify-between gap-4">
-      <dt className="text-muted-foreground">{label}</dt>
-      <dd className={mono ? "truncate font-mono text-xs" : "truncate text-right"}>{value}</dd>
+      <dt className="shrink-0 text-muted-foreground">{label}</dt>
+      <dd className="min-w-0 text-right">{value}</dd>
     </div>
   );
 }

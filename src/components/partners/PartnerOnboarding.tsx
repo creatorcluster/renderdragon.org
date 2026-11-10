@@ -21,6 +21,7 @@ import { Badge } from "@/components/ui/badge";
 import Logo from "@/components/Logo";
 import { ConsentFieldList } from "@/components/partners/ConsentFieldList";
 import { RedirectUriField } from "@/components/partners/RedirectUriField";
+import { ClientId } from "@/components/partners/ClientId";
 import { ImageUpload } from "@/components/profile/ImageUpload";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -79,6 +80,84 @@ const STEPS: Step[] = [
   },
 ];
 
+interface OnboardingDraft {
+  active: number;
+  name: string;
+  description: string;
+  logoUrl: string;
+  redirectUris: string[];
+  permissions: PartnerPermissionId[];
+  issued: IssuedPartnerKey | null;
+}
+
+const draftKey = (userId: string | undefined, appId: string) =>
+  `partner-onboarding-draft:${userId ?? "anon"}:${appId}`;
+
+/**
+ * The wizard keeps its draft in sessionStorage so a remount (token refresh on
+ * tab focus, StrictMode, an HMR reload) doesn't wipe half-filled fields or send
+ * the partner back to step one.
+ */
+function readDraft(app: PartnerApp, userId: string | undefined): OnboardingDraft {
+  const defaults: OnboardingDraft = {
+    active: 0,
+    name: app.name,
+    description: app.description ?? "",
+    logoUrl: app.logo_url ?? "",
+    redirectUris: app.redirect_uris ?? [],
+    permissions: app.permissions.length ? app.permissions : ["profile"],
+    issued: null,
+  };
+
+  try {
+    const raw = window.sessionStorage.getItem(draftKey(userId, app.id));
+    if (!raw) return defaults;
+    const parsed = JSON.parse(raw) as Partial<OnboardingDraft>;
+
+    const permissions = Array.isArray(parsed.permissions)
+      ? parsed.permissions.filter((id): id is PartnerPermissionId =>
+          PARTNER_PERMISSIONS.some((permission) => permission.id === id),
+        )
+      : defaults.permissions;
+
+    return {
+      active:
+        typeof parsed.active === "number"
+          ? Math.min(Math.max(Math.trunc(parsed.active), 0), STEPS.length - 1)
+          : defaults.active,
+      name: typeof parsed.name === "string" ? parsed.name : defaults.name,
+      description: typeof parsed.description === "string" ? parsed.description : defaults.description,
+      logoUrl: typeof parsed.logoUrl === "string" ? parsed.logoUrl : defaults.logoUrl,
+      redirectUris: Array.isArray(parsed.redirectUris)
+        ? parsed.redirectUris.filter((uri): uri is string => typeof uri === "string")
+        : defaults.redirectUris,
+      permissions: permissions.length ? permissions : defaults.permissions,
+      issued:
+        parsed.issued && typeof parsed.issued.key_id === "string" && typeof parsed.issued.secret === "string"
+          ? (parsed.issued as IssuedPartnerKey)
+          : null,
+    };
+  } catch {
+    return defaults;
+  }
+}
+
+function writeDraft(userId: string | undefined, appId: string, draft: OnboardingDraft) {
+  try {
+    window.sessionStorage.setItem(draftKey(userId, appId), JSON.stringify(draft));
+  } catch {
+    // Private mode / storage disabled — the wizard still works, it just won't survive a remount.
+  }
+}
+
+function clearDraft(userId: string | undefined, appId: string) {
+  try {
+    window.sessionStorage.removeItem(draftKey(userId, appId));
+  } catch {
+    // ignore
+  }
+}
+
 export function PartnerOnboarding({
   app,
   org,
@@ -91,18 +170,17 @@ export function PartnerOnboarding({
   const { user, signOut } = useAuth();
   const { profile } = useProfile();
 
-  const [active, setActive] = useState(0);
-  const [name, setName] = useState(app.name);
-  const [description, setDescription] = useState(app.description ?? "");
-  const [logoUrl, setLogoUrl] = useState(app.logo_url ?? "");
-  const [redirectUris, setRedirectUris] = useState<string[]>(app.redirect_uris ?? []);
-  const [permissions, setPermissions] = useState<PartnerPermissionId[]>(
-    app.permissions.length ? app.permissions : ["profile"],
-  );
+  const [initialDraft] = useState(() => readDraft(app, user?.id));
+  const [active, setActive] = useState(initialDraft.active);
+  const [name, setName] = useState(initialDraft.name);
+  const [description, setDescription] = useState(initialDraft.description);
+  const [logoUrl, setLogoUrl] = useState(initialDraft.logoUrl);
+  const [redirectUris, setRedirectUris] = useState<string[]>(initialDraft.redirectUris);
+  const [permissions, setPermissions] = useState<PartnerPermissionId[]>(initialDraft.permissions);
 
   const [saving, setSaving] = useState(false);
   const [issuing, setIssuing] = useState(false);
-  const [issued, setIssued] = useState<IssuedPartnerKey | null>(null);
+  const [issued, setIssued] = useState<IssuedPartnerKey | null>(initialDraft.issued);
 
   const titleRef = useRef<HTMLSpanElement>(null);
   const checkRef = useRef<HTMLSpanElement>(null);
@@ -117,6 +195,18 @@ export function PartnerOnboarding({
       checked ? [...new Set([...current, id])] : current.filter((permission) => permission !== id),
     );
   };
+
+  useEffect(() => {
+    writeDraft(user?.id, app.id, {
+      active,
+      name,
+      description,
+      logoUrl,
+      redirectUris,
+      permissions,
+      issued,
+    });
+  }, [user?.id, app.id, active, name, description, logoUrl, redirectUris, permissions, issued]);
 
   // transitions.dev — text-states-swap on the step title.
   useEffect(() => {
@@ -167,6 +257,7 @@ export function PartnerOnboarding({
     setSaving(true);
     try {
       await completePartnerOnboarding(app.id);
+      clearDraft(user?.id, app.id);
       onComplete();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Could not skip setup.");
@@ -185,6 +276,7 @@ export function PartnerOnboarding({
         permissions,
       });
       await completePartnerOnboarding(app.id);
+      clearDraft(user?.id, app.id);
       onComplete();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Could not finish setup.");
@@ -360,35 +452,33 @@ export function PartnerOnboarding({
                         onChange={(event) => setName(event.target.value)}
                         placeholder="Acme Tools"
                       />
-                      <div className="flex flex-col gap-3">
-                        <LabeledInput
-                          id="ob-logo"
-                          label="Logo URL"
-                          hint="Paste an image link, or upload one below."
-                          value={logoUrl}
-                          onChange={(event) => setLogoUrl(event.target.value)}
-                          placeholder="https://…/logo.png"
-                        />
-                        <div className="flex items-center gap-3">
-                          <ImageUpload
-                            bucket="showcase"
-                            folder="partner-logos"
-                            label="Upload logo"
-                            currentImage={logoUrl}
-                            onUpload={(url) => setLogoUrl(url)}
-                          />
+                      <div className="flex flex-col gap-2">
+                        <span className="text-sm font-medium">App icon</span>
+                        <div className="chamfer flex items-center gap-4 border border-input bg-card/40 p-4">
                           {logoUrl ? (
                             <img
                               src={logoUrl}
                               alt=""
-                              className="size-10 shrink-0 chamfer border border-border object-cover"
+                              className="size-14 shrink-0 chamfer border border-border object-cover"
                               referrerPolicy="no-referrer"
                             />
                           ) : (
-                            <div className="flex size-10 shrink-0 items-center justify-center chamfer border border-border bg-card font-heading text-base font-bold text-primary">
+                            <div className="flex size-14 shrink-0 items-center justify-center chamfer border border-border bg-card font-heading text-xl font-bold text-primary">
                               {appInitial}
                             </div>
                           )}
+                          <div className="flex min-w-0 flex-col gap-1.5">
+                            <ImageUpload
+                              bucket="showcase"
+                              folder="partner-logos"
+                              label={logoUrl ? "Replace icon" : "Upload icon"}
+                              currentImage={logoUrl}
+                              onUpload={(url) => setLogoUrl(url)}
+                            />
+                            <p className="text-xs text-muted-foreground">
+                              Shown on the consent screen. PNG, JPG or GIF up to 5 MB.
+                            </p>
+                          </div>
                         </div>
                       </div>
                       <LabeledTextarea
@@ -491,10 +581,10 @@ export function PartnerOnboarding({
                       </p>
 
                       <dl className="mt-8 flex w-full flex-col divide-y divide-border border-y border-border text-left text-sm">
-                        <div className="flex justify-between gap-4 py-3">
-                          <dt className="text-muted-foreground">Client id</dt>
-                          <dd className="truncate font-mono text-xs">
-                            {app.supabase_client_id ?? "Issued after review"}
+                        <div className="flex items-center justify-between gap-4 py-3">
+                          <dt className="shrink-0 text-muted-foreground">Client id</dt>
+                          <dd className="min-w-0 text-right">
+                            <ClientId clientId={app.supabase_client_id} />
                           </dd>
                         </div>
                         <div className="flex justify-between gap-4 py-3">
@@ -510,6 +600,13 @@ export function PartnerOnboarding({
                           <dd>{redirectCount}</dd>
                         </div>
                       </dl>
+
+                      {redirectCount === 0 && (
+                        <p className="mt-4 w-full text-left text-xs text-amber-500">
+                          Add at least one redirect URI so we can register your OAuth client and issue your
+                          client id.
+                        </p>
+                      )}
 
                       <div className="mt-8 w-full text-left">
                         <div className="flex items-center gap-2">

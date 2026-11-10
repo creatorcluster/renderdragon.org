@@ -31,6 +31,7 @@ const STRIP_FROM_REQUEST = new Set([
   "content-length",
   "accept-encoding",
   "cookie",
+  "authorization",
   "origin",
   "referer",
   "cf-connecting-ip",
@@ -128,7 +129,7 @@ async function verifySession(secret: string, token: string): Promise<SessionPayl
   return payload;
 }
 
-// ---- cookie ----
+// ---- session transport (cookie and/or bearer) ----
 
 const getCookie = (request: Request, name: string): string | null => {
   const header = request.headers.get("Cookie") ?? "";
@@ -140,6 +141,23 @@ const getCookie = (request: Request, name: string): string | null => {
   }
   return null;
 };
+
+const getBearerToken = (request: Request): string | null => {
+  const header = request.headers.get("Authorization") ?? "";
+  const match = /^Bearer[ \t]+(\S+)$/i.exec(header.trim());
+  return match ? match[1] : null;
+};
+
+/**
+ * The session normally travels as the `rdgw` cookie, but that cookie is
+ * third-party (`renderdragon.org` -> `gateway.codersoft.xyz`) and browsers that
+ * block third-party cookies (Safari/ITP, Brave, Chrome incognito, strict ETP)
+ * silently drop it, which used to make every catalog request 401 for those
+ * users. The same signed token is therefore also accepted as
+ * `Authorization: Bearer <token>`.
+ */
+const readSessionToken = (request: Request): string | null =>
+  getBearerToken(request) ?? getCookie(request, COOKIE_NAME);
 
 const sessionCookie = (value: string, maxAge: number, secure: boolean): string =>
   `${COOKIE_NAME}=${value}; Path=/; HttpOnly;${secure ? " Secure;" : ""} SameSite=${secure ? "None" : "Lax"}; Max-Age=${maxAge}`;
@@ -262,11 +280,13 @@ async function establishSession(request: Request, env: Env): Promise<Response> {
   const token = await mintSession(env.GATEWAY_SECRET, session);
   const secure = (env.COOKIE_SECURE ?? "true") !== "false";
 
-  return jsonResponse({ ok: true, expiresAt: session.exp }, 200, { token, maxAge, secure });
+  // The token is returned both as the cookie above and in the body: the body copy
+  // is what clients use when the third-party cookie cannot be stored.
+  return jsonResponse({ ok: true, expiresAt: session.exp, token }, 200, { token, maxAge, secure });
 }
 
 async function sessionStatus(request: Request, env: Env): Promise<Response> {
-  const token = getCookie(request, COOKIE_NAME);
+  const token = readSessionToken(request);
   const session = token ? await verifySession(env.GATEWAY_SECRET, token) : null;
   if (!session) return jsonResponse({ ok: false }, 401);
   return jsonResponse({ ok: true, expiresAt: session.exp }, 200);
@@ -276,7 +296,7 @@ async function proxy(request: Request, env: Env, url: URL, relativePath: string)
   const origin = request.headers.get("Origin");
   if (origin && !originAllowed(origin, env)) return jsonResponse({ error: "origin_not_allowed" }, 403);
 
-  const token = getCookie(request, COOKIE_NAME);
+  const token = readSessionToken(request);
   const session = token ? await verifySession(env.GATEWAY_SECRET, token) : null;
   if (!session) return jsonResponse({ error: "session_required" }, 401);
 
