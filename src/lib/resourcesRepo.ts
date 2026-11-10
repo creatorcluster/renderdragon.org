@@ -3,9 +3,6 @@ import type { Resource } from "@/types/resources";
 export const RESOURCES_REPO_RAW_BASE =
   "https://raw.githubusercontent.com/Renderdragonorg/resources_renderdragon/main";
 
-export const RESOURCES_REPO_BLOB_BASE =
-  "https://github.com/Renderdragonorg/resources_renderdragon/blob/main";
-
 const toRepoFilenamePart = (value: string) => value.toLowerCase().replace(/ /g, "%20");
 
 const creditPart = (credit?: string) =>

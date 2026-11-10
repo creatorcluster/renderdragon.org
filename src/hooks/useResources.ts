@@ -62,6 +62,12 @@ export const useResources = () => {
 
         if (currentFetchId === fetchIdRef.current) {
           setResources(data);
+          // Re-read after the fetch: the catalogue version sync may have
+          // invalidated the categories cache since the seed read above.
+          const freshCategories = getAvailableCategories();
+          if (freshCategories.length > 0) {
+            setAvailableCategories(freshCategories);
+          }
         }
       } catch (error) {
         console.error("Error fetching resources:", error);

@@ -63,11 +63,10 @@ export const createRandom = (seed: number) => {
 };
 
 /** Ranks textures by fuzzy relevance; callers decide whether a blank query should skip ranking. */
-export const rankTextures = <T extends { title: string }>(textures: T[], query: string, limit = Infinity): T[] => (
+export const rankTextures = <T extends { title: string }>(textures: T[], query: string): T[] => (
   textures
     .map((texture) => ({ texture, score: fuzzyTextureScore(texture, query) }))
     .filter(({ score }) => score !== Infinity)
     .sort((left, right) => left.score - right.score || left.texture.title.localeCompare(right.texture.title))
     .map(({ texture }) => texture)
-    .slice(0, limit)
 );

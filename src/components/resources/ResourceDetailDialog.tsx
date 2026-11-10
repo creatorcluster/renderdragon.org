@@ -12,7 +12,7 @@ import { Progress } from '@/components/ui/progress';
 import ResourcePreview from './ResourcePreview';
 import { DownloadProgress } from '@/lib/download';
 import { resourceFontUrl } from '@/lib/resourcesRepo';
-import { IconDownload, IconCopy, IconCheck, IconBrandGithub, IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
+import { IconDownload, IconCopy, IconCheck, IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
 

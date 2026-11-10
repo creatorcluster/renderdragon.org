@@ -118,16 +118,21 @@ function readGuestFavoritesFromStorage(): GuestFavorite[] {
  */
 export function readGuestFavorites(): GuestFavorite[] {
   const stored = readGuestFavoritesFromStorage();
-  if (stored.length > 0) return stored;
+  if (stored.length > 0) {
+    // Real data exists, so any legacy key is dead weight and must not be
+    // allowed to resurrect old hearts after the list is emptied.
+    localStorage.removeItem(LEGACY_HEARTED_KEY);
+    return stored;
+  }
 
   const raw = safeParse<unknown[] | null>(localStorage.getItem(LEGACY_HEARTED_KEY), null);
   if (Array.isArray(raw)) {
+    localStorage.removeItem(LEGACY_HEARTED_KEY);
     const migrated = raw
       .filter((x): x is string => typeof x === 'string')
       .map((resource_url) => ({ resource_url, folder_id: null }));
     if (migrated.length > 0) {
       writeGuestFavorites(migrated, false);
-      localStorage.removeItem(LEGACY_HEARTED_KEY);
     }
     return migrated;
   }
@@ -136,7 +141,11 @@ export function readGuestFavorites(): GuestFavorite[] {
 
 export function writeGuestFavorites(favorites: GuestFavorite[], shouldNotify = true): void {
   favoritesSnapshot = favorites;
-  localStorage.setItem(GUEST_FAVORITES_KEY, JSON.stringify(favorites));
+  try {
+    localStorage.setItem(GUEST_FAVORITES_KEY, JSON.stringify(favorites));
+  } catch {
+    // Quota or private mode: keep the in-memory snapshot so the session still works.
+  }
   if (shouldNotify) emit(favoriteListeners);
 }
 
@@ -148,6 +157,10 @@ export function readGuestFolders(): GuestFolder[] {
 
 export function writeGuestFolders(folders: GuestFolder[], shouldNotify = true): void {
   foldersSnapshot = folders;
-  localStorage.setItem(GUEST_FOLDERS_KEY, JSON.stringify(folders));
+  try {
+    localStorage.setItem(GUEST_FOLDERS_KEY, JSON.stringify(folders));
+  } catch {
+    // Quota or private mode: keep the in-memory snapshot so the session still works.
+  }
   if (shouldNotify) emit(folderListeners);
 }
