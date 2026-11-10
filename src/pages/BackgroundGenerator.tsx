@@ -26,7 +26,7 @@ import {
 import { toast } from "sonner";
 import Seo from "@/components/Seo";
 import { softwareApplicationSchema } from "@/lib/structuredData";
-import { fetchFromAssetsApi } from "@/lib/assetsApi";
+import { fetchAssetsJson } from "@/lib/assetsApi";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -193,8 +193,7 @@ const BackgroundGenerator = () => {
     const fetchTextures = async () => {
       try {
         setIsLoadingTextures(true);
-        const response = await fetchFromAssetsApi('/mcicons');
-        const data = await response.json();
+        const data = await fetchAssetsJson<{ files?: unknown }>('/mcicons');
         if (data && data.files) {
           const filteredTextures = Array.isArray(data.files) ? data.files.filter(isTexture) : [];
           setTextures(filteredTextures);

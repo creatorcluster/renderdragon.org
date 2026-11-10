@@ -1,6 +1,5 @@
 import { readCache, writeCache } from "@/lib/cache";
-import { fetchFromAssetsApi } from "@/lib/assetsApi";
-import { ensureAssetsVersionSynced } from "@/lib/assetsVersion";
+import { ensureAssetsVersionSynced, fetchAssetsJson } from "@/lib/assetsApi";
 import { Resource } from "@/types/resources";
 
 export { MCICONS_BLACKLISTED_SUBCATEGORIES, downloadCountKey } from "@/lib/resourceKeys";
@@ -32,13 +31,12 @@ export interface ApiAllResources {
 
 const fetchJson = async <T>(path: string): Promise<T | null> => {
   try {
-    const res = await fetchFromAssetsApi(path, {
+    return await fetchAssetsJson<T>(path, {
       cache: "default",
       headers: {
         Accept: "application/json",
       },
     });
-    return (await res.json()) as T;
   } catch (error) {
     console.error(`Fetch error for ${path}:`, error);
     return null;
@@ -94,6 +92,8 @@ const normalizeApiResource = (item: ApiResource, category: string): Resource | n
 };
 
 export const fetchCategories = async (): Promise<ApiCategories | null> => {
+  // Version sync runs before the cache-first read: a new catalogue version must
+  // invalidate these caches before anything is served from them.
   await ensureAssetsVersionSynced();
   const cached = readCache<ApiCategories>(CATEGORIES_CACHE_KEY);
   if (cached) return cached;
@@ -134,6 +134,7 @@ export const fetchCategory = async (category: string): Promise<Resource[]> => {
 };
 
 export const fetchAllResources = async (): Promise<Resource[]> => {
+  // Before the cache read, so stale catalogue data is dropped before we serve it.
   await ensureAssetsVersionSynced();
   const cached = readCache<ApiAllResources>(ALL_RESOURCES_CACHE_KEY);
   if (cached && cached.categories && Object.keys(cached.categories).length > 0) {
@@ -185,6 +186,7 @@ export const fetchAllResources = async (): Promise<Resource[]> => {
 };
 
 export const getResourceByCategory = async (category: string): Promise<Resource[]> => {
+  // Before the cache read (see fetchAllResources).
   await ensureAssetsVersionSynced();
   const apiCategory = toApiCategory(category);
   const allCached = readCache<ApiAllResources>(ALL_RESOURCES_CACHE_KEY);
