@@ -24,45 +24,7 @@ import { useAuth } from '@/hooks/useAuth'; // Added for auth
 import { useProfile } from '@/hooks/useProfile';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toDisplayAvatarUrl } from '@/lib/avatar';
-
-interface NavLink {
-  name: string;
-  path: string;
-  icon: string;
-  tag?: string; // optional badge/tag (e.g. "NEW")
-}
-
-interface NavDropdown {
-  name: string;
-  icon: string;
-  links: NavLink[];
-}
-
-const mainLinks: (NavLink | NavDropdown)[] = [
-  { name: 'Home', path: '/', icon: 'home' },
-  { name: 'Blogs', path: '/blogs', icon: 'text' },
-  { name: 'Contact', path: '/contact', icon: 'contact' },
-  {
-    name: 'Resources',
-    icon: 'resources',
-    links: [
-      { name: 'Resources Hub', path: '/resources', icon: 'resources-hub' },
-      { name: 'Utilities', path: '/utilities', icon: 'software' },
-      { name: 'Community', path: '/community', icon: 'yt-videos' },
-    ]
-  },
-  {
-    name: 'Tools',
-    icon: 'tools',
-    links: [
-      { name: 'Background Generator', path: '/background-generator', icon: 'background' },
-      { name: 'Player Renderer', path: '/player-renderer', icon: 'player' },
-      { name: 'Text Generator', path: '/text-generator', icon: 'text' },
-      { name: 'Youtube Tools', path: '/youtube-downloader', icon: 'yt-downloader' },
-      { name: 'Content Generators', path: '/generators', icon: 'text' }
-    ]
-  }
-];
+import { MAIN_NAV as mainLinks, type NavLink, type NavDropdown } from '@/lib/navigation';
 
 // Small badge for marking new/updated links
 function TagBadge({ label }: { label: string }) {
