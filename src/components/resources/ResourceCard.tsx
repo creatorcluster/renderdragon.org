@@ -8,12 +8,12 @@ import {
   IconSunglasses,
   IconWand,
 } from "@tabler/icons-react";
-import { Resource, getResourceUrl } from "@/types/resources";
+import { Resource } from "@/types/resources";
 import { cn } from "@/lib/utils";
 import { useUserFavorites } from "@/hooks/useUserFavorites";
 import AudioPlayer from "@/components/AudioPlayer";
 import HoverVideo from "@/components/HoverVideo";
-import { buildResourceRepoUrl, resourceFontUrl } from "@/lib/resourcesRepo";
+import { getResourceUrl, resolveFontSourceUrl, resolveMediaUrl } from "@/lib/resourcesRepo";
 
 interface ResourceCardProps {
   resource: Resource;
@@ -22,8 +22,7 @@ interface ResourceCardProps {
   onAnimate?: (resource: Resource) => void;
 }
 
-const getPreviewUrl = (resource: Resource) =>
-  resource.download_url || buildResourceRepoUrl(resource) || "";
+const getPreviewUrl = (resource: Resource) => resolveMediaUrl(resource) || "";
 
 // Track which font families we've actually loaded. `document.fonts.check()`
 // can't be used for this: it returns true for any family (even a bogus one),
@@ -44,7 +43,7 @@ const ResourceCard = ({ resource, onClick, onMusicLink, onAnimate }: ResourceCar
   const resourceUrl = getResourceUrl(resource);
   const isFavorite = isFavorited(resourceUrl);
   // Font files live in the resources repo, but an explicit download_url wins.
-  const fontFileSource = resource.download_url || resourceFontUrl(resource);
+  const fontFileSource = resolveFontSourceUrl(resource);
 
   const [isInView, setIsInView] = useState(false);
   const [isPreviewReady, setIsPreviewReady] = useState(false);

@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import ResourcePreview from './ResourcePreview';
 import { DownloadProgress } from '@/lib/download';
-import { RESOURCES_REPO_BLOB_BASE, resourceFontUrl } from '@/lib/resourcesRepo';
+import { resourceFontUrl } from '@/lib/resourcesRepo';
 import { IconDownload, IconCopy, IconCheck, IconBrandGithub, IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -122,16 +122,6 @@ const ResourceDetailDialog = ({
     setTimeout(() => {
       setCopied(false);
     }, 2000);
-  };
-
-  const getGithubURL = (resource: Resource) => {
-    if (!resource || !resource.filetype) return '';
-
-    const titleLowered = resource.title
-      .toLowerCase()
-      .replace(/ /g, '%20');
-
-    return `${RESOURCES_REPO_BLOB_BASE}/${resource.category}/${titleLowered}__${resource.credit}.${resource.filetype}`;
   };
 
   if (!resource) return null;

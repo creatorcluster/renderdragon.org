@@ -17,8 +17,6 @@ export interface CatalogueCriteria {
   availableSubcategories?: string[];
   /** Download counts keyed by `downloadCountKey(id)`. */
   downloadCounts?: Record<string, number>;
-  /** Subcategories hidden from the minecraft-icons catalogue. */
-  blacklist?: readonly string[];
 }
 
 const getNumericId = (id: Resource["id"]) => {
@@ -26,6 +24,10 @@ const getNumericId = (id: Resource["id"]) => {
   const parsed = Number(id.toString().replace(/^[^0-9]+/, ""));
   return Number.isFinite(parsed) ? parsed : 0;
 };
+
+/** Minecraft-icon subcategories that the catalogue hides (e.g. backgrounds). */
+const isHiddenIconSubcategory = (subcategory: string | undefined): boolean =>
+  Boolean(subcategory && MCICONS_BLACKLISTED_SUBCATEGORIES.includes(subcategory));
 
 /**
  * Pure filter + sort pipeline behind the resources catalogue. Applies, in order:
@@ -42,7 +44,6 @@ export const filterAndSort = (
     sortOrder = "newest",
     availableSubcategories = [],
     downloadCounts = {},
-    blacklist = MCICONS_BLACKLISTED_SUBCATEGORIES,
   } = criteria;
 
   let result = [...resources];
@@ -59,9 +60,7 @@ export const filterAndSort = (
   }
 
   if (category === "minecraft-icons") {
-    result = result.filter(
-      (r) => !r.subcategory || !blacklist.includes(r.subcategory)
-    );
+    result = result.filter((r) => !isHiddenIconSubcategory(r.subcategory));
   }
 
   if (subcategory && subcategory !== "all") {
@@ -107,14 +106,13 @@ export const filterAndSort = (
 /** Subcategories present in the loaded set for a category, sorted alphabetically. */
 export const deriveSubcategories = (
   resources: Resource[],
-  category: CatalogueCategory | undefined,
-  blacklist: readonly string[] = MCICONS_BLACKLISTED_SUBCATEGORIES
+  category: CatalogueCategory | undefined
 ): string[] => {
   if (!category || category === "favorites") return [];
   const subs = resources
     .filter((r) => {
       if (r.category !== category || !r.subcategory) return false;
-      if (category === "minecraft-icons" && blacklist.includes(r.subcategory)) {
+      if (category === "minecraft-icons" && isHiddenIconSubcategory(r.subcategory)) {
         return false;
       }
       return true;
@@ -123,20 +121,15 @@ export const deriveSubcategories = (
   return Array.from(new Set(subs)).sort();
 };
 
-/** Whether the loaded set contains anything for a category (ignoring the blacklist). */
+/** Whether the loaded set contains anything visible for a category. */
 export const hasResourcesForCategory = (
   resources: Resource[],
-  category: CatalogueCategory | undefined,
-  blacklist: readonly string[] = MCICONS_BLACKLISTED_SUBCATEGORIES
+  category: CatalogueCategory | undefined
 ): boolean => {
   if (!category || category === "favorites") return true;
   return resources.some((resource) => {
     if (resource.category !== category) return false;
-    if (
-      category === "minecraft-icons" &&
-      resource.subcategory &&
-      blacklist.includes(resource.subcategory)
-    ) {
+    if (category === "minecraft-icons" && isHiddenIconSubcategory(resource.subcategory)) {
       return false;
     }
     return true;

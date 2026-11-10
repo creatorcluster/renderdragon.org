@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { fetchCategory } from "@/lib/api";
+import { fetchAllResources } from "@/lib/api";
 import { Resource } from "@/types/resources";
 
 /**
- * Loads only the fonts catalogue, for consumers that just need the font list
- * (e.g. the text generator dropdown) instead of the whole resource hub state.
+ * Loads the font entries from the whole catalogue, mirroring the previous
+ * behaviour (the text generator filtered `resources` by category).
  */
 export const useFonts = () => {
   const [fonts, setFonts] = useState<Resource[]>([]);
@@ -17,9 +17,9 @@ export const useFonts = () => {
       setIsLoading(true);
 
       try {
-        const data = await fetchCategory("fonts");
+        const all = await fetchAllResources();
         if (!cancelled) {
-          setFonts(data);
+          setFonts(all.filter((resource) => resource.category === "fonts"));
         }
       } catch (error) {
         console.error("Error fetching fonts:", error);

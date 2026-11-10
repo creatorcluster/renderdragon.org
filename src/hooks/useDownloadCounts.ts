@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { downloadCountKey } from "@/lib/api";
+import { downloadCountKey } from "@/lib/resourceKeys";
 
 export const useDownloadCounts = () => {
   const { user } = useAuth();

@@ -24,7 +24,7 @@ import { useAuth } from '@/hooks/useAuth'; // Added for auth
 import { useProfile } from '@/hooks/useProfile';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toDisplayAvatarUrl } from '@/lib/avatar';
-import { MAIN_NAV as mainLinks, type NavLink, type NavDropdown } from '@/lib/navigation';
+import { MAIN_NAV as mainLinks, ROUTES, type NavLink, type NavDropdown } from '@/lib/navigation';
 
 // Small badge for marking new/updated links
 function TagBadge({ label }: { label: string }) {
@@ -100,7 +100,7 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const handleShowFavorites = () => {
-    navigate('/resources?tab=favorites');
+    navigate(`${ROUTES.resources}?tab=favorites`);
   };
 
   const handleMobileCollapsibleToggle = (name: string) => {
@@ -149,7 +149,7 @@ const Navbar = () => {
         />
         <div className="container mx-auto px-4 flex justify-between items-center relative z-10">
           <Link
-            to="/"
+            to={ROUTES.home}
             className="inline-flex items-center gap-2 text-xl md:text-2xl font-bold tracking-wider"
           >
             <div className="flex items-center justify-center">
@@ -278,7 +278,7 @@ const Navbar = () => {
                 <div className="px-4 py-6 max-h-[calc(100%-60px)] overflow-auto">
                   <div className="flex items-center justify-between mb-6">
                     <Link
-                      to="/"
+                      to={ROUTES.home}
                       className="flex items-center space-x-2 text-xl font-bold"
                       onClick={() => setIsDrawerOpen(false)} // Close drawer on logo click
                     >

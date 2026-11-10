@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Resource, getResourceUrl } from '@/types/resources';
+import { Resource } from '@/types/resources';
+import { getResourceUrl } from '@/lib/resourcesRepo';
 import {
   Dialog,
   DialogContent,

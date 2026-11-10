@@ -1,6 +1,7 @@
 import { DragEvent, FormEvent, useEffect, useRef, useState } from 'react';
 import { IconAlertCircle, IconFileMusic, IconLink, IconLoader2, IconUpload } from '@tabler/icons-react';
-import { Resource, getResourceUrl } from '@/types/resources';
+import { Resource } from '@/types/resources';
+import { getResourceUrl } from '@/lib/resourcesRepo';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';

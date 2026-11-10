@@ -76,6 +76,16 @@ export const resolveDownloadUrl = (resource: Resource): string | undefined => {
   );
 };
 
+/** URL of the media itself for inline previews: download_url first, then the repo. */
+export const resolveMediaUrl = (resource: Resource): string | undefined => {
+  return resource.download_url || buildResourceRepoUrl(resource);
+};
+
+/** Source a font is loaded from: an explicit download_url wins over the repo path. */
+export const resolveFontSourceUrl = (resource: Resource): string | undefined => {
+  return resource.download_url || resourceFontUrl(resource);
+};
+
 /** Repo path of a font file for a full Resource (includes the credit suffix). */
 export const resourceFontUrl = (resource: Resource): string | undefined => {
   if (!resource?.title || !resource?.filetype) {
@@ -85,6 +95,6 @@ export const resourceFontUrl = (resource: Resource): string | undefined => {
 };
 
 /** Repo path of a font file when only the font name is known (no credit info). */
-export const fontFileUrl = (fontName: string): string => {
+export const fontUrlForName = (fontName: string): string => {
   return buildFontRepoUrl(fontName, "ttf");
 };

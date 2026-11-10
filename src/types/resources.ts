@@ -18,7 +18,6 @@ export interface Resource {
   filename?: string;
 }
 
-export { getResourceUrl } from '@/lib/resourcesRepo';
 
 export interface ResourcesData {
   music: Resource[];

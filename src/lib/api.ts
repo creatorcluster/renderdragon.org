@@ -2,7 +2,6 @@ import { readCache, writeCache } from "@/lib/cache";
 import { ensureAssetsVersionSynced, fetchAssetsJson } from "@/lib/assetsApi";
 import { Resource } from "@/types/resources";
 
-export { MCICONS_BLACKLISTED_SUBCATEGORIES, downloadCountKey } from "@/lib/resourceKeys";
 
 const ALL_RESOURCES_CACHE_KEY = "api:all-resources";
 const CATEGORIES_CACHE_KEY = "api:categories";
