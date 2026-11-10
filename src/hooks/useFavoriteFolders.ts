@@ -1,17 +1,16 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { toast } from 'sonner';
 import {
-  readGuestFolders,
-  writeGuestFolders,
+  subscribeGuestFolders,
+  getGuestFoldersSnapshot,
   readGuestFavorites,
   writeGuestFavorites,
+  writeGuestFolders,
   GuestFolder,
   genId,
-  GUEST_FOLDERS_KEY,
-  GUEST_CHANGE_EVENT,
 } from '@/utils/guestFavorites';
 
 export interface FavoriteFolder {
@@ -28,22 +27,12 @@ export const useFavoriteFolders = () => {
     const isGuest = !user;
     const queryClient = useQueryClient();
 
-    // Guest (signed-out) folders, held in localStorage.
-    const [guestFolders, setGuestFolders] = useState<GuestFolder[]>(() => readGuestFolders());
-
-    useEffect(() => {
-        if (!isGuest) return;
-        const reload = () => setGuestFolders(readGuestFolders());
-        const handleStorage = (event: StorageEvent) => {
-            if (event.key === null || event.key === GUEST_FOLDERS_KEY) reload();
-        };
-        window.addEventListener(GUEST_CHANGE_EVENT, reload);
-        window.addEventListener('storage', handleStorage);
-        return () => {
-            window.removeEventListener(GUEST_CHANGE_EVENT, reload);
-            window.removeEventListener('storage', handleStorage);
-        };
-    }, [isGuest]);
+    // Guest (signed-out) folders, held in localStorage by the guest store.
+    const guestFolders = useSyncExternalStore(
+        subscribeGuestFolders,
+        getGuestFoldersSnapshot,
+        getGuestFoldersSnapshot,
+    );
 
     // Fetch all folders for the user
     const { data: userFolders = [], isLoading } = useQuery({
@@ -84,7 +73,6 @@ export const useFavoriteFolders = () => {
         };
         const next = sortFolders([...guestFolders, folder]);
         writeGuestFolders(next);
-        setGuestFolders(next);
         toast.success('Folder created successfully');
         return folder;
     };
@@ -94,14 +82,12 @@ export const useFavoriteFolders = () => {
             f.id === id ? { ...f, ...updates } : f
         ));
         writeGuestFolders(next);
-        setGuestFolders(next);
         toast.success('Folder updated successfully');
     };
 
     const deleteGuestFolder = (id: string) => {
         const next = guestFolders.filter(f => f.id !== id);
         writeGuestFolders(next);
-        setGuestFolders(next);
         const favorites = readGuestFavorites();
         if (favorites.some(f => f.folder_id === id)) {
             writeGuestFavorites(
