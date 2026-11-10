@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { TextSettings } from '@/types/textGenerator';
-import { RESOURCES_REPO_RAW_BASE } from '@/lib/resourcesRepo';
+import { fontFileUrl } from '@/lib/resourcesRepo';
 
 interface TextPreviewProps {
   settings: TextSettings;
@@ -14,7 +14,7 @@ const TextPreview = ({ settings, canvasRef }: TextPreviewProps) => {
   useEffect(() => {
     const loadFont = async () => {
       try {
-        const fontUrl = `${RESOURCES_REPO_RAW_BASE}/fonts/${settings.font.toLowerCase().replace(/ /g, '%20')}.ttf`;
+        const fontUrl = fontFileUrl(settings.font);
         const font = new FontFace(settings.font, `url(${fontUrl})`);
         const loadedFont = await font.load();
         document.fonts.add(loadedFont);

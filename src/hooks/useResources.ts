@@ -5,11 +5,12 @@ import {
   fetchAllResources,
   fetchCategory,
   getAvailableCategories,
+  downloadCountKey,
   MCICONS_BLACKLISTED_SUBCATEGORIES,
 } from "@/lib/api";
 import { getWaveform, cacheAudio, cacheImage } from "@/lib/cache";
 import { downloadFile, DownloadProgress } from "@/lib/download";
-import { buildResourceRepoUrl } from "@/lib/resourcesRepo";
+import { resolveDownloadUrl } from "@/lib/resourcesRepo";
 
 type Category = Resource["category"];
 type Subcategory = Resource["subcategory"];
@@ -145,14 +146,8 @@ export const useResources = () => {
   const filteredResources = useMemo(() => {
     let result = [...resources];
 
-    const getCount = (id: string | number) => {
-      if (typeof id === "number") return externalDownloadCounts[id] || 0;
-      if (id.startsWith("main-")) {
-        const numericId = id.replace("main-", "");
-        return externalDownloadCounts[numericId] || 0;
-      }
-      return externalDownloadCounts[id] || 0;
-    };
+    const getCount = (id: string | number) =>
+      externalDownloadCounts[downloadCountKey(id)] || 0;
 
     if (selectedCategory && selectedCategory !== "favorites") {
       result = result.filter((r) => r.category === selectedCategory);
@@ -218,15 +213,6 @@ export const useResources = () => {
     externalDownloadCounts,
     availableSubcategories,
   ]);
-
-  const resolveDownloadUrl = (resource: Resource) => {
-    return (
-      resource.download_url ||
-      resource.preview_url ||
-      resource.image_url ||
-      buildResourceRepoUrl(resource)
-    );
-  };
 
   const handleDownload = useCallback(
     async (

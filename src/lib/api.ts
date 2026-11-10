@@ -1,4 +1,4 @@
-import { readCache, writeCache, clearCache } from "@/lib/cache";
+import { readCache, writeCache } from "@/lib/cache";
 import { fetchFromAssetsApi } from "@/lib/assetsApi";
 import { ensureAssetsVersionSynced } from "@/lib/assetsVersion";
 import { Resource } from "@/types/resources";
@@ -28,6 +28,16 @@ export interface ApiCategories {
 export interface ApiAllResources {
   categories: Record<string, ApiResource[]>;
 }
+
+/**
+ * Download counts are keyed by the numeric resource id. Resources coming from
+ * the "main" resource set are identified as `main-<id>`; everything else keeps
+ * its own id.
+ */
+export const downloadCountKey = (id: string | number): string => {
+  if (typeof id === "number") return String(id);
+  return id.startsWith("main-") ? id.replace("main-", "") : id;
+};
 
 const fetchJson = async <T>(path: string): Promise<T | null> => {
   try {
@@ -183,18 +193,6 @@ export const fetchAllResources = async (): Promise<Resource[]> => {
   return [];
 };
 
-export const refreshAllResources = async (): Promise<Resource[]> => {
-  await ensureAssetsVersionSynced();
-  const data = await fetchJson<ApiAllResources>("/all");
-  if (data?.categories) {
-    writeCache(ALL_RESOURCES_CACHE_KEY, data);
-    return Object.entries(data.categories).flatMap(([category, items]) =>
-      items.map(item => normalizeApiResource(item, category)).filter((r): r is Resource => r !== null)
-    );
-  }
-  return [];
-};
-
 export const getResourceByCategory = async (category: string): Promise<Resource[]> => {
   await ensureAssetsVersionSynced();
   const apiCategory = toApiCategory(category);
@@ -211,17 +209,4 @@ export const getResourceByCategory = async (category: string): Promise<Resource[
 export const getAvailableCategories = (): string[] => {
   const cached = readCache<ApiCategories>(CATEGORIES_CACHE_KEY);
   return cached?.categories || [];
-};
-
-export const clearResourceCache = (): void => {
-  clearCache(ALL_RESOURCES_CACHE_KEY);
-  clearCache(CATEGORIES_CACHE_KEY);
-  clearCache(`${CATEGORY_CACHE_PREFIX}mcsounds`);
-  clearCache(`${CATEGORY_CACHE_PREFIX}minecraft-icons`);
-  clearCache(`${CATEGORY_CACHE_PREFIX}music`);
-  clearCache(`${CATEGORY_CACHE_PREFIX}sfx`);
-  clearCache(`${CATEGORY_CACHE_PREFIX}images`);
-  clearCache(`${CATEGORY_CACHE_PREFIX}animations`);
-  clearCache(`${CATEGORY_CACHE_PREFIX}fonts`);
-  clearCache(`${CATEGORY_CACHE_PREFIX}presets`);
 };

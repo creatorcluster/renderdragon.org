@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 import { useUserFavorites } from "@/hooks/useUserFavorites";
 import AudioPlayer from "@/components/AudioPlayer";
 import HoverVideo from "@/components/HoverVideo";
-import { RESOURCES_REPO_RAW_BASE } from "@/lib/resourcesRepo";
+import { buildResourceRepoUrl, resourceFontUrl } from "@/lib/resourcesRepo";
 
 interface ResourceCardProps {
   resource: Resource;
@@ -22,15 +22,8 @@ interface ResourceCardProps {
   onAnimate?: (resource: Resource) => void;
 }
 
-const getPreviewUrl = (resource: Resource) => {
-  if (resource.download_url) return resource.download_url;
-
-  if (!resource.title) return "";
-  const titleLowered = resource.title.toLowerCase().replace(/ /g, "%20");
-  const basePath = RESOURCES_REPO_RAW_BASE;
-  const creditPart = resource.credit ? `__${resource.credit.replace(/ /g, "_")}` : "";
-  return `${basePath}/${resource.category}/${titleLowered}${creditPart}.${resource.filetype}`;
-};
+const getPreviewUrl = (resource: Resource) =>
+  resource.download_url || buildResourceRepoUrl(resource) || "";
 
 // Track which font families we've actually loaded. `document.fonts.check()`
 // can't be used for this: it returns true for any family (even a bogus one),
@@ -50,6 +43,8 @@ const ResourceCard = ({ resource, onClick, onMusicLink, onAnimate }: ResourceCar
   // Key by resource URL to match the Favorites tab, sidebar and DB column.
   const resourceUrl = getResourceUrl(resource);
   const isFavorite = isFavorited(resourceUrl);
+  // Font files live in the resources repo, but an explicit download_url wins.
+  const fontFileSource = resource.download_url || resourceFontUrl(resource);
 
   const [isInView, setIsInView] = useState(false);
   const [isPreviewReady, setIsPreviewReady] = useState(false);
@@ -95,10 +90,7 @@ const ResourceCard = ({ resource, onClick, onMusicLink, onAnimate }: ResourceCar
       return () => { active = false; };
     }
 
-    const fontUrl = resource.download_url || (resource.title
-      ? `${RESOURCES_REPO_RAW_BASE}/${resource.category}/${resource.title.toLowerCase().replace(/ /g, "%20")}${resource.credit ? `__${resource.credit.replace(/ /g, "_")}` : ""}.${resource.filetype}`
-      : "");
-    if (!fontUrl) {
+    if (!fontFileSource) {
       return () => { active = false; };
     }
 
@@ -114,7 +106,7 @@ const ResourceCard = ({ resource, onClick, onMusicLink, onAnimate }: ResourceCar
       if (!pending) {
         pending = (async () => {
           const safeFontName = fontName.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
-          const safeFontUrl = fontUrl.replace(/ /g, '%20').replace(/"/g, '%22');
+          const safeFontUrl = fontFileSource.replace(/ /g, '%20').replace(/"/g, '%22');
           const fontFace = new FontFace(safeFontName, `url("${safeFontUrl}")`);
           const loadedFont = await fontFace.load();
           document.fonts.add(loadedFont);
@@ -135,7 +127,7 @@ const ResourceCard = ({ resource, onClick, onMusicLink, onAnimate }: ResourceCar
       return () => { active = false; clearTimeout(timer); };
     }
     return () => { active = false; };
-  }, [resource.category, resource.title, resource.download_url, resource.credit, resource.filetype, isInView]);
+  }, [resource.category, resource.title, fontFileSource, isInView]);
 
   const handlePreviewClick = (e: React.MouseEvent) => {
     e.stopPropagation();

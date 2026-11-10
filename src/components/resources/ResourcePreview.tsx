@@ -3,7 +3,7 @@ import { Resource } from '@/types/resources';
 import AudioPlayer from '@/components/AudioPlayer';
 import { useState, useEffect } from 'react';
 import VideoPlayer from '@/components/VideoPlayer';
-import { RESOURCES_REPO_RAW_BASE } from '@/lib/resourcesRepo';
+import { resolvePlayableUrl } from '@/lib/resourcesRepo';
 
 interface ResourcePreviewProps {
   resource: Resource;
@@ -16,38 +16,7 @@ const ResourcePreview = ({ resource }: ResourcePreviewProps) => {
     setHasError(false);
   }, [resource]);
 
-  const getDownloadURL = (resource: Resource) => {
-    if (!resource || !resource.filetype) return '';
-
-    // Use preview_url if available, otherwise construct URL
-    if (resource.preview_url) {
-      return resource.preview_url;
-    }
-
-    // Use download_url if available
-    if (resource.download_url) {
-      return resource.download_url;
-    }
-
-    // Fallback to the old URL construction method
-    const titleLowered = resource.title
-      .toLowerCase()
-      .replace(/ /g, '%20');
-
-    if (resource.category === 'presets') {
-      const prefix = resource.subcategory === 'adobe' ? 'a' : 'd';
-      return `${RESOURCES_REPO_RAW_BASE}/presets/PREVIEWS/${prefix}${titleLowered}.mp4`;
-    }
-
-    if (resource.credit) {
-      return `${RESOURCES_REPO_RAW_BASE}/${resource.category}/${titleLowered}__${resource.credit}.${resource.filetype}`;
-    }
-    else {
-      return `${RESOURCES_REPO_RAW_BASE}/${resource.category}/${titleLowered}.${resource.filetype}`;
-    }
-  };
-
-  const downloadURL = getDownloadURL(resource);
+  const downloadURL = resource?.filetype ? resolvePlayableUrl(resource) || '' : '';
 
   if (!downloadURL) {
     return <p>No preview available</p>;

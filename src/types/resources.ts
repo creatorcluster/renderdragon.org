@@ -18,9 +18,7 @@ export interface Resource {
   filename?: string;
 }
 
-export const getResourceUrl = (resource: Resource): string => {
-  return resource.download_url || resource.preview_url || resource.image_url || '';
-};
+export { getResourceUrl } from '@/lib/resourcesRepo';
 
 export interface ResourcesData {
   music: Resource[];

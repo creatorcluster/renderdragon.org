@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import ResourcePreview from './ResourcePreview';
 import { DownloadProgress } from '@/lib/download';
-import { RESOURCES_REPO_RAW_BASE, RESOURCES_REPO_BLOB_BASE } from '@/lib/resourcesRepo';
+import { RESOURCES_REPO_BLOB_BASE, resourceFontUrl } from '@/lib/resourcesRepo';
 import { IconDownload, IconCopy, IconCheck, IconBrandGithub, IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -97,18 +97,8 @@ const ResourceDetailDialog = ({
   // Update the font URL logic to append '__{creditName}' for resources with credit
   useEffect(() => {
     if (resource?.category === 'fonts' && resource.title && !loadedFonts.includes(resource.title)) {
-      const titleLowered = resource.title
-        .toLowerCase()
-        .replace(/ /g, '%20');
-
-      let fontUrl = `${RESOURCES_REPO_RAW_BASE}/${resource.category}/${titleLowered}`;
-
-      if (resource.credit) {
-        const creditName = resource.credit.replace(/ /g, '_');
-        fontUrl = `${fontUrl}__${creditName}`;
-      }
-
-      fontUrl = `${fontUrl}.${resource.filetype}`;
+      const fontUrl = resourceFontUrl(resource);
+      if (!fontUrl) return;
 
       const fontFace = new FontFace(resource.title, `url(${fontUrl})`);
 
