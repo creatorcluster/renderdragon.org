@@ -214,6 +214,10 @@ export type Database = {
         };
         Returns: Json;
       };
+      increment_download_count: {
+        Args: { target_resource_id: number };
+        Returns: number;
+      };
     };
     Enums: {
       resource_category: ResourceCategory;
