@@ -64,20 +64,22 @@ export const useDownloadCounts = () => {
         }
 
         if (numericId !== null) {
-          const { error } = await supabase.from("downloads").upsert(
-            {
-              resource_id: numericId,
-              count: newCount,
-            },
-            {
-              onConflict: "resource_id",
-            },
+          const { data, error } = await supabase.rpc(
+            "increment_download_count",
+            { target_resource_id: numericId },
           );
 
           if (error) {
             console.error("Error incrementing download count:", error);
             return;
           }
+
+          const next = typeof data === "number" ? data : newCount;
+          setDownloadCounts((prev) => ({
+            ...prev,
+            [resIdStr]: next,
+          }));
+          return;
         }
 
         setDownloadCounts((prev) => ({
