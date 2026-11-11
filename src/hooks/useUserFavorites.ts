@@ -1,14 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useState, useSyncExternalStore } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { toast } from 'sonner';
 import {
-  readGuestFavorites,
+  subscribeGuestFavorites,
+  getGuestFavoritesSnapshot,
   writeGuestFavorites,
   GuestFavorite,
-  GUEST_FAVORITES_KEY,
-  GUEST_CHANGE_EVENT,
 } from '@/utils/guestFavorites';
 
 export const MAX_FOLDER_ITEMS = 40;
@@ -24,22 +23,12 @@ export const useUserFavorites = () => {
   const queryClient = useQueryClient();
   const [isSchemaReady, setIsSchemaReady] = useState(true);
 
-  // Guest (signed-out) favourites, held in localStorage.
-  const [guestFavorites, setGuestFavorites] = useState<GuestFavorite[]>(() => readGuestFavorites());
-
-  useEffect(() => {
-    if (!isGuest) return;
-    const reload = () => setGuestFavorites(readGuestFavorites());
-    const handleStorage = (event: StorageEvent) => {
-      if (event.key === null || event.key === GUEST_FAVORITES_KEY) reload();
-    };
-    window.addEventListener(GUEST_CHANGE_EVENT, reload);
-    window.addEventListener('storage', handleStorage);
-    return () => {
-      window.removeEventListener(GUEST_CHANGE_EVENT, reload);
-      window.removeEventListener('storage', handleStorage);
-    };
-  }, [isGuest]);
+  // Guest (signed-out) favourites, held in localStorage by the guest store.
+  const guestFavorites = useSyncExternalStore(
+    subscribeGuestFavorites,
+    getGuestFavoritesSnapshot,
+    getGuestFavoritesSnapshot,
+  );
 
   const { data: userFavorites = [], isLoading } = useQuery({
     queryKey: ['userFavorites', user?.id],
@@ -194,7 +183,6 @@ export const useUserFavorites = () => {
       next.push({ resource_url: resourceUrl, folder_id: folderId });
     }
     writeGuestFavorites(next);
-    setGuestFavorites(next);
     return next;
   };
 
@@ -204,7 +192,6 @@ export const useUserFavorites = () => {
       ? guestFavorites.filter(f => f.resource_url !== resourceUrl)
       : [...guestFavorites, { resource_url: resourceUrl, folder_id: null }];
     writeGuestFavorites(next);
-    setGuestFavorites(next);
     return { action: isCurrently ? 'removed' : 'added' };
   };
 
@@ -232,7 +219,6 @@ export const useUserFavorites = () => {
         f.resource_url === resourceUrl ? { ...f, folder_id: folderId } : f
       );
       writeGuestFavorites(next);
-      setGuestFavorites(next);
       toast.success('Favorite moved to folder');
       return;
     }

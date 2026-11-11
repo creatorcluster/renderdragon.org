@@ -9,7 +9,7 @@ import {
     SelectLabel
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { fetchFromAssetsApi } from "@/lib/assetsApi";
+import { fetchAssetsJson } from "@/lib/assetsApi";
 
 interface FontOption {
     id: number;
@@ -60,15 +60,13 @@ export const FontPicker: React.FC<FontPickerProps> = ({ value, onFontChange }) =
                     const timeoutId = setTimeout(() => controller.abort(), 10000);
 
                     try {
-                        const res = await fetchFromAssetsApi('/fonts', {
+                        const data = await fetchAssetsJson<{ files?: RawFontOption[] }>('/fonts', {
                             signal: controller.signal
                         });
                         clearTimeout(timeoutId);
 
-                        const data = await res.json();
-
                         if (data && Array.isArray(data.files)) {
-                            const validated = (data.files as RawFontOption[])
+                            const validated = data.files
                                 .filter(isFontOption)
                                 .map((font) => ({ ...font, filename: typeof font.filename === 'string' ? font.filename : font.title }));
                             setExternalFonts(validated);

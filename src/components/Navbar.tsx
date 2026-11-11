@@ -24,45 +24,7 @@ import { useAuth } from '@/hooks/useAuth'; // Added for auth
 import { useProfile } from '@/hooks/useProfile';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toDisplayAvatarUrl } from '@/lib/avatar';
-
-interface NavLink {
-  name: string;
-  path: string;
-  icon: string;
-  tag?: string; // optional badge/tag (e.g. "NEW")
-}
-
-interface NavDropdown {
-  name: string;
-  icon: string;
-  links: NavLink[];
-}
-
-const mainLinks: (NavLink | NavDropdown)[] = [
-  { name: 'Home', path: '/', icon: 'home' },
-  { name: 'Blogs', path: '/blogs', icon: 'text' },
-  { name: 'Contact', path: '/contact', icon: 'contact' },
-  {
-    name: 'Resources',
-    icon: 'resources',
-    links: [
-      { name: 'Resources Hub', path: '/resources', icon: 'resources-hub' },
-      { name: 'Utilities', path: '/utilities', icon: 'software' },
-      { name: 'Community', path: '/community', icon: 'yt-videos' },
-    ]
-  },
-  {
-    name: 'Tools',
-    icon: 'tools',
-    links: [
-      { name: 'Background Generator', path: '/background-generator', icon: 'background' },
-      { name: 'Player Renderer', path: '/player-renderer', icon: 'player' },
-      { name: 'Text Generator', path: '/text-generator', icon: 'text' },
-      { name: 'Youtube Tools', path: '/youtube-downloader', icon: 'yt-downloader' },
-      { name: 'Content Generators', path: '/generators', icon: 'text' }
-    ]
-  }
-];
+import { MAIN_NAV as mainLinks, ROUTES, type NavLink, type NavDropdown } from '@/lib/navigation';
 
 // Small badge for marking new/updated links
 function TagBadge({ label }: { label: string }) {
@@ -138,7 +100,7 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const handleShowFavorites = () => {
-    navigate('/resources?tab=favorites');
+    navigate(`${ROUTES.resources}?tab=favorites`);
   };
 
   const handleMobileCollapsibleToggle = (name: string) => {
@@ -187,7 +149,7 @@ const Navbar = () => {
         />
         <div className="container mx-auto px-4 flex justify-between items-center relative z-10">
           <Link
-            to="/"
+            to={ROUTES.home}
             className="inline-flex items-center gap-2 text-xl md:text-2xl font-bold tracking-wider"
           >
             <div className="flex items-center justify-center">
@@ -316,7 +278,7 @@ const Navbar = () => {
                 <div className="px-4 py-6 max-h-[calc(100%-60px)] overflow-auto">
                   <div className="flex items-center justify-between mb-6">
                     <Link
-                      to="/"
+                      to={ROUTES.home}
                       className="flex items-center space-x-2 text-xl font-bold"
                       onClick={() => setIsDrawerOpen(false)} // Close drawer on logo click
                     >

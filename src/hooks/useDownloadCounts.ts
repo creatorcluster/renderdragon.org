@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { downloadCountKey } from "@/lib/resourceKeys";
 
 export const useDownloadCounts = () => {
   const { user } = useAuth();
@@ -54,14 +55,12 @@ export const useDownloadCounts = () => {
         const newCount = currentCount + 1;
 
         // Extract numeric ID if possible for DB persistence
+        const countKey = downloadCountKey(resourceId);
         let numericId: number | null = null;
         if (typeof resourceId === "number") {
           numericId = resourceId;
-        } else if (resourceId.startsWith("main-")) {
-          const idPart = resourceId.replace("main-", "");
-          if (!isNaN(Number(idPart))) {
-            numericId = Number(idPart);
-          }
+        } else if (countKey !== resourceId && !isNaN(Number(countKey))) {
+          numericId = Number(countKey);
         }
 
         if (numericId !== null) {

@@ -1,13 +1,11 @@
-import { readCache, readStaleCache, writeCache, clearCache } from "@/lib/cache";
-import { fetchFromAssetsApi } from "@/lib/assetsApi";
-import { ensureAssetsVersionSynced } from "@/lib/assetsVersion";
+import { readCache, readStaleCache, writeCache } from "@/lib/cache";
+import { ensureAssetsVersionSynced, fetchAssetsJson } from "@/lib/assetsApi";
 import { Resource } from "@/types/resources";
+
 
 const ALL_RESOURCES_CACHE_KEY = "api:all-resources";
 const CATEGORIES_CACHE_KEY = "api:categories";
 const CATEGORY_CACHE_PREFIX = "api:category:";
-
-export const MCICONS_BLACKLISTED_SUBCATEGORIES = ['backgrounds'];
 
 /**
  * Thrown when the catalog could not be loaded at all (session/network failure and
@@ -41,15 +39,15 @@ export interface ApiAllResources {
   categories: Record<string, ApiResource[]>;
 }
 
+
 const fetchJson = async <T>(path: string): Promise<T | null> => {
   try {
-    const res = await fetchFromAssetsApi(path, {
+    return await fetchAssetsJson<T>(path, {
       cache: "default",
       headers: {
         Accept: "application/json",
       },
     });
-    return (await res.json()) as T;
   } catch (error) {
     console.error(`Fetch error for ${path}:`, error);
     return null;
@@ -157,6 +155,8 @@ const readResourcesFromCategoryCaches = (): Resource[] => {
 };
 
 export const fetchCategories = async (): Promise<ApiCategories | null> => {
+  // Version sync runs before the cache-first read: a new catalogue version must
+  // invalidate these caches before anything is served from them.
   await ensureAssetsVersionSynced();
   const cached = readCache<ApiCategories>(CATEGORIES_CACHE_KEY);
   if (cached) return cached;
@@ -213,6 +213,7 @@ export const fetchCategory = async (category: string): Promise<Resource[]> => {
 };
 
 export const fetchAllResources = async (): Promise<Resource[]> => {
+  // Before the cache read, so stale catalogue data is dropped before we serve it.
   await ensureAssetsVersionSynced();
   const cached = readCache<ApiAllResources>(ALL_RESOURCES_CACHE_KEY);
   if (cached && cached.categories && Object.keys(cached.categories).length > 0) {
@@ -276,17 +277,8 @@ export const fetchAllResources = async (): Promise<Resource[]> => {
   throw new ResourceApiError("Unable to load resources from the assets API");
 };
 
-export const refreshAllResources = async (): Promise<Resource[]> => {
-  await ensureAssetsVersionSynced();
-  const data = await fetchJson<ApiAllResources>("/all");
-  if (data?.categories) {
-    writeCache(ALL_RESOURCES_CACHE_KEY, data);
-    return flattenCategories(data.categories);
-  }
-  throw new ResourceApiError("Unable to refresh resources from the assets API");
-};
-
 export const getResourceByCategory = async (category: string): Promise<Resource[]> => {
+  // Before the cache read (see fetchAllResources).
   await ensureAssetsVersionSynced();
   const apiCategory = toApiCategory(category);
   const catalog = readCachedCatalog();
@@ -301,17 +293,4 @@ export const getResourceByCategory = async (category: string): Promise<Resource[
 export const getAvailableCategories = (): string[] => {
   const cached = readCache<ApiCategories>(CATEGORIES_CACHE_KEY);
   return cached?.categories || [];
-};
-
-export const clearResourceCache = (): void => {
-  clearCache(ALL_RESOURCES_CACHE_KEY);
-  clearCache(CATEGORIES_CACHE_KEY);
-  clearCache(`${CATEGORY_CACHE_PREFIX}mcsounds`);
-  clearCache(`${CATEGORY_CACHE_PREFIX}minecraft-icons`);
-  clearCache(`${CATEGORY_CACHE_PREFIX}music`);
-  clearCache(`${CATEGORY_CACHE_PREFIX}sfx`);
-  clearCache(`${CATEGORY_CACHE_PREFIX}images`);
-  clearCache(`${CATEGORY_CACHE_PREFIX}animations`);
-  clearCache(`${CATEGORY_CACHE_PREFIX}fonts`);
-  clearCache(`${CATEGORY_CACHE_PREFIX}presets`);
 };

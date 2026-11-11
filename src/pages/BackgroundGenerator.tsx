@@ -26,13 +26,14 @@ import {
 import { toast } from "sonner";
 import Seo from "@/components/Seo";
 import { softwareApplicationSchema } from "@/lib/structuredData";
-import { fetchFromAssetsApi } from "@/lib/assetsApi";
+import { fetchAssetsJson } from "@/lib/assetsApi";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { drawPattern, type PatternType } from "@/lib/backgroundPattern";
+import { rankTextures } from "@/lib/textureSearch";
 
 type Texture = { id: number | string; url: string; title: string; subcategory?: string };
 type PatternImage = { id: string; url: string; title: string; source: "library" | "upload" };
-type PatternType = "grid" | "staggered" | "diagonal" | "scattered" | "random";
 type OutputMode = "image" | "video";
 
 const MAX_UPLOADED_IMAGES = 20;
@@ -42,68 +43,6 @@ const isTexture = (value: unknown): value is Texture => {
   if (!value || typeof value !== 'object') return false;
   const texture = value as Record<string, unknown>;
   return (typeof texture.id === 'number' || typeof texture.id === 'string') && typeof texture.url === 'string' && typeof texture.title === 'string' && texture.subcategory === 'textures';
-};
-
-const normalizeSearchText = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
-
-const editDistance = (left: string, right: string) => {
-  const previous = Array.from({ length: right.length + 1 }, (_, index) => index);
-
-  for (let leftIndex = 1; leftIndex <= left.length; leftIndex += 1) {
-    let diagonal = previous[0];
-    previous[0] = leftIndex;
-
-    for (let rightIndex = 1; rightIndex <= right.length; rightIndex += 1) {
-      const above = previous[rightIndex];
-      previous[rightIndex] = left[leftIndex - 1] === right[rightIndex - 1]
-        ? diagonal
-        : Math.min(diagonal, previous[rightIndex - 1], above) + 1;
-      diagonal = above;
-    }
-  }
-
-  return previous[right.length];
-};
-
-const fuzzyTextureScore = (texture: Texture, query: string) => {
-  const normalizedQuery = normalizeSearchText(query);
-  if (!normalizedQuery) return 0;
-
-  const title = normalizeSearchText(texture.title);
-  const words = title.split(" ").filter(Boolean);
-  if (title === normalizedQuery) return 0;
-  if (title.startsWith(normalizedQuery)) return 1;
-  if (title.includes(normalizedQuery)) return 2;
-
-  const queryWords = normalizedQuery.split(" ").filter(Boolean);
-  const wordScore = queryWords.reduce((total, queryWord) => {
-    const bestWordScore = words.reduce((best, word) => {
-      if (word.startsWith(queryWord)) return Math.min(best, 3);
-      if (word.includes(queryWord)) return Math.min(best, 4);
-      if (queryWord.length >= 3 && editDistance(word, queryWord) <= 2) return Math.min(best, 5);
-      return best;
-    }, Infinity);
-
-    return total + bestWordScore;
-  }, 0);
-
-  if (wordScore !== Infinity && wordScore <= queryWords.length * 5) return 10 + wordScore;
-
-  let queryIndex = 0;
-  for (const character of title) {
-    if (character === normalizedQuery[queryIndex]) queryIndex += 1;
-    if (queryIndex === normalizedQuery.length) return 20 + title.length - normalizedQuery.length;
-  }
-
-  return Infinity;
-};
-
-const createRandom = (seed: number) => {
-  let value = seed >>> 0;
-  return () => {
-    value = (value * 1664525 + 1013904223) >>> 0;
-    return value / 4294967296;
-  };
 };
 
 const BackgroundGenerator = () => {
@@ -177,11 +116,7 @@ const BackgroundGenerator = () => {
 
   const filteredTextures = useMemo(() => (
     textureSearch.trim()
-      ? textures
-        .map((texture) => ({ texture, score: fuzzyTextureScore(texture, textureSearch) }))
-        .filter(({ score }) => score !== Infinity)
-        .sort((left, right) => left.score - right.score || left.texture.title.localeCompare(right.texture.title))
-        .map(({ texture }) => texture)
+      ? rankTextures(textures, textureSearch)
       : textures
   ), [textures, textureSearch]);
 
@@ -193,8 +128,7 @@ const BackgroundGenerator = () => {
     const fetchTextures = async () => {
       try {
         setIsLoadingTextures(true);
-        const response = await fetchFromAssetsApi('/mcicons');
-        const data = await response.json();
+        const data = await fetchAssetsJson<{ files?: unknown }>('/mcicons');
         if (data && data.files) {
           const filteredTextures = Array.isArray(data.files) ? data.files.filter(isTexture) : [];
           setTextures(filteredTextures);
@@ -283,118 +217,6 @@ const BackgroundGenerator = () => {
     setSelectedImages((current) => current.filter((image) => !uploadIds.has(image.id)));
   };
 
-  const generatePattern = (
-    ctx: CanvasRenderingContext2D,
-    images: Array<PatternImage & { image: HTMLImageElement }>,
-    canvasWidth: number,
-    canvasHeight: number,
-    imgSpacing: number,
-    imgOpacity: number,
-    imgScale: number,
-    type: PatternType,
-    seed: number,
-    rotationDegrees: number,
-    horizontalOffset = 0,
-    motionPadding = 0,
-  ) => {
-    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-
-    if (!isTransparent) {
-      ctx.fillStyle = color;
-      ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-    }
-
-    const random = createRandom(seed);
-    const spacingPixels = imgSpacing;
-    const baseHeight = Math.max(12, 100 * (imgScale / 100));
-    const sizes = images.map((source) => {
-      const aspectRatio = source.image.width / source.image.height || 1;
-      return { width: baseHeight * aspectRatio, height: baseHeight };
-    });
-    ctx.save();
-    ctx.translate(horizontalOffset, 0);
-
-    const drawTile = (sourceIndex: number, x: number, y: number, width: number, height: number, tileRotation = 0) => {
-      const source = images[sourceIndex % images.length];
-      ctx.save();
-      ctx.globalAlpha = imgOpacity / 100;
-      ctx.translate(x + width / 2, y + height / 2);
-      ctx.rotate((rotationDegrees * Math.PI) / 180 + tileRotation);
-      ctx.drawImage(source.image, -width / 2, -height / 2, width, height);
-      ctx.restore();
-    };
-
-    const maxWidth = Math.max(...sizes.map(({ width }) => width));
-    const areaScale = Math.sqrt((canvasWidth * canvasHeight) / (1920 * 1080));
-    const minimumStep = Math.max(12, areaScale * 12);
-    const horizontalStep = Math.max(minimumStep, maxWidth + spacingPixels);
-    const verticalStep = Math.max(minimumStep, baseHeight + spacingPixels);
-    const randomOrder = images.map((_, index) => index);
-    for (let index = randomOrder.length - 1; index > 0; index -= 1) {
-      const swapIndex = Math.floor(random() * (index + 1));
-      [randomOrder[index], randomOrder[swapIndex]] = [randomOrder[swapIndex], randomOrder[index]];
-    }
-    let tileIndex = 0;
-
-    const drawStructuredTile = (sourceIndex: number, x: number, y: number) => {
-      const { width, height } = sizes[sourceIndex];
-      const rotationRadians = (rotationDegrees * Math.PI) / 180;
-      const rotatedWidth = Math.abs(width * Math.cos(rotationRadians)) + Math.abs(height * Math.sin(rotationRadians));
-      const rotatedHeight = Math.abs(width * Math.sin(rotationRadians)) + Math.abs(height * Math.cos(rotationRadians));
-      const fit = Math.min(1, maxWidth / rotatedWidth, baseHeight / rotatedHeight);
-      const drawWidth = width * fit;
-      const drawHeight = height * fit;
-      drawTile(
-        sourceIndex,
-        x + (maxWidth - drawWidth) / 2,
-        y + (baseHeight - drawHeight) / 2,
-        drawWidth,
-        drawHeight,
-      );
-    };
-
-    if (type === "random") {
-      for (let y = -baseHeight - motionPadding; y < canvasHeight + baseHeight + motionPadding; y += verticalStep) {
-        for (let x = -maxWidth - motionPadding; x < canvasWidth + maxWidth + motionPadding; x += horizontalStep) {
-          const sourceIndex = randomOrder[tileIndex % randomOrder.length];
-          const { width, height } = sizes[sourceIndex];
-           drawTile(sourceIndex, x, y, width, height);
-          tileIndex += 1;
-        }
-      }
-      ctx.restore();
-      return;
-    }
-
-    if (type === "scattered") {
-      for (let row = 0, y = -baseHeight - motionPadding; y < canvasHeight + baseHeight + motionPadding; row += 1, y += verticalStep) {
-        const rowOffset = (row % 2) * horizontalStep * 0.25;
-        for (let x = -maxWidth - motionPadding + rowOffset; x < canvasWidth + maxWidth + motionPadding; x += horizontalStep) {
-           const sourceIndex = randomOrder[tileIndex % randomOrder.length];
-           drawStructuredTile(sourceIndex, x, y);
-          tileIndex += 1;
-        }
-      }
-      ctx.restore();
-      return;
-    }
-
-    for (let row = 0, y = -baseHeight - motionPadding; y < canvasHeight + baseHeight + motionPadding; row += 1, y += verticalStep) {
-      const rowOffset = type === "staggered"
-        ? (row % 2) * horizontalStep / 2
-        : type === "diagonal"
-          ? (row * horizontalStep * 0.35) % horizontalStep
-          : 0;
-
-      for (let x = -maxWidth - motionPadding + rowOffset; x < canvasWidth + maxWidth + motionPadding; x += horizontalStep) {
-        const sourceIndex = randomOrder[tileIndex % randomOrder.length];
-        drawStructuredTile(sourceIndex, x, y);
-        tileIndex += 1;
-      }
-    }
-    ctx.restore();
-  };
-
   const loadSelectedImages = () => Promise.all(selectedImages.map((source) => new Promise<PatternImage & { image: HTMLImageElement }>((resolve, reject) => {
     const image = new Image();
     image.crossOrigin = "Anonymous";
@@ -430,7 +252,19 @@ const BackgroundGenerator = () => {
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
 
-      generatePattern(ctx, loadedImages, width, height, spacing[0], opacity[0], scale[0], patternType, randomSeed, rotation[0]);
+      drawPattern(ctx, {
+        images: loadedImages,
+        width,
+        height,
+        spacing: spacing[0],
+        opacity: opacity[0],
+        scale: scale[0],
+        type: patternType,
+        seed: randomSeed,
+        rotation: rotation[0],
+        color,
+        isTransparent,
+      });
       if (generationId === generationIdRef.current) {
         const imageUrl = await canvasToObjectUrl(canvas);
         if (generationId === generationIdRef.current) {
@@ -494,20 +328,21 @@ const BackgroundGenerator = () => {
       patternCanvas.height = height;
       const patternContext = patternCanvas.getContext("2d");
       if (!patternContext) throw new Error("Pattern canvas is unavailable");
-      generatePattern(
-        patternContext,
-        loadedImages,
-        patternCanvas.width,
+      drawPattern(patternContext, {
+        images: loadedImages,
+        width: patternCanvas.width,
         height,
-        spacing[0],
-        opacity[0],
-        scale[0],
-        patternType,
-        randomSeed,
-        rotation[0],
-        0,
-        400,
-      );
+        spacing: spacing[0],
+        opacity: opacity[0],
+        scale: scale[0],
+        type: patternType,
+        seed: randomSeed,
+        rotation: rotation[0],
+        color,
+        isTransparent,
+        horizontalOffset: 0,
+        motionPadding: 400,
+      });
 
       const stream = canvas.captureStream(animationFps[0]);
       const videoTrack = stream.getVideoTracks()[0] as CanvasCaptureMediaStreamTrack;

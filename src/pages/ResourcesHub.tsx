@@ -6,11 +6,12 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { toast } from 'sonner';
 import { useResources } from '@/hooks/useResources';
 import { useMinecraftMusic, ensurePlaylistCached } from '@/hooks/useMinecraftMusic';
-import { Resource, getResourceUrl } from '@/types/resources';
+import { Resource } from '@/types/resources';
+import { getResourceUrl } from '@/lib/resourcesRepo';
 import { MusicMood } from '@/types/music';
 import { DownloadProgress } from '@/lib/download';
 import { buildMusicLink } from '@/utils/musicLink';
-import { fetchFromAssetsApi } from '@/lib/assetsApi';
+import { fetchAssetsJson } from '@/lib/assetsApi';
 import ResourceFilters from '@/components/resources/ResourceFilters';
 import SortSelector from '@/components/resources/SortSelector';
 import ResourcesList from '@/components/resources/ResourcesList';
@@ -97,9 +98,7 @@ const ResourcesHub = () => {
   const loadMusicMoods = useCallback(async () => {
     setMoodsStatus('loading');
     try {
-      const response = await fetchFromAssetsApi('/music_moods');
-      if (!response.ok) throw new Error(`music moods request failed (${response.status})`);
-      const data = await response.json();
+      const data = await fetchAssetsJson<MusicMood[]>('/music_moods');
       if (!Array.isArray(data)) throw new Error('music moods response was not a list');
       setMusicMoodsData(data);
       setMoodsStatus('ready');

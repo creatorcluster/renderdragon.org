@@ -1,4 +1,5 @@
-import { Resource, getResourceUrl } from '@/types/resources';
+import { Resource } from '@/types/resources';
+import { getResourceUrl } from '@/lib/resourcesRepo';
 
 export const MUSIC_LINK_PATH = '/api/music-link';
 

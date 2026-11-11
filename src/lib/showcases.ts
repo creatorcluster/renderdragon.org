@@ -1,6 +1,9 @@
 import { supabase } from "@/integrations/supabase/client";
-import { fetchFromAssetsApi } from "@/lib/assetsApi";
-import { ensureAssetsVersionSynced, resetAssetsVersionSync } from "@/lib/assetsVersion";
+import {
+  ensureAssetsVersionSynced,
+  fetchAssetsJson,
+  resetAssetsVersionSync,
+} from "@/lib/assetsApi";
 import { clearCache, readCache, writeCache } from "@/lib/cache";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
@@ -45,13 +48,13 @@ export async function listShowcases(search?: string) {
   const newApiShowcases: Showcase[] = [];
   const newApiAssetsByShowcase = new Map<string, ShowcaseAsset[]>();
 
+  // Before the cache read, so a new catalogue version drops the stale showcase list first.
   await ensureAssetsVersionSynced();
 
   try {
     let assets = readCache<NewApiAsset[]>(SHOWCASES_CACHE_KEY);
     if (!assets) {
-      const response = await fetchFromAssetsApi('/api/assets');
-      assets = (await response.json()) as NewApiAsset[];
+      assets = await fetchAssetsJson<NewApiAsset[]>('/api/assets');
       if (Array.isArray(assets)) {
         try {
           writeCache(SHOWCASES_CACHE_KEY, assets);
@@ -173,12 +176,10 @@ export async function createShowcase(params: {
   // Pass message directly
   formData.append('message', params.description);
 
-  const response = await fetchFromAssetsApi('/api/assets', {
+  const result = await fetchAssetsJson<{ id: string }>('/api/assets', {
     method: 'POST',
     body: formData,
   });
-
-  const result = await response.json();
 
   // New upload changed the catalog; drop the cached list so the next read refreshes.
   clearCache(SHOWCASES_CACHE_KEY);

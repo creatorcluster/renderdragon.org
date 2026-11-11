@@ -5,11 +5,14 @@ import {
   fetchAllResources,
   fetchCategory,
   getAvailableCategories,
-  MCICONS_BLACKLISTED_SUBCATEGORIES,
 } from "@/lib/api";
-import { getWaveform, cacheAudio, cacheImage } from "@/lib/cache";
+import {
+  filterAndSort,
+  deriveSubcategories,
+  hasResourcesForCategory,
+} from "@/lib/catalogue";
 import { downloadFile, DownloadProgress } from "@/lib/download";
-import { buildResourceRepoUrl } from "@/lib/resourcesRepo";
+import { resolveDownloadUrl } from "@/lib/resourcesRepo";
 
 type Category = Resource["category"];
 type Subcategory = Resource["subcategory"];
@@ -31,7 +34,6 @@ export const useResources = () => {
     null
   );
   const [isSearching, setIsSearching] = useState(false);
-  const [lastAction, setLastAction] = useState<string>("");
   const [loadedFonts, setLoadedFonts] = useState<string[]>([]);
   const [fontPreviewText, setFontPreviewText] = useState<string>("Aa Bb Cc");
   const [availableCategories, setAvailableCategories] = useState<string[]>([]);
@@ -63,6 +65,12 @@ export const useResources = () => {
 
         if (currentFetchId === fetchIdRef.current) {
           setResources(data);
+          // Re-read after the fetch: the catalogue version sync may have
+          // invalidated the categories cache since the seed read above.
+          const freshCategories = getAvailableCategories();
+          if (freshCategories.length > 0) {
+            setAvailableCategories(freshCategories);
+          }
         }
       } catch (error) {
         console.error("Error fetching resources:", error);
@@ -85,13 +93,11 @@ export const useResources = () => {
   const handleSearchSubmit = useCallback((e?: React.FormEvent) => {
     e?.preventDefault();
     setIsSearching(true);
-    setLastAction("search");
   }, []);
 
   const handleClearSearch = useCallback(() => {
     setSearchQuery("");
     setIsSearching(false);
-    setLastAction("clear");
   }, []);
 
   const handleCategoryChange = useCallback(
@@ -99,7 +105,6 @@ export const useResources = () => {
       setIsLoading(true);
       setSelectedCategory(category);
       setSelectedSubcategory(null);
-      setLastAction("category");
     },
     []
   );
@@ -107,14 +112,12 @@ export const useResources = () => {
   const handleSubcategoryChange = useCallback(
     (subcategory: Subcategory | "all" | null) => {
       setSelectedSubcategory(subcategory);
-      setLastAction("subcategory");
     },
     []
   );
 
   const handleSearch = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
-    setLastAction("search");
     if (e.target.value === "") {
       setIsSearching(false);
     } else {
@@ -122,116 +125,36 @@ export const useResources = () => {
     }
   }, []);
 
-  const availableSubcategories = useMemo(() => {
-    if (!selectedCategory || selectedCategory === "favorites") return [];
-    const subs = resources
-      .filter((r) => {
-        if (r.category !== selectedCategory || !r.subcategory) return false;
-        if (selectedCategory === "minecraft-icons" && MCICONS_BLACKLISTED_SUBCATEGORIES.includes(r.subcategory)) {
-          return false;
-        }
-        return true;
-      })
-      .map((r) => r.subcategory as string);
-    return Array.from(new Set(subs)).sort();
-  }, [resources, selectedCategory]);
+  const availableSubcategories = useMemo(
+    () => deriveSubcategories(resources, selectedCategory),
+    [resources, selectedCategory]
+  );
 
-  const hasCategoryResources = useMemo(() => {
-    if (!selectedCategory || selectedCategory === "favorites") return true;
-    return resources.some((resource) => {
-      if (resource.category !== selectedCategory) return false;
-      if (selectedCategory === "minecraft-icons" && resource.subcategory && MCICONS_BLACKLISTED_SUBCATEGORIES.includes(resource.subcategory)) {
-        return false;
-      }
-      return true;
-    });
-  }, [resources, selectedCategory]);
+  const hasCategoryResources = useMemo(
+    () => hasResourcesForCategory(resources, selectedCategory),
+    [resources, selectedCategory]
+  );
 
-  const filteredResources = useMemo(() => {
-    let result = [...resources];
-
-    const getCount = (id: string | number) => {
-      if (typeof id === "number") return externalDownloadCounts[id] || 0;
-      if (id.startsWith("main-")) {
-        const numericId = id.replace("main-", "");
-        return externalDownloadCounts[numericId] || 0;
-      }
-      return externalDownloadCounts[id] || 0;
-    };
-
-    if (selectedCategory && selectedCategory !== "favorites") {
-      result = result.filter((r) => r.category === selectedCategory);
-    } else if (selectedCategory === null) {
-      result = result.filter((r) => r.category !== "minecraft-icons" && r.category !== "mcsounds");
-    }
-
-    if (selectedCategory === "minecraft-icons") {
-      result = result.filter(
-        (r) => !r.subcategory || !MCICONS_BLACKLISTED_SUBCATEGORIES.includes(r.subcategory)
-      );
-    }
-
-    if (selectedSubcategory && selectedSubcategory !== "all") {
-      if (selectedCategory === "mcsounds" || selectedCategory === "minecraft-icons") {
-        result = result.filter((r) =>
-          r.subcategory === selectedSubcategory ||
-          r.subcategory?.startsWith(selectedSubcategory + "/")
-        );
-      } else if (availableSubcategories.includes(selectedSubcategory)) {
-        result = result.filter((r) => r.subcategory === selectedSubcategory);
-      }
-    }
-
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      result = result.filter((r) =>
-        [r.title, r.credit, r.subcategory, r.filetype].some(
-          (field) => field && field.toLowerCase().includes(query)
-        )
-      );
-    }
-
-    const getNumericId = (id: Resource["id"]) => {
-      if (typeof id === "number") return id;
-      const parsed = Number(id.toString().replace(/^[^0-9]+/, ""));
-      return Number.isFinite(parsed) ? parsed : 0;
-    };
-
-    switch (sortOrder) {
-      case "popular":
-        result.sort((a, b) => getCount(b.id) - getCount(a.id));
-        break;
-      case "a-z":
-        result.sort((a, b) => a.title.localeCompare(b.title));
-        break;
-      case "z-a":
-        result.sort((a, b) => b.title.localeCompare(a.title));
-        break;
-      case "newest":
-      default:
-        result.sort((a, b) => getNumericId(b.id) - getNumericId(a.id));
-        break;
-    }
-
-    return result;
-  }, [
-    resources,
-    selectedCategory,
-    selectedSubcategory,
-    searchQuery,
-    sortOrder,
-    externalDownloadCounts,
-    availableSubcategories,
-  ]);
-
-  const resolveDownloadUrl = (resource: Resource) => {
-    return (
-      resource.download_url ||
-      resource.preview_url ||
-      resource.image_url ||
-      buildResourceRepoUrl(resource)
-    );
-  };
+  const filteredResources = useMemo(
+    () =>
+      filterAndSort(resources, {
+        category: selectedCategory,
+        subcategory: selectedSubcategory,
+        searchQuery,
+        sortOrder,
+        availableSubcategories,
+        downloadCounts: externalDownloadCounts,
+      }),
+    [
+      resources,
+      selectedCategory,
+      selectedSubcategory,
+      searchQuery,
+      sortOrder,
+      externalDownloadCounts,
+      availableSubcategories,
+    ]
+  );
 
   const handleDownload = useCallback(
     async (
@@ -254,24 +177,6 @@ export const useResources = () => {
     [incrementDownload]
   );
 
-  const loadWaveform = useCallback(async (resource: Resource) => {
-    const url = resource.download_url;
-    if (!url) return null;
-    return getWaveform(url);
-  }, []);
-
-  const loadCachedAudio = useCallback(async (resource: Resource) => {
-    const url = resource.download_url;
-    if (!url) return null;
-    return cacheAudio(url);
-  }, []);
-
-  const loadCachedImage = useCallback(async (resource: Resource) => {
-    const url = resource.download_url || resource.image_url;
-    if (!url) return null;
-    return cacheImage(url);
-  }, []);
-
   const retryResources = useCallback(() => {
     fetchIdRef.current++;
     setRefreshKey(prev => prev + 1);
@@ -286,8 +191,6 @@ export const useResources = () => {
     selectedSubcategory,
     isLoading,
     isSearching,
-    downloadCounts: externalDownloadCounts,
-    lastAction,
     loadedFonts,
     setLoadedFonts,
     fontPreviewText,
@@ -305,14 +208,6 @@ export const useResources = () => {
     handleSortOrderChange: setSortOrder,
     handleSearch,
     handleDownload,
-    loadWaveform,
-    loadCachedAudio,
-    loadCachedImage,
-    refreshResources: () => {
-      fetchIdRef.current++;
-      setRefreshKey(prev => prev + 1);
-      setSelectedCategory(null);
-    },
     retryResources,
   };
 };

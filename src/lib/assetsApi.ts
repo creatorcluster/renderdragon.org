@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { clearCachePrefixes, touchCaches } from "@/lib/cache";
 import { getTurnstileToken } from "@/lib/turnstile";
 
 // In local dev the gateway isn't reached directly: the Vite dev server proxies
@@ -166,4 +167,73 @@ export async function fetchFromAssetsApi(path: string, init?: RequestInit): Prom
     throw new Error(`Assets API error ${response.status} ${response.statusText} for ${path}`);
   }
   return response;
+}
+
+// Parse a JSON response from the assets API. Callers that only need typed data should
+// use this instead of hand-rolling `res.json()` and their own parse errors.
+export async function fetchAssetsJson<T>(path: string, init?: RequestInit): Promise<T> {
+  const response = await fetchFromAssetsApi(path, init);
+  try {
+    return (await response.json()) as T;
+  } catch {
+    throw new Error(`Invalid JSON from assets API for ${path}`);
+  }
+}
+
+const VERSION_KEY = "rd-assets-version";
+
+// Caches whose lifetime is governed by the catalog version instead of their own TTL.
+const CATALOG_CACHE_PREFIXES = [
+  "api:all-resources",
+  "api:categories",
+  "api:category:",
+  "api:showcases",
+];
+
+let syncPromise: Promise<void> | null = null;
+
+async function runSync(): Promise<void> {
+  const version = await fetchAssetsVersion();
+  if (!version) return; // endpoint unavailable -> leave existing caches alone
+
+  let stored: string | null = null;
+  try {
+    stored = localStorage.getItem(VERSION_KEY);
+  } catch {
+    stored = null;
+  }
+
+  if (stored === version) {
+    // Catalog is current: keep the caches alive so no auth (and no challenge) is needed.
+    touchCaches(CATALOG_CACHE_PREFIXES);
+    return;
+  }
+
+  // Catalog changed (or first visit): drop the stale data and remember the new version.
+  clearCachePrefixes(CATALOG_CACHE_PREFIXES);
+  try {
+    localStorage.setItem(VERSION_KEY, version);
+  } catch {
+    // ignore
+  }
+}
+
+// Best-effort, runs once per page load, and is awaited before any catalog fetch so the
+// version decision is made before we ever touch the authenticated path.
+//
+// This stays explicit at each cache-first call site (api.ts, showcases.ts) on purpose:
+// it is NOT run inside fetchFromAssetsApi, because the cached catalogue has to be
+// invalidated for a new version *before* it is read, and fetchFromAssetsApi only runs
+// once the code has already decided to go to the network.
+export function ensureAssetsVersionSynced(): Promise<void> {
+  if (!syncPromise) {
+    syncPromise = runSync().catch((error) => {
+      console.warn("Assets version sync failed:", error);
+    });
+  }
+  return syncPromise;
+}
+
+export function resetAssetsVersionSync(): void {
+  syncPromise = null;
 }

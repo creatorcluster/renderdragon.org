@@ -16,6 +16,7 @@ import { AdBlockDetector } from "@/components/AdBlockDetector";
 import Navbar from "@/components/Navbar";
 import Seo from "@/components/Seo";
 import { STATUS_PAGE_URL } from "@/lib/site";
+import { ROUTES } from "@/lib/navigation";
 
 // Routes that should never be indexed by search engines.
 const PRIVATE_ROUTE_PREFIXES = ['/admin', '/account', '/analytics', '/creator-packs/manage', '/partners/dashboard', '/oauth/consent'];
@@ -186,11 +187,11 @@ const App = () => {
                 <Navbar />
                 <Suspense fallback={<LoadingFallback />}>
                   <Routes>
-                    <Route path="/" element={<HomeRedirect />} />
-                    <Route path="/resources" element={<ResourcesHub />} />
-                    <Route path="/contact" element={<Contact />} />
+                    <Route path={ROUTES.home} element={<HomeRedirect />} />
+                    <Route path={ROUTES.resources} element={<ResourcesHub />} />
+                    <Route path={ROUTES.contact} element={<Contact />} />
                     <Route
-                      path="/background-generator"
+                      path={ROUTES.backgroundGenerator}
                       element={<BackgroundGenerator />}
                     />
                     <Route
@@ -208,13 +209,13 @@ const App = () => {
                     <Route path="/gappa/check/:jobId" element={<LooneyResultPage />} />
                     <Route path="/guides" element={<Guides />} />
                     <Route path="/guides/:slug" element={<GuideView />} />
-                    <Route path="/community" element={<Community />} />
+                    <Route path={ROUTES.community} element={<Community />} />
                     <Route
                       path="/ai-title-helper"
                       element={<AiTitleHelper />}
                     />
-                    <Route path="/utilities" element={<Utils />} />
-                    <Route path="/player-renderer" element={<PlayerRenderer />} />
+                    <Route path={ROUTES.utilities} element={<Utils />} />
+                    <Route path={ROUTES.playerRenderer} element={<PlayerRenderer />} />
                     <Route path="/renderbot" element={<Renderbot />} />
                     <Route path="/account" element={<Account />} />
                     <Route path="/account/profile" element={
@@ -241,16 +242,16 @@ const App = () => {
                     <Route path="/tos" element={<TOS />} />
                     <Route path="/privacy" element={<Privacy />} />
                     <Route path="/construction" element={<Construction />} />
-                    <Route path="/text-generator" element={<TextGenerator />} />
-                    <Route path="/generators" element={<Generators />} />
+                    <Route path={ROUTES.textGenerator} element={<TextGenerator />} />
+                    <Route path={ROUTES.generators} element={<Generators />} />
                     <Route
-                      path="/youtube-downloader"
+                      path={ROUTES.youtubeDownloader}
                       element={<YouTubeDownloader />}
                     />
                     <Route path="/showcase" element={<Showcase />} />
                     <Route path="/u/:username" element={<Profile />} />
                     <Route path="/changelogs" element={<Changelogs />} />
-                    <Route path="/blogs" element={<Blogs />} />
+                    <Route path={ROUTES.blogs} element={<Blogs />} />
                     <Route path="/blogs/:slug" element={<BlogView />} />
                     <Route path="/native-application" element={<NativeApplication />} />
                     <Route path="/creator-packs/new" element={<CreateCreatorPackPage />} />
